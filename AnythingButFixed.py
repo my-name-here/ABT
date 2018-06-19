@@ -27,15 +27,6 @@ class bullet(Turtle):
         self.seth(self.direction)
         self.hideturtle()
 
-    def addToScreen(self):
-        self.onscreen = True
-        self.seth(self.direction)
-        self.showturtle()
-
-    def takeOffScreen(self):
-        self.onscreen = False
-        self.hideturtle()
-
     def move(self, enlist):
         if self.btype == 'homing':
             bestenemy = ''
@@ -51,18 +42,16 @@ class bullet(Turtle):
             self.forward(self.speed)
         self.forward(self.speed)
         if self.ycor() < -300 or self.ycor() > 300:
-            self.takeOffScreen()
+            return True
         if self.xcor() < -300 or self.xcor() > 300:
-            self.takeOffScreen()
+            return True
+        return False
 
     def moveToPos(self, pos):
         self.goto(pos)
 
-    def resetvars(self):
-        self.direction = 90
-        self.seth(self.direction)
-
     def delete(self):
+        self.hideturtle()
         self.getscreen()._turtles.remove(self)
         del self
        
@@ -80,9 +69,6 @@ class enemy(Turtle):
         self.goto(random.randint(-300, 300), 300)
         self.bullets = []
         self.going = 1
-        for i in range(5):
-            b = bullet(-90, self.pos())
-            self.bullets.append(b)
 
     def move(self, p):
         self.forward(0.5)
@@ -127,6 +113,7 @@ class enemy(Turtle):
             self.delete()
 
     def delete(self):
+        self.hideturtle()
         self.getscreen()._turtles.remove(self)
         del self
 
@@ -259,11 +246,6 @@ class player(Turtle):
     
     def buy():
         pass
-    
-t = Turtle()
-s = t.getscreen()
-m = Turtle()
-t.hideturtle()
-del t
 
-print(s.getTurtles())
+colormode(255)
+
