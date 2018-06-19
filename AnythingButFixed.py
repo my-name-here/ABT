@@ -15,9 +15,9 @@ import gc
 class bullet(Turtle):
     def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, btype = 'regular'):
         Turtle.__init__(self)
-        self.onscreen = False
-        self.speed = sp
-        self.damage = 0
+        self.onscreen = False #Are you on the screen
+        self.speed = sp #How fast you are (higher is faster)
+        self.damage = 0 #How much damage a bullet deals
         self.up()
         self.btype = btype
         self.turtlesize(0.5, 0.5)
@@ -25,10 +25,22 @@ class bullet(Turtle):
         self.color(color)
         self.direction = direction
         self.seth(self.direction)
+        self.hideturtle() #Hide until fired
+
+<<<<<<< HEAD
+    def addToScreen(self): #Re-appear
+        self.onscreen = True
+        self.seth(self.direction)
+        self.showturtle()
+
+    def takeOffScreen(self): #Disappear
+        self.onscreen = False
         self.hideturtle()
 
+=======
+>>>>>>> 38a981a4532d5851b41a080e99f40cb22b6e3461
     def move(self, enlist):
-        if self.btype == 'homing':
+        if self.btype == 'homing': #Run homing missile code uf this is a homing missile
             bestenemy = ''
             bestdistance = float('inf')
             for enemy in enlist:
@@ -41,8 +53,13 @@ class bullet(Turtle):
                 self.seth(x+(self.towards(bestenemy)-90>x)-(self.towards(bestenemy)-90<x)+90)
             self.forward(self.speed)
         self.forward(self.speed)
+<<<<<<< HEAD
+        if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
+            self.takeOffScreen()
+=======
         if self.ycor() < -300 or self.ycor() > 300:
             return True
+>>>>>>> 38a981a4532d5851b41a080e99f40cb22b6e3461
         if self.xcor() < -300 or self.xcor() > 300:
             return True
         return False
@@ -110,7 +127,7 @@ class enemy(Turtle):
         if self.health > 0:
             self.turtlesize(self.health, self.health, 2)
         else:
-            self.delete()
+            self.delete() #Die if you're dead
 
     def delete(self):
         self.hideturtle()
@@ -234,9 +251,102 @@ class player(Turtle):
         self.chargespeed = 0
         self.chargemax = 5
         self.points = 0
+        self.cap = 25 #Maximum number of bullets on the screen
 
     def fire(self):
-        pass
+        num = 0
+        if len(bullets) < self.cap:
+            if self.weapons[self.weapon] == 'blaster':
+                b = bullet(90, p.pos(), (0, 255, 0))
+                bullets.append(b)
+                b.damage = 1
+                b.speed = 1.5
+                b.moveToPos(p.pos())
+                b.reset()
+                b.addToScreen()
+                return
+            elif self.weapons[self.weapon] == 'spreadshot' and charge >= 2:
+                charge -= 2
+                for i in range(3): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
+                    b = bullet(90, p.pos(), (0, 255, 0))
+                    bullets.append(b)
+                    b.damage = 1
+                    b.speed = 1.5
+                    b.moveToPos(p.pos())
+                    b.direction = random.randint(80, 100)
+                    b.addToScreen()
+                return
+            elif self.weapons[self.weapon] == 'lazor' and charge >= 3:
+                charge -= 3
+                self.lazorgo()
+                return
+            elif self.weapons[self.weapon] == 'blaster 2.0' and charge >= 3:
+                b = bullet(90, p.pos(), (0, 255, 0))
+                bullets.append(b)
+                charge -= 2
+                b.damage = 2
+                b.speed = 1
+                b.moveToPos(p.pos())
+                b.reset()
+                b.addToScreen()
+                return
+            elif self.weapons[self.weapon] == 'homingmissile' and charge >= 2:
+                b = bullet(90, p.pos(), (0, 255, 0), 1.5, 'homing')
+                bullets.append(b)
+                charge -= 2
+                h.moveToPos(p.pos())
+                h.seth(90)
+                h.addToScreen()
+                return
+            elif self.weapons[self.weapon] == 'bombs' and charge >= 3:
+                charge -= 1
+                radius = 40
+                b = bullet(90, p.pos(), (0, 255, 0), 1.5, 'bomb')
+                bullets.append(b)
+                b.moveToPos(p.pos())
+                b.seth(90)
+                b.addToScreen(min(radius, 100))
+                return
+        ##        global firing
+        ##        #global startofbullet
+        ##        charge -= 0
+        ##        if firing:
+        ##            firing = False
+        ##            radius = 10#int(startofbullet-time())*10
+        ##            for b in bbullets:
+        ##                if not b.onscreen:
+        ##                    b.moveToPos(p.pos())
+        ##                    b.seth(90)
+        ##                    b.addToScreen(100-(abs(-100+radius)/2-(-100+radius)/2))
+        ##                    return
+        ##        if not firing:
+        ##            startofbullet = time()
+        ##            firing = True
+        ##            return
+            elif self.weapons[self.weapon] == 'pentashot' and charge >= 3:
+                charge -= 3
+                for num in range(1, 6):
+                    b = bullet(90, p.pos(), (0, 255, 0))
+                    bullets.append(b)
+                    b.moveToPos(p.pos())
+                    b.damage = 1
+                    b.speed = 2.5
+                    x = 40
+                    b.direction = 90 + (2 - num)*x
+                    b.seth(90 + (2 - num)*x)
+                    b.addToScreen()
+                return
+            elif self.weapons[self.weapon] == "machine gun" and charge >= 4:
+                charge -= 4
+                for i in range(7):
+                    b = bullet(90, p.pos(), (0, 255, 0))
+                    bullets.append(b)
+                    b.moveToPos(p.pos())
+                    b.damage = 1
+                    b.speed = 2
+                    b.direction = random.randint(70,110)
+                    b.seth(b.direction)
+                    b.addToScreen()
 
     def move(self):
         pass
@@ -246,6 +356,20 @@ class player(Turtle):
     
     def buy():
         pass
+<<<<<<< HEAD
+
+    def lazorgo(self):
+        pass
+
+bullets = []
+
+t = Turtle()
+s = t.getscreen()
+m = Turtle()
+t.hideturtle()
+del t
+=======
+>>>>>>> 38a981a4532d5851b41a080e99f40cb22b6e3461
 
 colormode(255)
 
