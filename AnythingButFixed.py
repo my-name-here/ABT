@@ -18,6 +18,7 @@ class bullet(Turtle):
         self.onscreen = False #Are you on the screen
         self.speed = sp #How fast you are (higher is faster)
         self.damage = 0 #How much damage a bullet deals
+        self.radius = 40#Used for the bomb
         self.up()
         self.btype = btype
         self.turtlesize(0.5, 0.5)
@@ -113,6 +114,7 @@ class enemy(Turtle):
         if self.health > 0:
             self.turtlesize(self.health, self.health, 2)
         else:
+            elist.remove(self)
             self.delete() #Die if you're dead
 
     def delete(self):
@@ -278,29 +280,11 @@ class player(Turtle):
                 return
             elif self.weapons[self.weapon] == 'bombs' and charge >= 3:
                 charge -= 1
-                radius = 40
-                b = bullet(90, p.pos(), (0, 255, 0), 1.5, 'bomb')
+                b = bullet(90, p.pos(), (0, 255, 0), 1.2, 'bomb')
                 bullets.append(b)
                 b.moveToPos(p.pos())
                 b.seth(90)
-                b.addToScreen(min(radius, 100))#Needs to be fixed
                 return
-        ##        global firing
-        ##        #global startofbullet
-        ##        charge -= 0
-        ##        if firing:
-        ##            firing = False
-        ##            radius = 10#int(startofbullet-time())*10
-        ##            for b in bbullets:
-        ##                if not b.onscreen:
-        ##                    b.moveToPos(p.pos())
-        ##                    b.seth(90)
-        ##                    b.addToScreen(100-(abs(-100+radius)/2-(-100+radius)/2))
-        ##                    return
-        ##        if not firing:
-        ##            startofbullet = time()
-        ##            firing = True
-        ##            return
             elif self.weapons[self.weapon] == 'pentashot' and charge >= 3:
                 charge -= 3
                 for num in range(1, 6):
@@ -337,11 +321,310 @@ class player(Turtle):
         pass
 
 bullets = []
-
+elist = []
 t = Turtle()
 s = t.getscreen()
 m = Turtle()
 t.hideturtle()
 del t
 
-print(s.getTurtles())
+def loop():
+    global p, ennum, stopped, screen, enlist, pbullets, mov, health, points, root
+    global charge, maxcharge, weapons, weapon, distance, kdistance, fite, boss
+    global bbullets
+    distance += 1
+    if root != 0:
+        try:
+            root.destroy()
+        except:
+            pass
+    screen.onkey(stop, "e")
+    stopped = False
+    while True:
+        distance += 1
+        if fite:
+            distance = distance % 20
+        if distance == 1000:
+            kdistance += 1
+            distance = 0
+            print('1km')
+            if kdistance % 10 == 0:
+                fite = True
+                print('ahh', kdistance)
+        screen.update()
+        p.setx(p.xcor() + mov)
+
+        if fite:
+            global n
+            if kdistance == 10 and boss.bossness == 0 and not boss.isvisible():
+                boss.turtlesize(20, 20, 2)
+                boss.pencolor(255, 0, 0)
+                boss.seth(-90)
+                boss.up()
+                boss.goto(0, 300)
+                boss.health = 200
+                boss.showturtleandhealth()
+                n = 1
+                for i in range(200):
+                    boss.forward(1)
+                    screen.update()
+                    
+            elif kdistance == 20 and boss.bossness == 1 and not boss.isvisible():
+                boss.turtlesize(2, 2, 2)
+                boss.pencolor(255, 0, 0)
+                boss.shape('boss2')
+                boss.seth(-90)
+                boss.up()
+                boss.spot = 0
+                boss.goto(0, 300)
+                boss.health = 200
+                boss.showturtleandhealth()
+                n = 1
+                for i in range(200):
+                    boss.forward(1)
+                    screen.update()
+
+            elif kdistance == 30 and boss.bossness == 2 and not boss.isvisible():
+                boss.turtlesize(10, 20, 2)
+                boss.pencolor(255, 0, 0)
+                boss.shape('classic')
+                boss.seth(-90)
+                boss.up()
+                boss.goto(0, 300)
+                boss.health = 300
+                boss.showturtleandhealth()
+                n = 1
+                for i in range(200):
+                    boss.forward(1)
+                    screen.update()
+            
+            elif boss.isvisible() and kdistance == 10:
+                try:
+                    boss.moveBullets()
+                    for b in boss.bullets:
+                        if abs(b.ycor() - p.ycor()) < 20:
+                            if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
+                                b.takeOffScreen()
+                                b.moveToPos((0, 0))
+                                health -= 1
+                                updatescoreboard()
+                    boss.setx(boss.xcor()+n)
+                    if boss.xcor() > 300 or boss.xcor() < -300:
+                        n = n*-1
+                    if random.randint(0, 200) == 0 and ennum < len(enlist)-1:
+                        ennum += 1
+                        enlist[ennum].goto(boss.pos())
+                    if random.randint(0, 50) == 0:
+                        boss.spreadshoot()
+                    for b in pbullets + hbullets + bbullets:
+                        if b.onscreen:
+                            if abs(b.ycor() - boss.ycor()) < 20:
+                                if abs(b.xcor() - boss.xcor()) < boss.turtlesize()[0]*6:
+                                    b.takeOffScreen()
+                                    boss.takeDamage(b.damage)
+                                    if random.randint(0, 1) == 0:
+                                        points += 1
+                                        updatescoreboard()
+                                    if boss.health < 1 and fite:
+                                        fite = False
+                                        boss.hideturtle()
+                                        for b in boss.bullets:
+                                            b.takeOffScreen()
+                                        boss.bossness += 1
+                                        for e in enlist:
+                                            e.level += 1
+                                        for i in range(50):
+                                            points += 1
+                                            screen.update()
+                                            updatescoreboard()
+                                    else:
+                                        continue
+                except UnboundLocalError:
+                    n = 1
+            elif boss.isvisible() and kdistance == 20:
+                try:
+                    boss.forward(n)
+                    boss.clear()
+                    boss.moveBullets()
+                    for b in boss.bullets:
+                        if abs(b.ycor() - p.ycor()) < 20:
+                            if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
+                                b.takeOffScreen()
+                                b.moveToPos((0, 0))
+                                health -= 1
+                                updatescoreboard()
+                    boss.setx(boss.xcor() + int(boss.spot > boss.xcor())*4-int(boss.spot < boss.xcor())*4)
+                    if abs(boss.spot - boss.xcor()) < 10:
+                        boss.dot(40)
+                    if random.randint(0, 40) == 0 and abs(boss.spot - boss.xcor()) < 10:
+                        if boss.health > 150:
+                            if boss.lazershot(boss.pos(), -90):
+                                health -= 2
+                                updatescoreboard()
+                        else:
+                            if boss.lazershot(boss.pos(), -90) or boss.lazershot((boss.pos()[0]+100, boss.pos()[1]), -90) or boss.lazershot((boss.pos()[0]-100, boss.pos()[1]), -90):
+                                health -= 2
+                                updatescoreboard()
+                        screen.update()
+                        boss.spot = p.xcor()
+                    for b in boss.bullets:
+                            b.clear()
+                    v = boss.bullets[1].pos()
+                    boss.bullets[1].goto(boss.spot, -275)
+                    boss.bullets[1].showturtle()
+                    boss.bullets[1].dot(10, 'red')
+                    boss.bullets[1].hideturtle()
+                    boss.bullets[1].goto(v)
+                    if boss.ycor() > 200 or boss.ycor() < 100:
+                        n = n*-1
+                    for b in pbullets + hbullets + bbullets:
+                        if b.onscreen:
+                            if abs(b.ycor() - boss.ycor()) < 20:
+                                if abs(b.xcor() - boss.xcor()) < boss.turtlesize()[0]*60:
+                                    b.takeOffScreen()
+                                    boss.takeDamage(b.damage)
+                                    if random.randint(0, 1) == 0:
+                                        points += 1
+                                        updatescoreboard()
+                                    if boss.health < 1 and fite:
+                                        fite = False
+                                        boss.hideturtle()
+                                        boss.clear()
+                                        for b in boss.bullets:
+                                            b.takeOffScreen()
+                                        boss.bossness += 1
+                                        for e in enlist:
+                                            e.level += 1
+                                        for i in range(50):
+                                            points += 1
+                                            screen.update()
+                                            updatescoreboard()
+                                    else:
+                                        continue
+                except UnboundLocalError:
+                    n = 1
+
+            elif boss.isvisible() and kdistance == 30:
+                try:
+                    boss.moveBullets()
+                    for b in boss.bullets:
+                        if abs(b.ycor() - p.ycor()) < 20:
+                            if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
+                                b.takeOffScreen()
+                                b.moveToPos((0, 0))
+                                health -= 1
+                                updatescoreboard()
+                    x = 1 if boss.xcor() < p.xcor() else -1
+                    boss.setx(boss.xcor()+(2*n)+x)
+                    if random.randint(0, 20) == 0 or boss.xcor() > 300 or boss.xcor() < -300:
+                        n = n*-1
+                    if random.randint(0, 50) == 0 and ennum < len(enlist)-1:
+                        ennum += 1
+                        enlist[ennum].goto(boss.pos())
+                        enlist[ennum].seth(random.randint(-120, -60))
+                    if random.randint(0, 50) == 0:
+                        boss.burst(boss.towards(p), 20, 20)
+                        screen.update()
+                    for b in boss.bullets:
+                        b.clear()
+                    for b in pbullets + hbullets + bbullets:
+                        if b.onscreen:
+                            if abs(b.ycor() - boss.ycor()) < 20:
+                                if abs(b.xcor() - boss.xcor()) < boss.turtlesize()[0]*6:
+                                    b.takeOffScreen()
+                                    boss.takeDamage(b.damage)
+                                    if random.randint(0, 1) == 0:
+                                        points += 1
+                                        updatescoreboard()
+                                    if boss.health < 1 and fite:
+                                        fite = False
+                                        boss.hideturtle()
+                                        for b in boss.bullets:
+                                            b.takeOffScreen()
+                                        boss.bossness += 1
+                                        for e in enlist:
+                                            e.level += 1
+                                        for i in range(50):
+                                            points += 1
+                                            screen.update()
+                                            updatescoreboard()
+                                    else:
+                                        continue
+                except UnboundLocalError:
+                    n = 1
+                    print('shjfdk')
+
+        if charge < maxcharge and distance % 20 == 0:
+            charge += chargespeed
+            updatecharge()
+
+        if p.xcor() > 300:
+            p.setx(-300)
+        if p.xcor() < -300:
+            p.setx(300)
+        
+        if random.randint(0, 100) == 100 and ennum < len(enlist) and not fite:
+            ennum += 1
+
+        for i in range(ennum):
+            e = enlist[i]
+            e.showturtle()
+            e.move(p)
+            if random.randint(0, 200) == 0:
+                e.shoot()
+            if enlist[i].ycor() < -300:
+                e.resetstuff()
+                enlist.remove(e)
+                enlist.append(e)
+                ennum -= 1
+
+        for b in bullets:
+            b.move()
+            for i in range(len(elist))):#elist is the list of enemies
+                e = enlist[i]
+                if abs(b.ycor() - e.ycor()) < 20:
+                    if abs(b.xcor() - e.xcor()) < e.turtlesize()[0]*6:
+                        b.takeOffScreen()
+                        e.takeDamage(b.damage)
+                        if random.randint(0, 1) == 0:
+                            points += b.damage
+                            updatescoreboard()
+                        if e.health <= 0:
+                            e.resetstuff()
+                            enlist.remove(e)
+                            enlist.append(e)
+                            ennum -= 1
+                            if random.randint(0, 1) == 0:
+                                health += 1
+                                updatescoreboard()
+                        else:
+                            continue
+
+        for e in enlist:
+            for b in e.bullets:
+                if abs(b.ycor() - p.ycor()) < 20:
+                    if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
+                        b.takeOffScreen()
+                        b.moveToPos((0, 0))
+                        health -= 1
+                        updatescoreboard()
+                                   
+        if stopped:
+            screen.onkey(loop, "e")
+            screen.onkey(loop, "E")
+            root = Tk()
+            shop(root, boss.bossness)
+            break
+        if health < 1:
+            print('you lose haha')
+            print('points: ', points)
+            print('distance: ', distance + 1000*kdistance)
+            if points > get_highscore('Anything_But_That'):
+                change_highscore('Anything_But_That', points)
+                print('NEW POINTS HIGH SCORE!!!!')
+            if distance + 1000*kdistance > get_highscore('Anything_But_Thatd'):
+                change_highscore('Anything_But_Thatd', distance + 1000*kdistance)
+                print('NEW DISTANCE HIGH SCORE!!!!')
+            print('highscore: ', get_highscore('Anything_But_That'))
+            print('distance highscore: ', get_highscore('Anything_But_Thatd'))
+            break
