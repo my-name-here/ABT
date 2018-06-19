@@ -27,6 +27,7 @@ class bullet(Turtle):
         self.seth(self.direction)
         self.hideturtle() #Hide until fired
 
+<<<<<<< HEAD
     def addToScreen(self): #Re-appear
         self.onscreen = True
         self.seth(self.direction)
@@ -36,6 +37,8 @@ class bullet(Turtle):
         self.onscreen = False
         self.hideturtle()
 
+=======
+>>>>>>> 38a981a4532d5851b41a080e99f40cb22b6e3461
     def move(self, enlist):
         if self.btype == 'homing': #Run homing missile code uf this is a homing missile
             bestenemy = ''
@@ -50,19 +53,22 @@ class bullet(Turtle):
                 self.seth(x+(self.towards(bestenemy)-90>x)-(self.towards(bestenemy)-90<x)+90)
             self.forward(self.speed)
         self.forward(self.speed)
+<<<<<<< HEAD
         if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
             self.takeOffScreen()
+=======
+        if self.ycor() < -300 or self.ycor() > 300:
+            return True
+>>>>>>> 38a981a4532d5851b41a080e99f40cb22b6e3461
         if self.xcor() < -300 or self.xcor() > 300:
-            self.takeOffScreen()
+            return True
+        return False
 
     def moveToPos(self, pos):
         self.goto(pos)
 
-    def resetvars(self):
-        self.direction = 90
-        self.seth(self.direction)
-
     def delete(self):
+        self.hideturtle()
         self.getscreen()._turtles.remove(self)
         del self
        
@@ -80,9 +86,6 @@ class enemy(Turtle):
         self.goto(random.randint(-300, 300), 300)
         self.bullets = []
         self.going = 1
-        for i in range(5):
-            b = bullet(-90, self.pos())
-            self.bullets.append(b)
 
     def move(self, p):
         self.forward(0.5)
@@ -127,6 +130,7 @@ class enemy(Turtle):
             self.delete() #Die if you're dead
 
     def delete(self):
+        self.hideturtle()
         self.getscreen()._turtles.remove(self)
         del self
 
@@ -352,6 +356,7 @@ class player(Turtle):
     
     def buy():
         pass
+<<<<<<< HEAD
 
     def lazorgo(self):
         pass
@@ -363,5 +368,8 @@ s = t.getscreen()
 m = Turtle()
 t.hideturtle()
 del t
+=======
+>>>>>>> 38a981a4532d5851b41a080e99f40cb22b6e3461
 
-print(s.getTurtles())
+colormode(255)
+
