@@ -25,22 +25,9 @@ class bullet(Turtle):
         self.color(color)
         self.direction = direction
         self.seth(self.direction)
-        self.hideturtle() #Hide until fired
 
-<<<<<<< HEAD
-    def addToScreen(self): #Re-appear
-        self.onscreen = True
-        self.seth(self.direction)
-        self.showturtle()
-
-    def takeOffScreen(self): #Disappear
-        self.onscreen = False
-        self.hideturtle()
-
-=======
->>>>>>> 38a981a4532d5851b41a080e99f40cb22b6e3461
     def move(self, enlist):
-        if self.btype == 'homing': #Run homing missile code uf this is a homing missile
+        if self.btype == 'homing': #Run homing missile code if this is a homing missile
             bestenemy = ''
             bestdistance = float('inf')
             for enemy in enlist:
@@ -53,13 +40,8 @@ class bullet(Turtle):
                 self.seth(x+(self.towards(bestenemy)-90>x)-(self.towards(bestenemy)-90<x)+90)
             self.forward(self.speed)
         self.forward(self.speed)
-<<<<<<< HEAD
-        if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
-            self.takeOffScreen()
-=======
         if self.ycor() < -300 or self.ycor() > 300:
             return True
->>>>>>> 38a981a4532d5851b41a080e99f40cb22b6e3461
         if self.xcor() < -300 or self.xcor() > 300:
             return True
         return False
@@ -356,7 +338,6 @@ class player(Turtle):
     
     def buy():
         pass
-<<<<<<< HEAD
 
     def lazorgo(self):
         pass
@@ -368,8 +349,6 @@ s = t.getscreen()
 m = Turtle()
 t.hideturtle()
 del t
-=======
->>>>>>> 38a981a4532d5851b41a080e99f40cb22b6e3461
 
 colormode(255)
 
