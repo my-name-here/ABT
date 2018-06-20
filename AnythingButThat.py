@@ -16,7 +16,6 @@ import os
 class bullet(Turtle):
     def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, damage = 1):
         Turtle.__init__(self)
-        self.onscreen = False
         self.speed = sp
         self.damage = 0
         self.up()
@@ -25,7 +24,6 @@ class bullet(Turtle):
         self.color(color)
         self.direction = direction
         self.seth(self.direction)
-        self.hideturtle()
 
     def addToScreen(self):
         self.onscreen = True

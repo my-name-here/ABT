@@ -265,6 +265,18 @@ class player(Turtle):
         self.points = 0
         self.cap = 25 #Maximum number of bullets on the screen
 
+    def spray(self, num, charge, damage, speed, spread = 20, regular = False):
+        charge -= charge
+        for i in range(1, num+1): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
+            b = bullet(90, p.pos(), (0, 255, 0))
+            b.damage = 1
+            b.speed = 1.5
+            b.moveToPos(p.pos())
+            if regular:
+                b.direction = 90 + (floor(num/2) - i)*regular
+            else:
+                b.direction = random.randint(90 - spread, 90 + spread)
+
     def fire(self):
         num = 0
         if len(bullets) < self.cap:
