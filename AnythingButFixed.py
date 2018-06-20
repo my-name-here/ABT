@@ -95,10 +95,6 @@ class enemy(Turtle):
         self.goto(random.randint(-300, 300), 300)
         self.bullets = []
         self.going = 1
-        for i in range(5):
-            b = bullet(-90, self.pos())
-            self.bullets.append(b)
-        elist.append(self)
 
     def move(self, p):
         self.forward(0.5)
@@ -154,9 +150,6 @@ class boss(Turtle):
         self.spot = 0
         self.bullets = []
         self.bossness = 0
-        for i in range(20):
-            b = bullet(-90, self.pos())
-            self.bullets.append(b)
         self.health = 0
         self.keeper = Turtle()
         self.up()
