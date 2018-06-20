@@ -138,11 +138,13 @@ class enemy(Turtle):
         self.health -= damage
         if self.health > 0:
             self.turtlesize(self.health, self.health, 2)
+            return False #Youre alive
         else:
-            elist.remove(self)
             self.delete() #Die if you're dead
+            return True
 
     def delete(self):
+        elist.remove(self)
         self.getscreen()._turtles.remove(self)
         del self
 
@@ -339,6 +341,7 @@ class player(Turtle):
     def lazorgo(self):
         pass
 
+colormode(255)
 bullets = [] #Holds the players bulletsd
 elist = [] #Holds all the enemies
 
@@ -356,8 +359,8 @@ boss.bossness = 2## 0
 boss.hideturtle()
 g = False
 
-<<<<<<< HEAD
 def loop_iteration():
+    '''Iterates once and returns whether you're done'''
     if charge < maxcharge and distance % 20 == 0:
         charge += chargespeed
         updatecharge()
@@ -373,12 +376,73 @@ def loop_iteration():
             if random.randint(0, 200) == 0:
                 e.shoot()
             if enlist[i].ycor() < -300:
-                e.resetstuff()
-                enlist.remove(e)
-                enlist.append(e)
-                ennum -= 1
-=======
+                e.delete()
+                
+    for b in bullets:
+        b.move()
+        for e in elist:
+            if abs(b.ycor() - e.ycor()) < 20:
+                if abs(b.xcor() - e.xcor()) < e.turtlesize()[0]*6:
+                    if e.takeDamage(b.damage): #True if it dies
+                        if random.randint(0, 1) == 0:
+                            health += 1
+                            updatescoreboard()
+                    b.collide()
+                    if random.randint(0, 1) == 0:
+                        points += b.damage
+                        updatescoreboard()
+
+    for e in elist:
+        for b in e.bullets:
+            if abs(b.ycor() - p.ycor()) < 20:
+                if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
+                    b.delete()
+                    p.health -= 1
+                    updatescoreboard()
+    if stopped:
+        screen.onkey(loop, "e")
+        screen.onkey(loop, "E")
+        root = Tk()
+        shop(root, boss.bossness)
+        break
+    if health < 1:
+        print('you lose haha')
+        print('points: ', points)
+        print('distance: ', distance + 1000*kdistance)
+        if points > get_highscore('Anything_But_That'):
+            change_highscore('Anything_But_That', points)
+            print('NEW POINTS HIGH SCORE!!!!')
+        if distance + 1000*kdistance > get_highscore('Anything_But_Thatd'):
+            change_highscore('Anything_But_Thatd', distance + 1000*kdistance)
+            print('NEW DISTANCE HIGH SCORE!!!!')
+        print('highscore: ', get_highscore('Anything_But_That'))
+        print('distance highscore: ', get_highscore('Anything_But_Thatd'))
+        return True
+    return False
+                        
+def boss_iteration():
+    if distance == 1000:
+        kdistance += 1
+        distance = 0
+        print('1km')
+        if kdistance % 10 == 0:
+            fite = True
+            print('ahh', kdistance)
+    if not fite:
+        distance += 1
+    
+
+def main():
+    loop_iteration()
+    boss_iteration()
+    if root != 0:
+        try:
+            root.destroy()
+        except:
+            pass
+    screen.onkey(stop, "e")
+    stopped = False
+    screen.update()
+
 colormode(255)
 
-print(s.getTurtles())
->>>>>>> 57e5a639d6efcbfc138d9e1df6304a742a7dc9c6
