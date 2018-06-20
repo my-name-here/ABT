@@ -1,0 +1,8 @@
+Format: name prereq level cost blurb
+spreadshot blaster 0 20 spreadshot [sprays three bullets for 2 charge] (20 pts)
+lazor blaster 0 30 lazor [instant, peircing ray for 3 charge] (30 pts)
+blaster_2.0 blaster 0 30 blaster 2.0 [slow bullet that deals 2 damage for 3 charge] (30 pts)
+pentashot spreadshot 0 40 pentashot [shoots 5 bullets for 3 charge], (40 pts)
+machine_gun spreadshot 0 40 machine gun [shoots 7 bullets for 4 charge], (40 pts)
+homing_missile blaster 0 60 homing missile [its OBFISHMUS what this does] (60 pts)
+bombs blaster 0 40 bombs [its OBFISHMUS what this does] (40 pts)

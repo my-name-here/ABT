@@ -288,7 +288,7 @@ class player(Turtle):
                 charge -= 3
                 self.lazorgo()
                 return
-            elif self.weapons[self.weapon] == 'blaster 2.0' and charge >= 3:
+            elif self.weapons[self.weapon] == 'blaster_2.0' and charge >= 3:
                 b = bullet(90, p.pos(), (0, 255, 0))
                 charge -= 2
                 b.damage = 2
@@ -296,7 +296,7 @@ class player(Turtle):
                 b.moveToPos(p.pos())
                 b.reset()
                 return
-            elif self.weapons[self.weapon] == 'homingmissile' and charge >= 2:
+            elif self.weapons[self.weapon] == 'homing_missile' and charge >= 2:
                 b = bullet(90, p.pos(), (0, 255, 0), 1.5, 'homing')
                 charge -= 2
                 h.moveToPos(p.pos())
@@ -319,7 +319,7 @@ class player(Turtle):
                     b.direction = 90 + (2 - num)*x
                     b.seth(90 + (2 - num)*x)
                 return
-            elif self.weapons[self.weapon] == "machine gun" and charge >= 4:
+            elif self.weapons[self.weapon] == "machine_gun" and charge >= 4:
                 charge -= 4
                 for i in range(7):
                     b = bullet(90, p.pos(), (0, 255, 0))
@@ -341,21 +341,97 @@ class player(Turtle):
     def lazorgo(self):
         pass
 
-def updatecharge():
-    global scoreboard, battery
+def shop(root, k):
+    global weapons
+    c = Canvas(root)
+    c.pack()
+    root.title("turtle man's shop :D")
+    rt = RawTurtle(c)
+    bg = rt.getscreen()
+    bg.bgcolor('black')
+    bg.colormode(255)
+    rt.shape('turtle')
+    rt.turtlesize(3, 3, 2)
+    rt.right(90)
+    rt.pencolor(0, 255, 0)
+
+    chargeb = Button(root, text = 'max charge + 2 [self explanatory] (5 pts)', command = chargeboost)
+    chargeb.pack()
+    f = open("HighScore.txt").read().split('\n')
+    for weapond in f:
+        weapon = weapond.spilt()
+        if weapon[0] not in p.weapons and weapon[1] in p.weapons and n >= weapon[2]:
+            button = Button(root, text = ' '.join(weapon[4:]), command = lambda: p.buy(button, weapon[0], weapon[3]))#button, weapon, cost
+            button.pack()
+    if 'spreadshot' not in weapons:
+        macheneg = Button(root, text = 'spreadshot [sprays three bullets for 2 charge] (20 pts)', command = lambda: buymachenegun(macheneg))
+        macheneg.pack()
+    if 'lazor' not in weapons:
+        lazerg = Button(root, text = 'lazor [instant, peircing ray for 3 charge] (30 pts)', command = lambda: buylazergun(lazerg))
+        lazerg.pack()
+    if 'blaster_2.0' not in weapons:
+        bl2 = Button(root, text = 'blaster 2.0 [slow bullet that deals 2 damage for 3 charge] (30 pts)', command = lambda: buyblaster2gun(bl2))
+        bl2.pack()
+    if 'spreadshot' in weapons and 'pentashot' not in weapons:
+        pentashotg = Button(root, text = 'pentashot [shoots 5 bullets for 3 charge], (40 pts)', command = lambda: buypentashot(pentashotg))
+        pentashotg.pack()
+    if 'spreadshot' in weapons and 'machine_gun' not in weapons:
+        gung = Button(root, text = 'machine gun [shoots 7 bullets for 4 charge], (40 pts)', command = lambda: buyminigun(gung))
+        gung.pack()
+    if 'homing_missile' not in weapons:
+        homingmissileg = Button(root, text = 'homing missile [its OBFISHMUS what this does] (60 pts)', command = lambda: buyhomingmissile(homingmissileg))
+        homingmissileg.pack()
+    if 'bombs' not in weapons:
+        bombsg = Button(root, text = 'bombs [its OBFISHMUS what this does] (40 pts)', command = lambda: buybombs(bombsg))
+        bombsg.pack()
+    if k > 0:
+        hb = Button(root, text = 'health + 1 [self explanatory] (10 pts)', command = healthboost)
+        hb.pack()
+    if k > 1:
+        hb = Button(root, text = 'increase charge speed [self explanatory] (10 pts)', command = csboost)
+        hb.pack()
+
+def updatescoreboard():
+    global scoreboard, score, hitpoints, battery, weaponl
     try:
+        score.forget()
+        hitpoints.forget()
+        weaponl.forget()
         battery.forget()
-        battery = Label(scoreboard, text = 'charge: ' + str(int(charge)), font = ('Monaco', 16))
+        score = Label(scoreboard, text = 'points: ' + str(p.points), font = ('Monaco', 16))
+        score.pack()
+        hitpoints = Label(scoreboard, text = 'health: ' + str(p.health), font = ('Monaco', 16))
+        hitpoints.pack()
+        weaponl = Label(scoreboard, text = 'weapon: ' + str(p.weapons[p.weapon]), font = ('Monaco', 16))
+        weaponl.pack()
+        battery = Label(scoreboard, text = 'charge: ' + str(int(p.charge)), font = ('Monaco', 16))
         battery.pack()
     except TclError:
         scoreboard = Tk()
         score = Label(scoreboard, text = 'points: ' + str(points), font = ('Monaco', 16))
         score.pack()
-        hitpoints = Label(scoreboard, text = 'health: ' + str(health), font = ('Monaco', 16))
+        hitpoints = Label(scoreboard, text = 'health: ' + str(p.health), font = ('Monaco', 16))
         hitpoints.pack()
-        weaponl = Label(scoreboard, text = 'weapon: ' + str(weapons[weapon]), font = ('Monaco', 16))
+        weaponl = Label(scoreboard, text = 'weapon: ' + str(p.weapons[p.weapon]), font = ('Monaco', 16))
         weaponl.pack()
-        battery = Label(scoreboard, text = 'charge: ' + str(int(charge)), font = ('Monaco', 16))
+        battery = Label(scoreboard, text = 'charge: ' + str(int(p.charge)), font = ('Monaco', 16))
+        battery.pack()
+
+def updatecharge(): #Delete if this doesn't make things faster
+    global scoreboard, battery
+    try:
+        battery.forget()
+        battery = Label(scoreboard, text = 'charge: ' + str(int(p.charge)), font = ('Monaco', 16))
+        battery.pack()
+    except TclError:
+        scoreboard = Tk()
+        score = Label(scoreboard, text = 'points: ' + str(p.points), font = ('Monaco', 16))
+        score.pack()
+        hitpoints = Label(scoreboard, text = 'health: ' + str(p.health), font = ('Monaco', 16))
+        hitpoints.pack()
+        weaponl = Label(scoreboard, text = 'weapon: ' + str(p.weapons[p.weapon]), font = ('Monaco', 16))
+        weaponl.pack()
+        battery = Label(scoreboard, text = 'charge: ' + str(int(p.charge)), font = ('Monaco', 16))
         battery.pack()
 
 def start_tutorial():
@@ -460,7 +536,7 @@ def loop_iteration():
                         points += b.damage
                         updatescoreboard()
 
-    for e in elist:
+    for e i in elist:
         for b in e.bullets:
             if abs(b.ycor() - p.ycor()) < 20:
                 if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
