@@ -15,7 +15,6 @@ import gc
 class bullet(Turtle):
     def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, btype = 'regular'):
         Turtle.__init__(self)
-        self.onscreen = False #Are you on the screen
         self.speed = sp #How fast you are (higher is faster)
         self.damage = 0 #How much damage a bullet deals
         self.radius = 40 #Used for the bomb
@@ -26,7 +25,6 @@ class bullet(Turtle):
         self.color(color)
         self.direction = direction
         self.seth(self.direction)
-        bullets.append(self) #Put yourself in the bullet list
 
     def move(self, enlist):
         if self.btype == 'homing': #Run homing missile code if this is a homing missile
@@ -262,7 +260,21 @@ class player(Turtle):
         self.chargemax = 5
         self.points = 0
         self.cap = 25 #Maximum number of bullets on the screen
+        self.bullets = []
 
+    def spray(self, num, charge, speed, damage, srange = 20, spread = False):
+        self.charge -= charge
+        for i in range(1, num+1): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
+            b = bullet(90, p.pos(), (0, 255, 0))
+            b.damage = 1
+            b.speed = speed
+            b.moveToPos(p.pos())
+            if spread:
+                b.direction = 90 + (floor(num/2)-i)*spread
+            else:
+                b.direction = random.randint(90 - srange, 90 + srange)
+            self.bullets.append(b)
+        
     def fire(self):
         num = 0
         if len(bullets) < self.cap:
@@ -273,59 +285,39 @@ class player(Turtle):
                 b.moveToPos(p.pos())
                 b.reset()
                 return
-            elif self.weapons[self.weapon] == 'spreadshot' and charge >= 2:
-                charge -= 2
-                for i in range(3): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
-                    b = bullet(90, p.pos(), (0, 255, 0))
-                    b.damage = 1
-                    b.speed = 1.5
-                    b.moveToPos(p.pos())
-                    b.direction = random.randint(80, 100)
+            elif self.weapons[self.weapon] == 'spreadshot' and self.charge >= 2:
+                spray(3, 2, 1.5, 1)
                 return
-            elif self.weapons[self.weapon] == 'lazor' and charge >= 3:
-                charge -= 3
+            elif self.weapons[self.weapon] == 'lazor' and self.charge >= 3:
+                self.charge -= 3
                 self.lazorgo()
                 return
-            elif self.weapons[self.weapon] == 'blaster 2.0' and charge >= 3:
+            elif self.weapons[self.weapon] == 'blaster 2.0' and self.charge >= 3:
                 b = bullet(90, p.pos(), (0, 255, 0))
-                charge -= 2
+                self.charge -= 2
                 b.damage = 2
                 b.speed = 1
                 b.moveToPos(p.pos())
                 b.reset()
                 return
-            elif self.weapons[self.weapon] == 'homingmissile' and charge >= 2:
+            elif self.weapons[self.weapon] == 'homingmissile' and self.charge >= 2:
                 b = bullet(90, p.pos(), (0, 255, 0), 1.5, 'homing')
-                charge -= 2
+                self.charge -= 2
                 h.moveToPos(p.pos())
                 h.seth(90)
                 return
-            elif self.weapons[self.weapon] == 'bombs' and charge >= 3:
-                charge -= 1
+            elif self.weapons[self.weapon] == 'bombs' and self.charge >= 3:
+                self.charge -= 1
                 b = bullet(90, p.pos(), (0, 255, 0), 1.2, 'bomb')
                 b.moveToPos(p.pos())
                 b.seth(90)
                 return
-            elif self.weapons[self.weapon] == 'pentashot' and charge >= 3:
-                charge -= 3
-                for num in range(1, 6):
-                    b = bullet(90, p.pos(), (0, 255, 0))
-                    b.moveToPos(p.pos())
-                    b.damage = 1
-                    b.speed = 2.5
-                    x = 40
-                    b.direction = 90 + (2 - num)*x
-                    b.seth(90 + (2 - num)*x)
+            elif self.weapons[self.weapon] == 'pentashot' and self.charge >= 3:
+                spray(5, 3, 2.5, 1, spread = 40)
                 return
-            elif self.weapons[self.weapon] == "machine gun" and charge >= 4:
-                charge -= 4
-                for i in range(7):
-                    b = bullet(90, p.pos(), (0, 255, 0))
-                    b.moveToPos(p.pos())
-                    b.damage = 1
-                    b.speed = 2
-                    b.direction = random.randint(70,110)
-                    b.seth(b.direction)
+            elif self.weapons[self.weapon] == "machine gun" and self.charge >= 4:
+                spray(7, 4, 2, 1, srange = 30)
+                return
 
     def move(self):
         pass
@@ -339,6 +331,7 @@ class player(Turtle):
     def lazorgo(self):
         pass
 
+colormode(255)
 bullets = [] #Holds the players bulletsd
 elist = [] #Holds all the enemies
 
@@ -356,7 +349,6 @@ boss.bossness = 2## 0
 boss.hideturtle()
 g = False
 
-<<<<<<< HEAD
 def loop_iteration():
     if charge < maxcharge and distance % 20 == 0:
         charge += chargespeed
@@ -377,8 +369,4 @@ def loop_iteration():
                 enlist.remove(e)
                 enlist.append(e)
                 ennum -= 1
-=======
-colormode(255)
 
-print(s.getTurtles())
->>>>>>> 57e5a639d6efcbfc138d9e1df6304a742a7dc9c6
