@@ -261,7 +261,7 @@ class player(Turtle):
         self.health = 20
         self.charge = 0
         self.chargespeed = 0
-        self.chargemax = 5
+        self.maxcharge = 5
         self.points = 0
         self.cap = 25 #Maximum number of bullets on the screen
 
@@ -346,7 +346,7 @@ def shop(root, k):
             button = Button(root, text = ' '.join(weapon[4:]), command = lambda: p.buy(button, weapon[0], weapon[3]))#button, weapon, cost
             button.pack()
     if k > 0:
-        hb = Button(root, text = 'health + 1 [self explanatory] (10 pts)', command = lambda: p.health += 1)
+        hb = Button(root, text = 'health + 1 [self explanatory] (10 pts)', command = healthboost)
         hb.pack()
     if k > 1:
         hb = Button(root, text = 'increase charge speed [self explanatory] (10 pts)', command = csboost)
@@ -437,6 +437,21 @@ def first_loop():
         started = True
         main()
 
+color = (0, 255, 0)
+
+p = player('blaster')
+screen = p.getscreen()
+screen.colormode(255)
+screen.tracer(0)
+canvas = screen.getcanvas()
+ABTShapes.registerABTShapes(screen)
+screen.bgcolor(0, 0, 0)
+p.turtlesize(3, 4, 2)
+p.up()
+p.left(90)
+p.back(275)
+p.pencolor(color)
+
 colormode(255)
 bullets = [] #Holds the players bulletsd
 elist = [] #Holds all the enemies
@@ -455,19 +470,19 @@ boss.bossness = 2## 0
 boss.hideturtle()
 g = False
 
-score = Label(scoreboard, text = 'points: ' + str(points), font = ('Monaco', 16))
+score = Label(scoreboard, text = 'points: ' + str(p.points), font = ('Monaco', 16))
 score.pack()
-hitpoints = Label(scoreboard, text = 'health: ' + str(health), font = ('Monaco', 16))
+hitpoints = Label(scoreboard, text = 'health: ' + str(p.health), font = ('Monaco', 16))
 hitpoints.pack()
-battery = Label(scoreboard, text = 'charge: ' + str(charge), font = ('Monaco', 16))
+battery = Label(scoreboard, text = 'charge: ' + str(p.charge), font = ('Monaco', 16))
 battery.pack()
-weaponl = Label(scoreboard, text = 'weapon: ' + str(weapons[weapon]), font = ('Monaco', 16))
+weaponl = Label(scoreboard, text = 'weapon: ' + str(p.weapons[p.weapon]), font = ('Monaco', 16))
 weaponl.pack()
 
 def loop_iteration():
     '''Iterates once and returns whether you're done'''
-    if charge < maxcharge and distance % 20 == 0:
-        charge += chargespeed
+    if p.charge < p.maxcharge and distance % 20 == 0:
+        p.charge += p.chargespeed
         updatecharge()
     if p.xcor() > 300:
         p.setx(-300)
@@ -497,7 +512,7 @@ def loop_iteration():
                         points += b.damage
                         updatescoreboard()
 
-    for e i in elist:
+    for e in elist:
         for b in e.bullets:
             if abs(b.ycor() - p.ycor()) < 20:
                 if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
@@ -509,7 +524,6 @@ def loop_iteration():
         screen.onkey(loop, "E")
         root = Tk()
         shop(root, boss.bossness)
-        break
     if health < 1:
         print('you lose haha')
         print('points: ', points)
@@ -549,5 +563,5 @@ def main():
     stopped = False
     screen.update()
 
-colormode(255)
 
+main()
