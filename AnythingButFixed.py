@@ -288,13 +288,7 @@ class player(Turtle):
                 b.reset()
                 return
             elif self.weapons[self.weapon] == 'spreadshot' and charge >= 2:
-                charge -= 2
-                for i in range(3): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
-                    b = bullet(90, p.pos(), (0, 255, 0))
-                    b.damage = 1
-                    b.speed = 1.5
-                    b.moveToPos(p.pos())
-                    b.direction = random.randint(80, 100)
+                spray(3, 2, 1, 1.5)
                 return
             elif self.weapons[self.weapon] == 'lazor' and charge >= 3:
                 charge -= 3
@@ -321,25 +315,11 @@ class player(Turtle):
                 b.seth(90)
                 return
             elif self.weapons[self.weapon] == 'pentashot' and charge >= 3:
-                charge -= 3
-                for num in range(1, 6):
-                    b = bullet(90, p.pos(), (0, 255, 0))
-                    b.moveToPos(p.pos())
-                    b.damage = 1
-                    b.speed = 2.5
-                    x = 40
-                    b.direction = 90 + (2 - num)*x
-                    b.seth(90 + (2 - num)*x)
+                spray(5, 3, 1, 2.5, regular = 40)
                 return
             elif self.weapons[self.weapon] == "machine_gun" and charge >= 4:
-                charge -= 4
-                for i in range(7):
-                    b = bullet(90, p.pos(), (0, 255, 0))
-                    b.moveToPos(p.pos())
-                    b.damage = 1
-                    b.speed = 2
-                    b.direction = random.randint(70,110)
-                    b.seth(b.direction)
+                spray(7, 4, 1, 2, spread = 30)
+                return
 
     def move(self):
         pass
