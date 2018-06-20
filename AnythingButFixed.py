@@ -265,18 +265,6 @@ class player(Turtle):
         self.points = 0
         self.cap = 25 #Maximum number of bullets on the screen
 
-    def spray(self, num, charge, damage, speed, spread = 20, regular = False):
-        charge -= charge
-        for i in range(1, num+1): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
-            b = bullet(90, p.pos(), (0, 255, 0))
-            b.damage = 1
-            b.speed = 1.5
-            b.moveToPos(p.pos())
-            if regular:
-                b.direction = 90 + (floor(num/2) - i)*regular
-            else:
-                b.direction = random.randint(90 - spread, 90 + spread)
-
     def fire(self):
         num = 0
         if len(bullets) < self.cap:
@@ -347,8 +335,10 @@ class player(Turtle):
     def takeDamage(self):
         pass
     
-    def buy():
-        pass
+    def buy(self, button, weapon, cost):
+        button.forget()
+        self.weapons.append(weapon)
+        self.points -= cost
 
     def lazorgo(self):
         pass
@@ -375,29 +365,8 @@ def shop(root, k):
         if weapon[0] not in p.weapons and weapon[1] in p.weapons and n >= weapon[2]:
             button = Button(root, text = ' '.join(weapon[4:]), command = lambda: p.buy(button, weapon[0], weapon[3]))#button, weapon, cost
             button.pack()
-    if 'spreadshot' not in weapons:
-        macheneg = Button(root, text = 'spreadshot [sprays three bullets for 2 charge] (20 pts)', command = lambda: buymachenegun(macheneg))
-        macheneg.pack()
-    if 'lazor' not in weapons:
-        lazerg = Button(root, text = 'lazor [instant, peircing ray for 3 charge] (30 pts)', command = lambda: buylazergun(lazerg))
-        lazerg.pack()
-    if 'blaster_2.0' not in weapons:
-        bl2 = Button(root, text = 'blaster 2.0 [slow bullet that deals 2 damage for 3 charge] (30 pts)', command = lambda: buyblaster2gun(bl2))
-        bl2.pack()
-    if 'spreadshot' in weapons and 'pentashot' not in weapons:
-        pentashotg = Button(root, text = 'pentashot [shoots 5 bullets for 3 charge], (40 pts)', command = lambda: buypentashot(pentashotg))
-        pentashotg.pack()
-    if 'spreadshot' in weapons and 'machine_gun' not in weapons:
-        gung = Button(root, text = 'machine gun [shoots 7 bullets for 4 charge], (40 pts)', command = lambda: buyminigun(gung))
-        gung.pack()
-    if 'homing_missile' not in weapons:
-        homingmissileg = Button(root, text = 'homing missile [its OBFISHMUS what this does] (60 pts)', command = lambda: buyhomingmissile(homingmissileg))
-        homingmissileg.pack()
-    if 'bombs' not in weapons:
-        bombsg = Button(root, text = 'bombs [its OBFISHMUS what this does] (40 pts)', command = lambda: buybombs(bombsg))
-        bombsg.pack()
     if k > 0:
-        hb = Button(root, text = 'health + 1 [self explanatory] (10 pts)', command = healthboost)
+        hb = Button(root, text = 'health + 1 [self explanatory] (10 pts)', command = lambda: p.health += 1)
         hb.pack()
     if k > 1:
         hb = Button(root, text = 'increase charge speed [self explanatory] (10 pts)', command = csboost)
