@@ -26,13 +26,12 @@ class bullet(Turtle):
         self.color(color)
         self.direction = direction
         self.seth(self.direction)
-        bullets.append(self) #Put yourself in the bullet list
 
-    def move(self, enlist):
+    def move(self, elist):
         if self.btype == 'homing': #Run homing missile code if this is a homing missile
             bestenemy = ''
             bestdistance = float('inf')
-            for enemy in enlist:
+            for enemy in elist:
                 x = sqrt((self.xcor()-enemy.xcor())**2+(self.ycor()-enemy.ycor())**2)
                 if x<bestdistance:
                     bestdistance = x
@@ -42,8 +41,6 @@ class bullet(Turtle):
                 self.seth(x+(self.towards(bestenemy)-90>x)-(self.towards(bestenemy)-90<x)+90)
             self.forward(self.speed)
         self.forward(self.speed)
-        if self.ycor() < -300 or self.ycor() > 300:
-            return True
         if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
             self.delete()
         if self.xcor() < -300 or self.xcor() > 300:
@@ -66,7 +63,7 @@ class bullet(Turtle):
     def explode(self, radius, turtle, hitenemies = []):
         damagedenemies = list(hitenemies)
         turtle.shapesize(radius/10)
-        for enemy in enlist:
+        for enemy in elist:
             if (not enemy in hitenemies) and sqrt(((enemy.xcor()-self.xcor())**2)+(enemy.ycor()-self.ycor())**2)<=radius:
                 enemy.takeDamage()
                 damagedenemies.append(enemy)
@@ -89,12 +86,12 @@ class enemy(Turtle):
         self.level = level
         self.up()
         self.health = level
-        self.hideturtle()
         self.turtlesize(self.health, self.health, 2)
         self.right(90)
         self.goto(random.randint(-300, 300), 300)
         self.bullets = []
         self.going = 1
+        elist.append(self)
 
     def move(self, p):
         self.forward(0.5)
@@ -246,6 +243,28 @@ class boss(Turtle):
                 b.getscreen().update()
                 return False
 
+def stop():
+    global stopped
+    stopped = True
+
+def movel():
+    global mov
+    mov = -2
+
+def stopmovel():
+    global mov
+    if mov == -2:
+        mov = 0
+
+def mover():
+    global mov
+    mov = 2
+
+def stopmover():
+    global mov
+    if mov == 2:
+        mov = 0
+
 class player(Turtle):
     def __init__(self, weapons):
         Turtle.__init__(self)
@@ -259,10 +278,11 @@ class player(Turtle):
         self.cap = 25 #Maximum number of bullets on the screen
 
     def fire(self):
-        num = 0
+        print('hi')
         if len(bullets) < self.cap:
             if self.weapons[self.weapon] == 'blaster':
                 b = bullet(90, p.pos(), (0, 255, 0))
+                bullets.append(b)
                 b.damage = 1
                 b.speed = 1.5
                 b.moveToPos(p.pos())
@@ -277,6 +297,7 @@ class player(Turtle):
                 return
             elif self.weapons[self.weapon] == 'blaster_2.0' and charge >= 3:
                 b = bullet(90, p.pos(), (0, 255, 0))
+                bullets.append(b)
                 charge -= 2
                 b.damage = 2
                 b.speed = 1
@@ -285,6 +306,7 @@ class player(Turtle):
                 return
             elif self.weapons[self.weapon] == 'homing_missile' and charge >= 2:
                 b = bullet(90, p.pos(), (0, 255, 0), 1.5, 'homing')
+                bullets.append(b)
                 charge -= 2
                 h.moveToPos(p.pos())
                 h.seth(90)
@@ -292,6 +314,7 @@ class player(Turtle):
             elif self.weapons[self.weapon] == 'bombs' and charge >= 3:
                 charge -= 1
                 b = bullet(90, p.pos(), (0, 255, 0), 1.2, 'bomb')
+                bullets.append(b)
                 b.moveToPos(p.pos())
                 b.seth(90)
                 return
@@ -307,6 +330,10 @@ class player(Turtle):
 
     def takeDamage(self):
         pass
+
+    def changeWeapon(self):
+        self.weapon += 1
+        self.weapon %= len(self.weapons)
     
     def buy(self, button, weapon, cost):
         button.forget()
@@ -432,7 +459,7 @@ def first_loop():
 
 color = (0, 255, 0)
 
-p = player('blaster')
+p = player(['blaster'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
@@ -463,6 +490,17 @@ boss.bossness = 2## 0
 boss.hideturtle()
 g = False
 
+screen.listen()
+screen.onkeypress(movel, "Left")
+screen.onkey(stopmovel, "Left")
+screen.onkeypress(mover, "Right")
+screen.onkey(stopmover, "Right")
+screen.onkey(p.changeWeapon, "w")
+screen.onkey(p.changeWeapon, "W")
+screen.onkeypress(p.fire, "space")
+screen.title('Anything but That')
+os.system('xset r off')
+
 score = Label(scoreboard, text = 'points: ' + str(p.points), font = ('Monaco', 16))
 score.pack()
 hitpoints = Label(scoreboard, text = 'health: ' + str(p.health), font = ('Monaco', 16))
@@ -474,6 +512,7 @@ weaponl.pack()
 
 def loop_iteration():
     '''Iterates once and returns whether you're done'''
+    p.setx(p.xcor() + mov)
     if p.charge < p.maxcharge and distance % 20 == 0:
         p.charge += p.chargespeed
         updatecharge()
@@ -484,21 +523,24 @@ def loop_iteration():
     if random.randint(0, 100) == 100 and not fite:
         x = enemy(random.randint(n, n+1))
     for i in range(len(elist)):
+        try:
             e = elist[i]
             e.move(p) #p is Player
             if random.randint(0, 200) == 0:
                 e.shoot()
-            if enlist[i].ycor() < -300:
+            if elist[i].ycor() < -300:
                 e.delete()
+        except:
+            pass
                 
     for b in bullets:
-        b.move()
+        b.move(elist)
         for e in elist:
             if abs(b.ycor() - e.ycor()) < 20:
                 if abs(b.xcor() - e.xcor()) < e.turtlesize()[0]*6:
                     if e.takeDamage(b.damage): #True if it dies
                         if random.randint(0, 1) == 0:
-                            health += 1
+                            p.health += 1
                             updatescoreboard()
                     b.collide()
                     if random.randint(0, 1) == 0:
@@ -517,7 +559,7 @@ def loop_iteration():
         screen.onkey(loop, "E")
         root = Tk()
         shop(root, boss.bossness)
-    if health < 1:
+    if p.health < 1:
         print('you lose haha')
         print('points: ', points)
         print('distance: ', distance + 1000*kdistance)
@@ -533,6 +575,7 @@ def loop_iteration():
     return False
                         
 def boss_iteration():
+    global distance, kdistance, fite
     if distance == 1000:
         kdistance += 1
         distance = 0
@@ -545,6 +588,7 @@ def boss_iteration():
     
 
 def main():
+    global distance, kdistance
     loop_iteration()
     boss_iteration()
     if root != 0:
@@ -556,5 +600,8 @@ def main():
     stopped = False
     screen.update()
 
-
-main()
+while True:
+    if not stopped:
+        main()
+    else:
+        pass
