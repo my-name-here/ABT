@@ -42,15 +42,19 @@ class bullet(Turtle):
         self.forward(self.speed)
         if self.ycor() < -300 or self.ycor() > 300:
             return True
+        if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
+            self.takeOffScreen()
         if self.xcor() < -300 or self.xcor() > 300:
-            return True
-        return False
+            self.takeOffScreen()
 
     def moveToPos(self, pos):
         self.goto(pos)
 
+    def resetvars(self):
+        self.direction = 90
+        self.seth(self.direction)
+
     def delete(self):
-        self.hideturtle()
         self.getscreen()._turtles.remove(self)
         del self
        
@@ -68,6 +72,9 @@ class enemy(Turtle):
         self.goto(random.randint(-300, 300), 300)
         self.bullets = []
         self.going = 1
+        for i in range(5):
+            b = bullet(-90, self.pos())
+            self.bullets.append(b)
 
     def move(self, p):
         self.forward(0.5)
@@ -92,7 +99,6 @@ class enemy(Turtle):
         for b in self.bullets:
             if not b.onscreen:
                 b.moveToPos(self.pos())
-                b.addToScreen()
                 return
 
     def resetstuff(self):
@@ -112,7 +118,6 @@ class enemy(Turtle):
             self.delete() #Die if you're dead
 
     def delete(self):
-        self.hideturtle()
         self.getscreen()._turtles.remove(self)
         del self
 
@@ -178,7 +183,6 @@ class boss(Turtle):
             if not b.onscreen:
                 b.seth(-90)
                 b.moveToPos(self.pos())
-                b.addToScreen()
                 return
             
     def burst(self, angle, number, spread):
@@ -187,7 +191,6 @@ class boss(Turtle):
             if not b.onscreen:
                 b.direction = angle
                 b.moveToPos((self.pos()[0] + ((num-((number+1)/2))*spread), self.pos()[1]))
-                b.addToScreen()
                 num += 1
                 if num == number:
                     return
@@ -198,7 +201,6 @@ class boss(Turtle):
             if not b.onscreen:
                 b.direction = random.randint(-110, -70)
                 b.moveToPos(self.pos())
-                b.addToScreen()
                 num += 1
                 if num == 3:
                     return
@@ -245,7 +247,6 @@ class player(Turtle):
                 b.speed = 1.5
                 b.moveToPos(p.pos())
                 b.reset()
-                b.addToScreen()
                 return
             elif self.weapons[self.weapon] == 'spreadshot' and charge >= 2:
                 charge -= 2
@@ -256,7 +257,6 @@ class player(Turtle):
                     b.speed = 1.5
                     b.moveToPos(p.pos())
                     b.direction = random.randint(80, 100)
-                    b.addToScreen()
                 return
             elif self.weapons[self.weapon] == 'lazor' and charge >= 3:
                 charge -= 3
@@ -270,7 +270,6 @@ class player(Turtle):
                 b.speed = 1
                 b.moveToPos(p.pos())
                 b.reset()
-                b.addToScreen()
                 return
             elif self.weapons[self.weapon] == 'homingmissile' and charge >= 2:
                 b = bullet(90, p.pos(), (0, 255, 0), 1.5, 'homing')
@@ -278,7 +277,6 @@ class player(Turtle):
                 charge -= 2
                 h.moveToPos(p.pos())
                 h.seth(90)
-                h.addToScreen()
                 return
             elif self.weapons[self.weapon] == 'bombs' and charge >= 3:
                 charge -= 1
@@ -287,7 +285,7 @@ class player(Turtle):
                 bullets.append(b)
                 b.moveToPos(p.pos())
                 b.seth(90)
-                b.addToScreen(min(radius, 100))
+                b.addToScreen(min(radius, 100))#Needs to be fixed
                 return
         ##        global firing
         ##        #global startofbullet
@@ -316,7 +314,6 @@ class player(Turtle):
                     x = 40
                     b.direction = 90 + (2 - num)*x
                     b.seth(90 + (2 - num)*x)
-                    b.addToScreen()
                 return
             elif self.weapons[self.weapon] == "machine gun" and charge >= 4:
                 charge -= 4
@@ -328,7 +325,6 @@ class player(Turtle):
                     b.speed = 2
                     b.direction = random.randint(70,110)
                     b.seth(b.direction)
-                    b.addToScreen()
 
     def move(self):
         pass
@@ -352,3 +348,4 @@ del t
 
 colormode(255)
 
+print(s.getTurtles())
