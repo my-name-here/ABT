@@ -341,6 +341,65 @@ class player(Turtle):
     def lazorgo(self):
         pass
 
+def updatecharge():
+    global scoreboard, battery
+    try:
+        battery.forget()
+        battery = Label(scoreboard, text = 'charge: ' + str(int(charge)), font = ('Monaco', 16))
+        battery.pack()
+    except TclError:
+        scoreboard = Tk()
+        score = Label(scoreboard, text = 'points: ' + str(points), font = ('Monaco', 16))
+        score.pack()
+        hitpoints = Label(scoreboard, text = 'health: ' + str(health), font = ('Monaco', 16))
+        hitpoints.pack()
+        weaponl = Label(scoreboard, text = 'weapon: ' + str(weapons[weapon]), font = ('Monaco', 16))
+        weaponl.pack()
+        battery = Label(scoreboard, text = 'charge: ' + str(int(charge)), font = ('Monaco', 16))
+        battery.pack()
+
+def start_tutorial():
+    screen.onkey(first_loop, "e")
+    screen.onkey(first_loop, "E")
+    turtor = Turtle()
+    turtor.up()
+    turtor.seth(-90)
+    turtor.shapesize(2)
+    turtor.shape('turtle')
+    turtor.pencolor('green')
+    turtor.goto(20, 20)
+    turtor.write('Hi there', font=("Ariel", 10, "normal"))
+    turtor.goto(0, 0)
+    screen.update()
+    canvas.after(1500, lambda: speech(turtor, 'Press space to shoot.'))
+    canvas.after(3500, lambda: speech(turtor, 'Press w to cycle through your weapons.'))
+    canvas.after(5500, lambda: speech(turtor, 'You can press e to pause the game.\nIt will also open the shop.'))
+    canvas.after(8500, lambda: speech(turtor, "I'll be in there to sell you weapons for the\npoints you get from hitting enemies."))
+    canvas.after(11500, lambda: speech(turtor, "When you kill an enemy you may be able to use\ntheir scrap to fix your ship and get more health."))
+    canvas.after(14500, lambda: speech(turtor, "Here's a blaster. Use it safely."))
+    canvas.after(16500, lambda: speech(turtor, "I almost forgot, arrow keys to move."))
+    canvas.after(18500, lambda: speech(turtor, "Bye bye"))
+    canvas.after(20500, lambda: turtor.hideturtle())
+    canvas.after(20500, lambda: speech(turtor, ''))
+    canvas.after(20500, first_loop)
+
+def speech(turtor, words):
+    if not started:
+        turtor.clear()
+        turtor.goto(20, 20)
+        turtor.write(words, font=("Ariel", 10, "normal"))
+        turtor.goto(0, 0)
+        screen.update()
+    else:
+        turtor.hideturtle()
+        turtor.clear()
+
+def first_loop():
+    global started
+    if not started:
+        started = True
+        main()
+
 colormode(255)
 bullets = [] #Holds the players bulletsd
 elist = [] #Holds all the enemies
@@ -358,6 +417,15 @@ boss = boss()
 boss.bossness = 2## 0
 boss.hideturtle()
 g = False
+
+score = Label(scoreboard, text = 'points: ' + str(points), font = ('Monaco', 16))
+score.pack()
+hitpoints = Label(scoreboard, text = 'health: ' + str(health), font = ('Monaco', 16))
+hitpoints.pack()
+battery = Label(scoreboard, text = 'charge: ' + str(charge), font = ('Monaco', 16))
+battery.pack()
+weaponl = Label(scoreboard, text = 'weapon: ' + str(weapons[weapon]), font = ('Monaco', 16))
+weaponl.pack()
 
 def loop_iteration():
     '''Iterates once and returns whether you're done'''
