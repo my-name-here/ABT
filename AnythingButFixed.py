@@ -29,7 +29,7 @@ class bullet(Turtle):
         bullets.append(self) #Put yourself in the bullet list
 
     def move(self, enlist):
-        if self.btype == 'homing': #Run homing missile code uf this is a homing missile
+        if self.btype == 'homing': #Run homing missile code if this is a homing missile
             bestenemy = ''
             bestdistance = float('inf')
             for enemy in enlist:
@@ -42,6 +42,8 @@ class bullet(Turtle):
                 self.seth(x+(self.towards(bestenemy)-90>x)-(self.towards(bestenemy)-90<x)+90)
             self.forward(self.speed)
         self.forward(self.speed)
+        if self.ycor() < -300 or self.ycor() > 300:
+            return True
         if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
             self.delete()
         if self.xcor() < -300 or self.xcor() > 300:
@@ -354,6 +356,7 @@ boss.bossness = 2## 0
 boss.hideturtle()
 g = False
 
+<<<<<<< HEAD
 def loop_iteration():
     if charge < maxcharge and distance % 20 == 0:
         charge += chargespeed
@@ -374,3 +377,8 @@ def loop_iteration():
                 enlist.remove(e)
                 enlist.append(e)
                 ennum -= 1
+=======
+colormode(255)
+
+print(s.getTurtles())
+>>>>>>> 57e5a639d6efcbfc138d9e1df6304a742a7dc9c6
