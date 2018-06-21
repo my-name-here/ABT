@@ -648,7 +648,7 @@ def loop_iteration():
             print('NEW DISTANCE HIGH SCORE!!!!')
         print('highscore: ', get_highscore('Anything_But_That'))
         print('distance highscore: ', get_highscore('Anything_But_Thatd'))
-        return True
+        raise done 
     return False
                         
 def boss_iteration():
@@ -691,11 +691,6 @@ def main():
     screen.onkey(stop, "e")
     screen.update()
 
-while True:
-        if not stopped:
-            main()
-        else:
-            screen.update()
 try:
     while True:
         if not stopped:
