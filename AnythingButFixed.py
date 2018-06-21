@@ -83,10 +83,15 @@ class bullet(Turtle):
             turtle.delete()
 
     def delete(self):
-        bullets.remove(self)
         self.hideturtle()
-        self.getscreen()._turtles.remove(self)
         del self
+
+def garbage_collect(bullets):
+    '''Takes in turtles and deletes them'''
+    for b in bullets:
+        bullets.remove(b)
+        screen._turtles.remove(b)
+
        
 class enemy(Turtle):
     def __init__(self, level):
@@ -149,9 +154,7 @@ class enemy(Turtle):
             return True
 
     def delete(self):
-        elist.remove(self)
         self.hideturtle()
-        self.getscreen()._turtles.remove(self)
         del self
 
 class boss(Turtle):
@@ -498,7 +501,9 @@ p.back(275)
 
 
 bullets = [] #Holds the players bulletsd
+ebullets = [] #Holds the enemy bullets
 elist = [] #Holds all the enemies
+garbage = []
 
 mov = 0
 n = 1 #Progress for enemy level
@@ -613,6 +618,20 @@ def boss_iteration():
 
 def main():
     global distance, kdistance
+    if distance % 40 == 10:
+        garbage_collect(garbage)
+    for b in bullets:
+        if not b.isvisible():
+            garbage.append(b)
+            bullets.remove(b)
+    for b in ebullets:
+        if not b.isvisible():
+            garbage.append(b)
+            ebullets.remove(b)
+    for e in elist:
+        if not e.isvisible():
+            garbage.append(e)
+            elist.remove(e)
     loop_iteration()
     boss_iteration()
     if root != 0:
