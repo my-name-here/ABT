@@ -15,7 +15,6 @@ import gc
 class bullet(Turtle):
     def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, btype = 'regular'):
         Turtle.__init__(self)
-        self.onscreen = False #Are you on the screen
         self.speed = sp #How fast you are (higher is faster)
         self.damage = 0 #How much damage a bullet deals
         self.radius = 40 #Used for the bomb
@@ -282,12 +281,13 @@ class player(Turtle):
         self.maxcharge = 5
         self.points = 0
         self.cap = 25 #Maximum number of bullets on the screen
+        self.up()
+        self.pencolor(color)
 
     def fire(self):
-        print('hi')
         if len(bullets) < self.cap:
             if self.weapons[self.weapon] == 'blaster':
-                b = bullet(90, p.pos(), (0, 255, 0))
+                b = bullet(90, self.pos(), (0, 255, 0))
                 bullets.append(b)
                 b.damage = 1
                 b.speed = 1.5
@@ -463,6 +463,7 @@ def first_loop():
         started = True
         main()
 
+colormode(255)
 color = (0, 255, 0)
 
 p = player(['blaster'])
@@ -471,14 +472,13 @@ screen.colormode(255)
 screen.tracer(0)
 canvas = screen.getcanvas()
 ABTShapes.registerABTShapes(screen)
-screen.bgcolor(0, 0, 0)
+#screen.bgcolor(0, 0, 0)
 p.turtlesize(3, 4, 2)
-p.up()
 p.left(90)
 p.back(275)
-p.pencolor(color)
+#p.pencolor(color)
 
-colormode(255)
+
 bullets = [] #Holds the players bulletsd
 elist = [] #Holds all the enemies
 
@@ -491,9 +491,9 @@ stopped = False
 started = False
 scoreboard = Tk()
 root = 0
-boss = boss()
+'''boss = boss()
 boss.bossness = 2## 0
-boss.hideturtle()
+boss.hideturtle()'''
 g = False
 
 screen.listen()
