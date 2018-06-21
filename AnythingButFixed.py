@@ -37,7 +37,7 @@ class explosion(Turtle):
             self.hideturtle()
             del self
 
-    def move(self, x):
+    def move(x):
         pass
             
 
@@ -131,7 +131,6 @@ class enemy(Turtle):
         self.turtlesize(self.health, self.health, 2)
         self.right(90)
         self.goto(random.randint(-300, 300), 300)
-        self.bullets = []
         self.going = 1
         elist.append(self)
 
@@ -148,19 +147,14 @@ class enemy(Turtle):
                 self.setx(300)
         elif self.level >= 6:
             a = self.towards(p)
-            
-        for b in self.bullets:
-            if b.onscreen:
-                b.move()
-                if b.ycor() < -300 or b.ycor() > 300:
-                    b.takeOffScreen()
+        if not random.randint(0, 100):
+            self.shoot()
 
     def shoot(self):
         self.going = self.going * -1
-        for b in self.bullets:
-            if not b.onscreen:
-                b.moveToPos(self.pos())
-                return
+        b = bullet(-90, self.pos(), (255, 0, 0))
+        ebullets.append(b)
+        return
 
     def resetstuff(self):
         for b in self.bullets:
@@ -319,10 +313,10 @@ class player(Turtle):
         self.weapon = 0
         self.health = 20
         self.charge = 0
-        self.chargespeed = 0.5
+        self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 100
-        self.cap = 10 #Maximum number of bullets on the screen
+        self.points = 1000000
+        self.cap = 25 #Maximum number of bullets on the screen
         self.up()
         self.pencolor(color)
 
@@ -368,7 +362,7 @@ class player(Turtle):
                 b.damage = 1
                 b.moveToPos(p.pos())
                 b.seth(90)
-            elif self.weapons[self.weapon] == 'bombs' and self.charge >= 1:
+            elif self.weapons[self.weapon] == 'bombs' and self.charge >= 3:
                 self.charge -= 1
                 b = bullet(90, p.pos(), (0, 255, 0), 1.2, 'bomb')
                 b.damage = 1
@@ -398,7 +392,6 @@ class player(Turtle):
             button.forget()
             self.weapons.append(weapon)
             self.points -= cost
-            self.cap += 5
 
     def lazorgo(self):
         pass
@@ -421,7 +414,7 @@ def csboost():
     global p
     if p.points >= 10:
         p.points -= 10
-        p.chargespeed += 0.1
+        p.chargespeed += 0.2
         updatescoreboard()
 
 def shop(root, k):
@@ -562,7 +555,7 @@ elist = [] #Holds all the enemies
 garbage = []
 
 mov = 0
-n = 1 #Progress for enemy level
+n = 3 #Progress for enemy level
 distance = 0## 0
 kdistance = 20## 0
 fite = False
@@ -611,8 +604,6 @@ def loop_iteration():
         try:
             e = elist[i]
             e.move(p) #p is Player
-            if random.randint(0, 200) == 0:
-                e.shoot()
             if elist[i].ycor() < -300:
                 e.delete()
         except:
@@ -632,13 +623,13 @@ def loop_iteration():
                         p.points += b.damage
                         updatescoreboard()
 
-    for e in elist:
-        for b in e.bullets:
-            if abs(b.ycor() - p.ycor()) < 20:
-                if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
-                    b.delete()
-                    p.health -= 1
-                    updatescoreboard()
+    for b in ebullets:
+        b.move(elist)
+        if abs(b.ycor() - p.ycor()) < 20:
+            if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
+                b.delete()
+                p.health -= 1
+                updatescoreboard()
     if stopped:
         screen.onkey(main, "e")
         screen.onkey(main, "E")
@@ -648,7 +639,7 @@ def loop_iteration():
         print('you lose haha')
         print('points: ', points)
         print('distance: ', distance + 1000*kdistance)
-        if points > get_highscore('Anything_But_That'):
+        if p.points > get_highscore('Anything_But_That'):
             change_highscore('Anything_But_That', points)
             print('NEW POINTS HIGH SCORE!!!!')
         if distance + 1000*kdistance > get_highscore('Anything_But_Thatd'):
@@ -699,7 +690,11 @@ def main():
     screen.onkey(stop, "e")
     screen.update()
 
-
+while True:
+        if not stopped:
+            main()
+        else:
+            screen.update()
 try:
     while True:
         if not stopped:
