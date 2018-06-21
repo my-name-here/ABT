@@ -262,6 +262,10 @@ class boss(Turtle):
 def stop():
     global stopped
     stopped = True
+    screen.onkey(main, "e")
+    screen.onkey(main, "E")
+    root = Tk()
+    shop(root, n)#boss.bossness
 
 def movel():
     global mov
@@ -288,15 +292,15 @@ class player(Turtle):
         self.weapon = 0
         self.health = 20
         self.charge = 0
-        self.chargespeed = 0
+        self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 0
+        self.points = 20
         self.cap = 25 #Maximum number of bullets on the screen
         self.up()
         self.pencolor(color)
 
     def spray(self, num, charge, damage, speed, spread = 20, regular = False):
-        charge -= charge
+        self.charge -= charge
         for i in range(1, num+1): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
             b = bullet(90, p.pos(), (0, 255, 0))
             bullets.append(b)
@@ -317,41 +321,42 @@ class player(Turtle):
                 b.speed = 1.5
                 b.moveToPos(p.pos())
                 return
-            elif self.weapons[self.weapon] == 'spreadshot' and charge >= 2:
-                spray(3, 2, 1, 1.5)
+            elif self.weapons[self.weapon] == 'spreadshot' and self.charge >= 2:
+                self.spray(3, 2, 1, 1.5)
                 return
-            elif self.weapons[self.weapon] == 'lazor' and charge >= 3:
-                charge -= 3
+            elif self.weapons[self.weapon] == 'lazor' and self.charge >= 3:
+                self.charge -= 3
                 self.lazorgo()
                 return
-            elif self.weapons[self.weapon] == 'blaster_2.0' and charge >= 3:
+            elif self.weapons[self.weapon] == 'blaster_2.0' and self.charge >= 3:
                 b = bullet(90, p.pos(), (0, 255, 0))
                 bullets.append(b)
-                charge -= 2
+                self.charge -= 2
                 b.damage = 2
                 b.speed = 1
                 b.moveToPos(p.pos())
                 return
-            elif self.weapons[self.weapon] == 'homing_missile' and charge >= 2:
+            elif self.weapons[self.weapon] == 'homing_missile' and self.charge >= 2:
                 b = bullet(90, p.pos(), (0, 255, 0), 1.5, 'homing')
                 bullets.append(b)
-                charge -= 2
+                self.charge -= 2
                 h.moveToPos(p.pos())
                 h.seth(90)
                 return
-            elif self.weapons[self.weapon] == 'bombs' and charge >= 3:
-                charge -= 1
+            elif self.weapons[self.weapon] == 'bombs' and self.charge >= 3:
+                self.charge -= 1
                 b = bullet(90, p.pos(), (0, 255, 0), 1.2, 'bomb')
                 bullets.append(b)
                 b.moveToPos(p.pos())
                 b.seth(90)
                 return
-            elif self.weapons[self.weapon] == 'pentashot' and charge >= 3:
+            elif self.weapons[self.weapon] == 'pentashot' and self.charge >= 3:
                 spray(5, 3, 1, 2.5, regular = 40)
                 return
-            elif self.weapons[self.weapon] == "machine_gun" and charge >= 4:
+            elif self.weapons[self.weapon] == "machine_gun" and self.charge >= 4:
                 spray(7, 4, 1, 2, spread = 30)
                 return
+    
     def move(self):
         pass
 
@@ -359,16 +364,46 @@ class player(Turtle):
         pass
 
     def changeWeapon(self):
+        print('weaponchanged')
         self.weapon += 1
         self.weapon %= len(self.weapons)
+        updatescoreboard()
     
     def buy(self, button, weapon, cost):
-        button.forget()
-        self.weapons.append(weapon)
-        self.points -= cost
+        print(weapon)
+        if self.points >= cost:
+            print('hi')
+            button.forget()
+            self.weapons.append(weapon)
+            print(self.weapons)
+            self.points -= cost
 
     def lazorgo(self):
         pass
+
+def chargeboost():
+    global p
+    if p.points >= 5:
+        p.points -= 5
+        p.maxcharge += 2
+        updatescoreboard()
+
+def healthboost():
+    global p
+    if p.points >= 10:
+        p.points -= 10
+        p.health += 1
+        updatescoreboard()
+
+def csboost():
+    global p
+    if p.points >= 10:
+        p.points -= 10
+        p.chargespeed += 0.2
+        updatescoreboard()
+
+def copy(x):
+    pass
 
 def shop(root, k):
     global weapons
@@ -386,11 +421,13 @@ def shop(root, k):
 
     chargeb = Button(root, text = 'max charge + 2 [self explanatory] (5 pts)', command = chargeboost)
     chargeb.pack()
-    f = open("HighScore.txt").read().split('\n')
+    f = open("Weapons.txt").read().split('\n')
     for weapond in f:
-        weapon = weapond.spilt()
-        if weapon[0] not in p.weapons and weapon[1] in p.weapons and n >= weapon[2]:
-            button = Button(root, text = ' '.join(weapon[4:]), command = lambda: p.buy(button, weapon[0], weapon[3]))#button, weapon, cost
+        weapon = weapond.split()
+        if weapon[0] not in p.weapons and weapon[1] in p.weapons and n >= int(weapon[2]):
+            button = Button(root, text = ' '.join(weapon[4:]), command = lambda: 1+1)
+            button.configure(command=lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))
+            #button = Button(root, text = ' '.join(weapon[4:]), command = lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))#button, weapon, cost
             button.pack()
     if k > 0:
         hb = Button(root, text = 'health + 1 [self explanatory] (10 pts)', command = healthboost)
@@ -584,8 +621,8 @@ def loop_iteration():
                     p.health -= 1
                     updatescoreboard()
     if stopped:
-        screen.onkey(loop, "e")
-        screen.onkey(loop, "E")
+        screen.onkey(main, "e")
+        screen.onkey(main, "E")
         root = Tk()
         shop(root, boss.bossness)
     if p.health < 1:
@@ -617,7 +654,8 @@ def boss_iteration():
     
 
 def main():
-    global distance, kdistance
+    global distance, kdistance, root, stopped
+    stopped = False
     if distance % 40 == 10:
         garbage_collect(garbage)
     for b in bullets:
@@ -640,11 +678,10 @@ def main():
         except:
             pass
     screen.onkey(stop, "e")
-    stopped = False
     screen.update()
 
 while True:
     if not stopped:
         main()
     else:
-        pass
+        screen.update()
