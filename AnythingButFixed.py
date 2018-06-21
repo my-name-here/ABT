@@ -660,17 +660,6 @@ def loop_iteration():
     return False
                         
 def boss_iteration():
-    global distance, kdistance, fite
-    if distance == 1000:
-        kdistance += 1
-        distance = 0
-        print('1km')
-        if kdistance % 10 == 0:
-            fite = True
-            print('ahh', kdistance)
-    if not fite:
-        distance += 1
-    
 
 def main():
     global distance, kdistance, root, stopped
@@ -689,8 +678,10 @@ def main():
         if not e.isvisible():
             garbage.append(e)
             elist.remove(e)
-    loop_iteration()
-    boss_iteration()
+    if fight:
+        boss_iteration()
+    else:
+        loop_iteration()
     if root != 0:
         try:
             root.destroy()
