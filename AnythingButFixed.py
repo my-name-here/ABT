@@ -26,6 +26,7 @@ class bullet(Turtle):
         self.color(color)
         self.direction = direction
         self.seth(self.direction)
+        print('asdf')
 
     def move(self, elist):
         if self.btype == 'homing': #Run homing missile code if this is a homing missile
@@ -74,7 +75,9 @@ class bullet(Turtle):
             turtle.delete()
 
     def delete(self):
+        print('deleted')
         bullets.remove(self)
+        self.hideturtle()
         self.getscreen()._turtles.remove(self)
         del self
        
@@ -95,6 +98,8 @@ class enemy(Turtle):
 
     def move(self, p):
         self.forward(0.5)
+        if self.ycor() < -300 or self.ycor() > 300:
+            self.delete()
         if self.level == 5:
             self.shape('5enemy')
             self.setx(self.xcor() + self.going)
@@ -138,6 +143,7 @@ class enemy(Turtle):
 
     def delete(self):
         elist.remove(self)
+        self.hideturtle()
         self.getscreen()._turtles.remove(self)
         del self
 
@@ -544,7 +550,7 @@ def loop_iteration():
                             updatescoreboard()
                     b.collide()
                     if random.randint(0, 1) == 0:
-                        points += b.damage
+                        p.points += b.damage
                         updatescoreboard()
 
     for e in elist:
