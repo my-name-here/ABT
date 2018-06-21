@@ -37,7 +37,7 @@ class explosion(Turtle):
             self.hideturtle()
             del self
 
-    def move(x):
+    def move(self, x):
         pass
             
 
@@ -319,10 +319,10 @@ class player(Turtle):
         self.weapon = 0
         self.health = 20
         self.charge = 0
-        self.chargespeed = 1
+        self.chargespeed = 0.5
         self.maxcharge = 5
-        self.points = 1000000
-        self.cap = 25 #Maximum number of bullets on the screen
+        self.points = 100
+        self.cap = 10 #Maximum number of bullets on the screen
         self.up()
         self.pencolor(color)
 
@@ -368,7 +368,7 @@ class player(Turtle):
                 b.damage = 1
                 b.moveToPos(p.pos())
                 b.seth(90)
-            elif self.weapons[self.weapon] == 'bombs' and self.charge >= 3:
+            elif self.weapons[self.weapon] == 'bombs' and self.charge >= 1:
                 self.charge -= 1
                 b = bullet(90, p.pos(), (0, 255, 0), 1.2, 'bomb')
                 b.damage = 1
@@ -398,6 +398,7 @@ class player(Turtle):
             button.forget()
             self.weapons.append(weapon)
             self.points -= cost
+            self.cap += 5
 
     def lazorgo(self):
         pass
@@ -420,7 +421,7 @@ def csboost():
     global p
     if p.points >= 10:
         p.points -= 10
-        p.chargespeed += 0.2
+        p.chargespeed += 0.1
         updatescoreboard()
 
 def shop(root, k):
@@ -561,7 +562,7 @@ elist = [] #Holds all the enemies
 garbage = []
 
 mov = 0
-n = 3 #Progress for enemy level
+n = 1 #Progress for enemy level
 distance = 0## 0
 kdistance = 20## 0
 fite = False
