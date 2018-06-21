@@ -284,6 +284,19 @@ class player(Turtle):
         self.up()
         self.pencolor(color)
 
+    def spray(self, num, charge, damage, speed, spread = 20, regular = False):
+        charge -= charge
+        for i in range(1, num+1): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
+            b = bullet(90, p.pos(), (0, 255, 0))
+            bullets.append(b)
+            b.damage = 1
+            b.speed = 1.5
+            b.moveToPos(p.pos())
+            if regular:
+                b.direction = 90 + (floor(num/2) - i)*regular
+            else:
+                b.direction = random.randint(90 - spread, 90 + spread)
+
     def fire(self):
         if len(bullets) < self.cap:
             if self.weapons[self.weapon] == 'blaster':
@@ -330,7 +343,6 @@ class player(Turtle):
             elif self.weapons[self.weapon] == "machine_gun" and charge >= 4:
                 spray(7, 4, 1, 2, spread = 30)
                 return
-
     def move(self):
         pass
 
