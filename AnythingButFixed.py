@@ -37,7 +37,7 @@ class explosion(Turtle):
             self.hideturtle()
             del self
 
-    def move(x):
+    def move(self, x):
         pass
             
 
@@ -372,9 +372,9 @@ class player(Turtle):
                 b.moveToPos(p.pos())
                 b.seth(90)
             elif self.weapons[self.weapon] == 'pentashot' and self.charge >= 3:
-                spray(5, 3, 1, 2.5, regular = 40)
+                self.spray(5, 3, 1, 2.5, regular = 40)
             elif self.weapons[self.weapon] == "machine_gun" and self.charge >= 4:
-                spray(7, 4, 1, 2, spread = 20)
+                self.spray(7, 4, 1, 2, spread = 20)
         updatecharge()
         return
     
@@ -433,8 +433,7 @@ def shop(root, k):
     rt.right(90)
     rt.pencolor(0, 255, 0)
 
-    chargeb = Button(root, text = 'max charge + 2 [self explanatory] (5 pts)', command = chargeboost)
-    chargeb.pack()
+    
     f = open("Weapons.txt").read().split('\n')
     for weapond in f:
         weapon = weapond.split()
@@ -443,6 +442,8 @@ def shop(root, k):
             button.configure(command=lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))
             #button = Button(root, text = ' '.join(weapon[4:]), command = lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))#button, weapon, cost
             button.pack()
+    chargeb = Button(root, text = 'max charge + 2 [self explanatory] (5 pts)', command = chargeboost)
+    chargeb.pack()
     if k > 0:
         hb = Button(root, text = 'health + 1 [self explanatory] (10 pts)', command = healthboost)
         hb.pack()
@@ -639,10 +640,10 @@ def loop_iteration():
         shop(root, boss.bossness)
     if p.health < 1:
         print('you lose haha')
-        print('points: ', points)
+        print('points: ', p.points)
         print('distance: ', distance + 1000*kdistance)
         if p.points > get_highscore('Anything_But_That'):
-            change_highscore('Anything_But_That', points)
+            change_highscore('Anything_But_That', p.points)
             print('NEW POINTS HIGH SCORE!!!!')
         if distance + 1000*kdistance > get_highscore('Anything_But_Thatd'):
             change_highscore('Anything_But_Thatd', distance + 1000*kdistance)
@@ -653,8 +654,8 @@ def loop_iteration():
     return False
                         
 def boss_iteration():
+    pass
     
-
 def main():
     global distance, kdistance, root, stopped
     stopped = False
