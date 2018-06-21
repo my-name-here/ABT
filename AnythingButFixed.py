@@ -188,8 +188,6 @@ class boss(Turtle):
         self.keeper = Turtle()
         self.up()
 
-    def setup(self, level)
-
     def showturtleandhealth(self):
         self.showturtle()
         self.keeper.seth(0)
@@ -396,7 +394,25 @@ class player(Turtle):
             self.points -= cost
 
     def lazorgo(self):
-        pass
+        b = bullet(90, self.pos(), (0, 255, 0))
+        b.damage = 1
+        b.down()
+        b.width(3)
+        b.write("blap", font = ("Comic Sans MS", 20, "normal"))
+        for e in elist:
+            if abs(e.xcor()-b.xcor()) < max(e.turtlesize()[0]*6-3, 0):
+                if e.takeDamage():
+                    p.health += 1
+                    updatescoreboard()
+                if random.randint(0, 1) == 0:#Double cost and remove randomness
+                    p.points += 1
+                    updatescoreboard()
+                
+        b.forward(600)
+        screen.update()
+        b.clear()
+        b.collide()
+        return
 
 def chargeboost():
     global p
@@ -654,8 +670,18 @@ def loop_iteration():
     return False
                         
 def boss_iteration():
-    pass
+    global distance, kdistance, fite
+    if distance == 1000:
+        kdistance += 1
+        distance = 0
+        print('1km')
+        if kdistance % 10 == 0:
+            fite = True
+            print('ahh', kdistance)
+    if not fite:
+        distance += 1
     
+
 def main():
     global distance, kdistance, root, stopped
     stopped = False
@@ -673,9 +699,8 @@ def main():
         if not e.isvisible():
             garbage.append(e)
             elist.remove(e)
-    if fight:
-        boss_iteration()
     loop_iteration()
+    boss_iteration()
     if root != 0:
         try:
             root.destroy()
@@ -684,11 +709,16 @@ def main():
     screen.onkey(stop, "e")
     screen.update()
 
-try:
+while True:
+    if not stopped:
+        main()
+    else:
+        screen.update()
+'''try:
     while True:
         if not stopped:
             main()
         else:
             screen.update()
 except:
-    pass
+    pass'''
