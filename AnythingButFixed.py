@@ -1,23 +1,24 @@
 # Anything but That
 # version 0.2
 
-from turtle import *
 from tkinter import *
+from turtle import *
 import random
 from Highscore_tools import *
 from math import *
 import ABTShapes
 from time import time
 import os
-import gc
+#import gc
 
 
 class bullet(Turtle):
     def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, btype = 'regular'):
         Turtle.__init__(self)
-        self.speed = sp #How fast you are (higher is faster)
+        self.movespeed = sp #How fast you are (higher is faster)
         self.damage = 0 #How much damage a bullet deals
         self.radius = 40 #Used for the bomb
+        
         self.up()
         self.btype = btype
         self.turtlesize(0.5, 0.5)
@@ -25,7 +26,14 @@ class bullet(Turtle):
         self.color(color)
         self.direction = direction
         self.seth(self.direction)
-        print('asdf')
+        #self.start(direction, pos, color)
+
+    def start(self):
+        self.up()
+        self.turtlesize(0.5, 0.5)
+        self.goto(pos)
+        self.color((0, 255, 0))
+        self.seth(self.direction)
 
     def move(self, elist):
         if self.btype == 'homing': #Run homing missile code if this is a homing missile
@@ -39,8 +47,9 @@ class bullet(Turtle):
             if bestenemy != '':
                 x = self.heading()-90
                 self.seth(x+(self.towards(bestenemy)-90>x)-(self.towards(bestenemy)-90<x)+90)
-            self.forward(self.speed)
-        self.forward(self.speed)
+            self.forward(self.movespeed)
+        else:
+            self.forward(self.movespeed)
         if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
             self.delete()
         if self.xcor() < -300 or self.xcor() > 300:
@@ -74,7 +83,6 @@ class bullet(Turtle):
             turtle.delete()
 
     def delete(self):
-        print('deleted')
         bullets.remove(self)
         self.hideturtle()
         self.getscreen()._turtles.remove(self)
@@ -305,7 +313,6 @@ class player(Turtle):
                 b.damage = 1
                 b.speed = 1.5
                 b.moveToPos(p.pos())
-                b.reset()
                 return
             elif self.weapons[self.weapon] == 'spreadshot' and charge >= 2:
                 spray(3, 2, 1, 1.5)
@@ -321,7 +328,6 @@ class player(Turtle):
                 b.damage = 2
                 b.speed = 1
                 b.moveToPos(p.pos())
-                b.reset()
                 return
             elif self.weapons[self.weapon] == 'homing_missile' and charge >= 2:
                 b = bullet(90, p.pos(), (0, 255, 0), 1.5, 'homing')
@@ -484,7 +490,7 @@ screen.colormode(255)
 screen.tracer(0)
 canvas = screen.getcanvas()
 ABTShapes.registerABTShapes(screen)
-#screen.bgcolor(0, 0, 0)
+screen.bgcolor(0, 0, 0)
 p.turtlesize(3, 4, 2)
 p.left(90)
 p.back(275)

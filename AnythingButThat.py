@@ -17,6 +17,7 @@ class bullet(Turtle):
     def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, damage = 1):
         Turtle.__init__(self)
         self.speed = sp
+        self.onscreen = False
         self.damage = 0
         self.up()
         self.turtlesize(0.5, 0.5)
