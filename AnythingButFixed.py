@@ -11,6 +11,35 @@ from time import time
 import os
 #import gc
 
+class explosion(Turtle):
+    def __init__(self, pos, fade, color = (255, 0, 0), radius = 40):
+        Turtle.__init__(self)
+        self.fade = fade
+        self.up()
+        self.goto(pos)
+        self.pencolor((0, 255, 0))
+        self.radius = radius
+        self.shape('circle')
+        self.explode(1)
+
+    def explode(self, radius, hitenemies = []):
+        damagedenemies = list(hitenemies)
+        self.shapesize(radius/10)
+        for enemy in elist:
+            if (not enemy in hitenemies) and sqrt(((enemy.xcor()-self.xcor())**2)+(enemy.ycor()-self.ycor())**2)<=radius:
+                enemy.takeDamage()
+                damagedenemies.append(enemy)
+        if radius < self.radius:
+            self.pencolor((int(self.pencolor()[0]/self.fade), int(self.pencolor()[1]/self.fade), int(self.pencolor()[2]/self.fade)))
+            scoreboard.after(50, lambda: self.explode(radius+4, damagedenemies))
+        else:
+            bullets.append(self)
+            self.hideturtle()
+            del self
+
+    def move(x):
+        pass
+            
 
 class bullet(Turtle):
     def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, btype = 'regular'):
@@ -64,10 +93,8 @@ class bullet(Turtle):
 
     def collide(self):
         if self.btype == 'bomb':
-            self.shape('circle')
-            self.explode(1, self)
-        else:
-            self.delete()
+            t = explosion(self.pos(), 1.2, radius = self.radius)
+        self.delete()
 
     def explode(self, radius, turtle, hitenemies = []):
         damagedenemies = list(hitenemies)
@@ -260,7 +287,7 @@ class boss(Turtle):
                 return False
 
 def stop():
-    global stopped
+    global stopped, root
     stopped = True
     screen.onkey(main, "e")
     screen.onkey(main, "E")
@@ -294,12 +321,12 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 20
+        self.points = 1000000
         self.cap = 25 #Maximum number of bullets on the screen
         self.up()
         self.pencolor(color)
 
-    def spray(self, num, charge, damage, speed, spread = 20, regular = False):
+    def spray(self, num, charge, damage, speed, spread = 10, regular = False):
         self.charge -= charge
         for i in range(1, num+1): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
             b = bullet(90, p.pos(), (0, 255, 0))
@@ -309,8 +336,10 @@ class player(Turtle):
             b.moveToPos(p.pos())
             if regular:
                 b.direction = 90 + (floor(num/2) - i)*regular
+                b.seth(b.direction)
             else:
                 b.direction = random.randint(90 - spread, 90 + spread)
+                b.seth(b.direction)
 
     def fire(self):
         if len(bullets) < self.cap:
@@ -320,14 +349,11 @@ class player(Turtle):
                 b.damage = 1
                 b.speed = 1.5
                 b.moveToPos(p.pos())
-                return
             elif self.weapons[self.weapon] == 'spreadshot' and self.charge >= 2:
                 self.spray(3, 2, 1, 1.5)
-                return
             elif self.weapons[self.weapon] == 'lazor' and self.charge >= 3:
                 self.charge -= 3
                 self.lazorgo()
-                return
             elif self.weapons[self.weapon] == 'blaster_2.0' and self.charge >= 3:
                 b = bullet(90, p.pos(), (0, 255, 0))
                 bullets.append(b)
@@ -335,27 +361,26 @@ class player(Turtle):
                 b.damage = 2
                 b.speed = 1
                 b.moveToPos(p.pos())
-                return
             elif self.weapons[self.weapon] == 'homing_missile' and self.charge >= 2:
                 b = bullet(90, p.pos(), (0, 255, 0), 1.5, 'homing')
                 bullets.append(b)
                 self.charge -= 2
-                h.moveToPos(p.pos())
-                h.seth(90)
-                return
+                b.damage = 1
+                b.moveToPos(p.pos())
+                b.seth(90)
             elif self.weapons[self.weapon] == 'bombs' and self.charge >= 3:
                 self.charge -= 1
                 b = bullet(90, p.pos(), (0, 255, 0), 1.2, 'bomb')
+                b.damage = 1
                 bullets.append(b)
                 b.moveToPos(p.pos())
                 b.seth(90)
-                return
             elif self.weapons[self.weapon] == 'pentashot' and self.charge >= 3:
                 spray(5, 3, 1, 2.5, regular = 40)
-                return
             elif self.weapons[self.weapon] == "machine_gun" and self.charge >= 4:
-                spray(7, 4, 1, 2, spread = 30)
-                return
+                spray(7, 4, 1, 2, spread = 20)
+        updatecharge()
+        return
     
     def move(self):
         pass
@@ -364,18 +389,14 @@ class player(Turtle):
         pass
 
     def changeWeapon(self):
-        print('weaponchanged')
         self.weapon += 1
         self.weapon %= len(self.weapons)
         updatescoreboard()
     
     def buy(self, button, weapon, cost):
-        print(weapon)
         if self.points >= cost:
-            print('hi')
             button.forget()
             self.weapons.append(weapon)
-            print(self.weapons)
             self.points -= cost
 
     def lazorgo(self):
@@ -401,9 +422,6 @@ def csboost():
         p.points -= 10
         p.chargespeed += 0.2
         updatescoreboard()
-
-def copy(x):
-    pass
 
 def shop(root, k):
     global weapons
@@ -543,7 +561,7 @@ elist = [] #Holds all the enemies
 garbage = []
 
 mov = 0
-n = 1 #Progress for enemy level
+n = 3 #Progress for enemy level
 distance = 0## 0
 kdistance = 20## 0
 fite = False
@@ -680,8 +698,12 @@ def main():
     screen.onkey(stop, "e")
     screen.update()
 
-while True:
-    if not stopped:
-        main()
-    else:
-        screen.update()
+
+try:
+    while True:
+        if not stopped:
+            main()
+        else:
+            screen.update()
+except:
+    pass
