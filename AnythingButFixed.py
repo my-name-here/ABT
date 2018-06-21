@@ -194,6 +194,8 @@ class boss(Turtle):
         self.keeper = Turtle()
         self.up()
 
+    def setup(self, level)
+
     def showturtleandhealth(self):
         self.showturtle()
         self.keeper.seth(0)
@@ -660,6 +662,7 @@ def loop_iteration():
     return False
                         
 def boss_iteration():
+    
 
 def main():
     global distance, kdistance, root, stopped
@@ -680,8 +683,7 @@ def main():
             elist.remove(e)
     if fight:
         boss_iteration()
-    else:
-        loop_iteration()
+    loop_iteration()
     if root != 0:
         try:
             root.destroy()
