@@ -325,7 +325,7 @@ class player(Turtle):
 
     def spray(self, num, charge, damage, speed, spread = 10, regular = False):
         self.charge -= charge
-        for i in range(1, num+1): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
+        for i in range(num): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
             b = bullet(90, p.pos(), (0, 255, 0))
             bullets.append(b)
             b.damage = 1
@@ -615,6 +615,7 @@ def loop_iteration():
     p.setx(p.xcor() + mov)
     if p.charge < p.maxcharge and distance % 20 == 0:
         p.charge += p.chargespeed
+        p.charge = min(p.charge, p.maxcharge)
         updatecharge()
     if p.xcor() > 300:
         p.setx(-300)
@@ -673,23 +674,24 @@ def loop_iteration():
     return False
                         
 def boss_iteration():
-    global distance, kdistance, fite
+    global distance, kdistance, fight
     if distance == 1000:
         kdistance += 1
         distance = 0
         print('1km')
         if kdistance % 10 == 0:
-            fite = True
+            fight = True
             print('ahh', kdistance)
-    if not fite:
+    if not fight:
         distance += 1
     
 
 def main():
     global distance, kdistance, root, stopped, fight
     stopped = False
-    if distance % 40 == 10:
-        garbage_collect(garbage)
+    garbage_collect(garbage)
+##    if distance % 20 == 10:
+##        garbage_collect(garbage)
     for b in bullets:
         if not b.isvisible():
             garbage.append(b)
