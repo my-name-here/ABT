@@ -188,6 +188,9 @@ class boss(Turtle):
         self.keeper = Turtle()
         self.up()
 
+    def setup(self, level):
+        pass
+    
     def showturtleandhealth(self):
         self.showturtle()
         self.keeper.seth(0)
@@ -577,7 +580,7 @@ mov = 0
 n = 3 #Progress for enemy level
 distance = 0## 0
 kdistance = 20## 0
-fite = False
+fight = False
 stopped = False
 started = False
 scoreboard = Tk()
@@ -617,7 +620,7 @@ def loop_iteration():
         p.setx(-300)
     if p.xcor() < -300:
         p.setx(300)
-    if random.randint(0, 100) == 100 and not fite:
+    if random.randint(0, 100) == 100 and not fight:
         x = enemy(random.randint(n, n+1))
     for i in range(len(elist)):
         try:
@@ -683,7 +686,7 @@ def boss_iteration():
     
 
 def main():
-    global distance, kdistance, root, stopped
+    global distance, kdistance, root, stopped, fight
     stopped = False
     if distance % 40 == 10:
         garbage_collect(garbage)
