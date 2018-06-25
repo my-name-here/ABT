@@ -512,8 +512,8 @@ def updatecharge(): #Delete if this doesn't make things faster
         battery.pack()
 
 def start_tutorial():
-    screen.onkey(first_loop, "e")
-    screen.onkey(first_loop, "E")
+    screen.onkey(lambda: speech(turtor, []), "e")
+    screen.onkey(lambda: speech(turtor, []), "E")
     turtor = Turtle()
     turtor.up()
     turtor.seth(-90)
@@ -524,34 +524,32 @@ def start_tutorial():
     turtor.write('Hi there', font=("Ariel", 10, "normal"))
     turtor.goto(0, 0)
     screen.update()
-    canvas.after(1500, lambda: speech(turtor, 'Press space to shoot.'))
-    canvas.after(3500, lambda: speech(turtor, 'Press w to cycle through your weapons.'))
-    canvas.after(5500, lambda: speech(turtor, 'You can press e to pause the game.\nIt will also open the shop.'))
-    canvas.after(8500, lambda: speech(turtor, "I'll be in there to sell you weapons for the\npoints you get from hitting enemies."))
-    canvas.after(11500, lambda: speech(turtor, "When you kill an enemy you may be able to use\ntheir scrap to fix your ship and get more health."))
-    canvas.after(14500, lambda: speech(turtor, "Here's a blaster. Use it safely."))
-    canvas.after(16500, lambda: speech(turtor, "I almost forgot, arrow keys to move."))
-    canvas.after(18500, lambda: speech(turtor, "Bye bye"))
-    canvas.after(20500, lambda: turtor.hideturtle())
-    canvas.after(20500, lambda: speech(turtor, ''))
-    canvas.after(20500, first_loop)
+    f = open("tutorial.txt").read().split(':::')
+    speech(turtor, f)
 
 def speech(turtor, words):
-    if not started:
+    if not started and words != []:
         turtor.clear()
         turtor.goto(20, 20)
-        turtor.write(words, font=("Ariel", 10, "normal"))
+        turtor.write(words[0], font=("Ariel", 10, "normal"))
         turtor.goto(0, 0)
         screen.update()
+        screen.onkeypress(lambda: speech(turtor, words[1:]), "space")
     else:
         turtor.hideturtle()
         turtor.clear()
+        screen.onkeypress(p.fire, "space")
+        first_loop()
 
 def first_loop():
     global started
     if not started:
         started = True
-        main()
+        while True:
+            if not stopped:
+                main()
+            else:
+                screen.update()
 
 colormode(255)
 color = (0, 255, 0)
@@ -710,11 +708,13 @@ def main():
     screen.onkey(stop, "e")
     screen.update()
 
-while True:
+
+start_tutorial()
+'''while True:
     if not stopped:
         main()
     else:
-        screen.update()
+        screen.update()'''
 '''try:
     while True:
         if not stopped:
