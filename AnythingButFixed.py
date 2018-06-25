@@ -390,10 +390,8 @@ class player(Turtle):
             if abs(e.xcor()-b.xcor()) < max(e.turtlesize()[0]*6-3, 0):
                 if e.takeDamage():
                     p.health += 1
-                    updatescoreboard()
-                if random.randint(0, 1) == 0:#Double cost and remove randomness
-                    p.points += 1
-                    updatescoreboard()
+                p.points += 1
+                updatescoreboard()
                 
         b.forward(600)
         screen.update()
@@ -403,22 +401,22 @@ class player(Turtle):
 
 def chargeboost():
     global p
-    if p.points >= 5:
-        p.points -= 5
+    if p.points >= 10:
+        p.points -= 10
         p.maxcharge += 2
         updatescoreboard()
 
 def healthboost():
     global p
-    if p.points >= 10:
-        p.points -= 10
+    if p.points >= 20:
+        p.points -= 20
         p.health += 1
         updatescoreboard()
 
 def csboost():
     global p
-    if p.points >= 10:
-        p.points -= 10
+    if p.points >= 20:
+        p.points -= 20
         p.chargespeed += 0.2
         updatescoreboard()
 
@@ -445,13 +443,13 @@ def shop(root, k):
             button.configure(command=lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))
             #button = Button(root, text = ' '.join(weapon[4:]), command = lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))#button, weapon, cost
             button.pack()
-    chargeb = Button(root, text = 'max charge + 2 [self explanatory] (5 pts)', command = chargeboost)
+    chargeb = Button(root, text = 'max charge + 2 [self explanatory] (10 pts)', command = chargeboost)
     chargeb.pack()
     if k > 0:
-        hb = Button(root, text = 'health + 1 [self explanatory] (10 pts)', command = healthboost)
+        hb = Button(root, text = 'health + 1 [self explanatory] (20 pts)', command = healthboost)
         hb.pack()
     if k > 1:
-        hb = Button(root, text = 'increase charge speed [self explanatory] (10 pts)', command = csboost)
+        hb = Button(root, text = 'increase charge speed [self explanatory] (20 pts)', command = csboost)
         hb.pack()
 
 def updatescoreboard():
@@ -498,8 +496,8 @@ def updatecharge(): #Delete if this doesn't make things faster
         battery.pack()
 
 def start_tutorial():
-    screen.onkey(first_loop, "e")
-    screen.onkey(first_loop, "E")
+    screen.onkey(lambda: speech(turtor, []), "e")
+    screen.onkey(lambda: speech(turtor, []), "E")
     turtor = Turtle()
     turtor.up()
     turtor.seth(-90)
@@ -510,34 +508,32 @@ def start_tutorial():
     turtor.write('Hi there', font=("Ariel", 10, "normal"))
     turtor.goto(0, 0)
     screen.update()
-    canvas.after(1500, lambda: speech(turtor, 'Press space to shoot.'))
-    canvas.after(3500, lambda: speech(turtor, 'Press w to cycle through your weapons.'))
-    canvas.after(5500, lambda: speech(turtor, 'You can press e to pause the game.\nIt will also open the shop.'))
-    canvas.after(8500, lambda: speech(turtor, "I'll be in there to sell you weapons for the\npoints you get from hitting enemies."))
-    canvas.after(11500, lambda: speech(turtor, "When you kill an enemy you may be able to use\ntheir scrap to fix your ship and get more health."))
-    canvas.after(14500, lambda: speech(turtor, "Here's a blaster. Use it safely."))
-    canvas.after(16500, lambda: speech(turtor, "I almost forgot, arrow keys to move."))
-    canvas.after(18500, lambda: speech(turtor, "Bye bye"))
-    canvas.after(20500, lambda: turtor.hideturtle())
-    canvas.after(20500, lambda: speech(turtor, ''))
-    canvas.after(20500, first_loop)
+    f = open("tutorial.txt").read().split(':::')
+    speech(turtor, f)
 
 def speech(turtor, words):
-    if not started:
+    if not started and words != []:
         turtor.clear()
         turtor.goto(20, 20)
-        turtor.write(words, font=("Ariel", 10, "normal"))
+        turtor.write(words[0], font=("Ariel", 10, "normal"))
         turtor.goto(0, 0)
         screen.update()
+        screen.onkeypress(lambda: speech(turtor, words[1:]), "space")
     else:
         turtor.hideturtle()
         turtor.clear()
+        screen.onkeypress(p.fire, "space")
+        first_loop()
 
 def first_loop():
     global started
     if not started:
         started = True
-        main()
+        while True:
+            if not stopped:
+                main()
+            else:
+                screen.update()
 
 colormode(255)
 color = (0, 255, 0)
@@ -620,11 +616,9 @@ def loop_iteration():
                     if e.takeDamage(b.damage): #True if it dies
                         if random.randint(0, 1) == 0:
                             p.health += 1
-                            updatescoreboard()
                     b.collide()
-                    if random.randint(0, 1) == 0:
-                        p.points += b.damage
-                        updatescoreboard()
+                    p.points += b.damage
+                    updatescoreboard()
 
     for b in ebullets:
         b.move(elist)
@@ -695,11 +689,13 @@ def main():
     screen.onkey(stop, "e")
     screen.update()
 
-while True:
+
+start_tutorial()
+'''while True:
     if not stopped:
         main()
     else:
-        screen.update()
+        screen.update()'''
 '''try:
     while True:
         if not stopped:
