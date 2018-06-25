@@ -187,9 +187,6 @@ class boss(Turtle):
         self.health = 0
         self.keeper = Turtle()
         self.up()
-
-    def setup(self, level):
-        pass
     
     def showturtleandhealth(self):
         self.showturtle()
@@ -228,60 +225,47 @@ class boss(Turtle):
             self.keeper.clear()
             return True
         return False
-    
-    def moveBullets(self):
-        for b in self.bullets:
-            if b.onscreen:
-                b.move()
-                if b.ycor() < -300 or b.ycor() > 300:
-                    b.takeOffScreen()
                     
     def shoot(self):
-        for b in self.bullets:
-            if not b.onscreen:
-                b.seth(-90)
-                b.moveToPos(self.pos())
-                return
+        b = bullet(-90, self.pos())
+        ebullets.append(b)
+
+    def spray(self, num, charge, damage, speed, spread = 10, regular = False):
+        self.charge -= charge
+        for i in range(num): #If the bullet cap is 2 more than the # of bullets, it will exceed that number i. e. 18+3 =21>20
+            b = bullet(90, p.pos(), (0, 255, 0))
+            ebullets.append(b)
+            b.damage = 1
+            b.speed = 1.5
+            b.moveToPos(self.pos())
+            if regular:
+                b.direction = 90 + (floor(num/2) - i)*regular
+                b.seth(b.direction)
+            else:
+                b.direction = random.randint(90 - spread, 90 + spread)
+                b.seth(b.direction)
             
     def burst(self, angle, number, spread):
-        num = 0
-        for b in self.bullets:
-            if not b.onscreen:
-                b.direction = angle
-                b.moveToPos((self.pos()[0] + ((num-((number+1)/2))*spread), self.pos()[1]))
-                num += 1
-                if num == number:
-                    return
-            
-    def spreadshoot(self):
-        num = 0
-        for b in self.bullets:
-            if not b.onscreen:
-                b.direction = random.randint(-110, -70)
-                b.moveToPos(self.pos())
-                num += 1
-                if num == 3:
-                    return
+        pass
+
+    def fireenemy(self, minlevel, maxlevel):
+        e = enemy(random.choice(minlevel, maxlevel))
+        e.goto(self.pos())
+        elist.append(e)
 
     def lazershot(self, start, direction):
-        for b in self.bullets:
-            if not b.onscreen:
-                b.goto(start)
-                b.color('red')
-                b.down()
-                b.width(5)
-                b.seth(direction)
-                while b.ycor() > -290:
-                    b.forward(5)
-                if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
-                    b.up()
-                    b.width(1)
-                    b.getscreen().update()
-                    return True
-                b.up()
-                b.width(1)
-                b.getscreen().update()
-                return False
+        pass
+
+class boss1(boss):
+    def __init__(self):
+        boss.__init__(self)
+
+    def move(self):
+        pass
+
+    def fire(self):
+        if not random.randint(0, 200):
+            fireenemy(1, 4)
 
 def stop():
     global stopped, root
@@ -330,7 +314,7 @@ class player(Turtle):
             bullets.append(b)
             b.damage = 1
             b.speed = 1.5
-            b.moveToPos(p.pos())
+            b.moveToPos(self.pos())
             if regular:
                 b.direction = 90 + (floor(num/2) - i)*regular
                 b.seth(b.direction)
@@ -568,8 +552,6 @@ screen.bgcolor(0, 0, 0)
 p.turtlesize(3, 4, 2)
 p.left(90)
 p.back(275)
-#p.pencolor(color)
-
 
 bullets = [] #Holds the players bulletsd
 ebullets = [] #Holds the enemy bullets
@@ -579,15 +561,13 @@ garbage = []
 mov = 0
 n = 3 #Progress for enemy level
 distance = 0## 0
-kdistance = 20## 0
+kdistance = 0## 0
+bdistance = 0
 fight = False
 stopped = False
 started = False
 scoreboard = Tk()
 root = 0
-'''boss = boss()
-boss.bossness = 2## 0
-boss.hideturtle()'''
 g = False
 
 screen.listen()
@@ -675,23 +655,17 @@ def loop_iteration():
                         
 def boss_iteration():
     global distance, kdistance, fight
-    if distance == 1000:
-        kdistance += 1
-        distance = 0
-        print('1km')
-        if kdistance % 10 == 0:
-            fight = True
-            print('ahh', kdistance)
-    if not fight:
-        distance += 1
-    
+    distance = 0
+    bdistance += 1
+    if p.charge < p.maxcharge and bdistance % 20 == 0:
+        p.charge += p.chargespeed
+        p.charge = min(p.charge, p.maxcharge)
+        bdistance = 0
 
 def main():
     global distance, kdistance, root, stopped, fight
     stopped = False
     garbage_collect(garbage)
-##    if distance % 20 == 10:
-##        garbage_collect(garbage)
     for b in bullets:
         if not b.isvisible():
             garbage.append(b)
@@ -704,8 +678,15 @@ def main():
         if not e.isvisible():
             garbage.append(e)
             elist.remove(e)
+    distance += 1
+    if distance % 1000 == 0:
+        distance = 0
+        kdistance += 1
+        if kdistance % 10 == 0:
+            fight = True
     loop_iteration()
-    boss_iteration()
+    if fight:
+        boss_iteration()
     if root != 0:
         try:
             root.destroy()
