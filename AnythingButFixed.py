@@ -406,10 +406,8 @@ class player(Turtle):
             if abs(e.xcor()-b.xcor()) < max(e.turtlesize()[0]*6-3, 0):
                 if e.takeDamage():
                     p.health += 1
-                    updatescoreboard()
-                if random.randint(0, 1) == 0:#Double cost and remove randomness
-                    p.points += 1
-                    updatescoreboard()
+                p.points += 1
+                updatescoreboard()
                 
         b.forward(600)
         screen.update()
@@ -419,22 +417,22 @@ class player(Turtle):
 
 def chargeboost():
     global p
-    if p.points >= 5:
-        p.points -= 5
+    if p.points >= 10:
+        p.points -= 10
         p.maxcharge += 2
         updatescoreboard()
 
 def healthboost():
     global p
-    if p.points >= 10:
-        p.points -= 10
+    if p.points >= 20:
+        p.points -= 20
         p.health += 1
         updatescoreboard()
 
 def csboost():
     global p
-    if p.points >= 10:
-        p.points -= 10
+    if p.points >= 20:
+        p.points -= 20
         p.chargespeed += 0.2
         updatescoreboard()
 
@@ -461,13 +459,13 @@ def shop(root, k):
             button.configure(command=lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))
             #button = Button(root, text = ' '.join(weapon[4:]), command = lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))#button, weapon, cost
             button.pack()
-    chargeb = Button(root, text = 'max charge + 2 [self explanatory] (5 pts)', command = chargeboost)
+    chargeb = Button(root, text = 'max charge + 2 [self explanatory] (10 pts)', command = chargeboost)
     chargeb.pack()
     if k > 0:
-        hb = Button(root, text = 'health + 1 [self explanatory] (10 pts)', command = healthboost)
+        hb = Button(root, text = 'health + 1 [self explanatory] (20 pts)', command = healthboost)
         hb.pack()
     if k > 1:
-        hb = Button(root, text = 'increase charge speed [self explanatory] (10 pts)', command = csboost)
+        hb = Button(root, text = 'increase charge speed [self explanatory] (20 pts)', command = csboost)
         hb.pack()
 
 def updatescoreboard():
@@ -640,11 +638,9 @@ def loop_iteration():
                     if e.takeDamage(b.damage): #True if it dies
                         if random.randint(0, 1) == 0:
                             p.health += 1
-                            updatescoreboard()
                     b.collide()
-                    if random.randint(0, 1) == 0:
-                        p.points += b.damage
-                        updatescoreboard()
+                    p.points += b.damage
+                    updatescoreboard()
 
     for b in ebullets:
         b.move(elist)
