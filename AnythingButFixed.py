@@ -272,6 +272,7 @@ class Boss(Turtle):
         self.keeper.hideturtle()
         elist.append(self)
         elist.append(self.keeper)
+        p.level += 1
         del self.keeper
         del self
 
@@ -309,11 +310,15 @@ def stop():
     screen.onkey(main, "e")
     screen.onkey(main, "E")
     root = Tk()
-    shop(root, n)#boss.bossness
+    shop(root, p.level)
 
 def movel():
     global mov
     mov = -2
+
+def isColliding(x, y, turtle):
+    '''Checks if x, y is inside the turtle'''
+    pass
 
 def stopmovel():
     global mov
@@ -340,6 +345,7 @@ class player(Turtle):
         self.maxcharge = 5
         self.points = 1000000
         self.cap = 25 #Maximum number of bullets on the screen
+        self.level = 0 #Number of bosses defeated
         self.up()
         self.pencolor(color)
 
@@ -475,17 +481,17 @@ def shop(root, k):
     f = open("Weapons.txt").read().split('\n')
     for weapond in f:
         weapon = weapond.split()
-        if weapon[0] not in p.weapons and weapon[1] in p.weapons and n >= int(weapon[2]):
+        if weapon[0] not in p.weapons and weapon[1] in p.weapons and p.level >= int(weapon[2]):
             button = Button(root, text = ' '.join(weapon[4:]), command = lambda: 1+1)
             button.configure(command=lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))
             #button = Button(root, text = ' '.join(weapon[4:]), command = lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))#button, weapon, cost
             button.pack()
     chargeb = Button(root, text = 'max charge + 2 [self explanatory] (10 pts)', command = chargeboost)
     chargeb.pack()
-    if k > 0:
+    if p.level > 0:
         hb = Button(root, text = 'health + 1 [self explanatory] (20 pts)', command = healthboost)
         hb.pack()
-    if k > 1:
+    if p.level > 1:
         hb = Button(root, text = 'increase charge speed [self explanatory] (20 pts)', command = csboost)
         hb.pack()
 
@@ -592,7 +598,7 @@ elist = [] #Holds all the enemies
 garbage = []
 
 mov = 0
-n = 3 #Progress for enemy level
+#Progress for enemy level
 distance = 990## 0
 kdistance = 9## 0
 bdistance = 0
@@ -602,9 +608,6 @@ started = False
 scoreboard = Tk()
 root = 0
 boss = 0
-'''boss = boss()
-boss.bossness = 2## 0
-boss.hideturtle()'''
 
 screen.listen()
 screen.onkeypress(movel, "Left")
@@ -638,7 +641,7 @@ def loop_iteration():
     if p.xcor() < -300:
         p.setx(300)
     if random.randint(0, 100) == 100 and not fight:
-        x = enemy(random.randint(n, n+1))
+        x = enemy(random.randint(p.level, p.level+1))
     for i in range(len(elist)):
         try:
             e = elist[i]
@@ -698,7 +701,6 @@ def boss_iteration():
     boss.move()
     boss.fire()
     for b in bullets:
-        b.move(boss)
         if abs(b.ycor() - boss.ycor()) < 20:
             if abs(b.xcor() - boss.xcor()) < 100:
                 if boss.health > 0:
@@ -752,16 +754,3 @@ def main():
 
 
 start_tutorial()
-'''while True:
-    if not stopped:
-        main()
-    else:
-        screen.update()'''
-'''try:
-    while True:
-        if not stopped:
-            main()
-        else:
-            screen.update()
-except:
-    pass'''

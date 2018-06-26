@@ -1,4 +1,4 @@
-spreadshot blaster 0 40 spreadshot [sprays three bullets for 2 charge] (40 pts)
+spreadshot blaster 1 40 spreadshot [sprays three bullets for 2 charge] (40 pts)
 lazor blaster 0 60 lazor [instant, peircing ray for 3 charge] (60 pts)
 blaster_2.0 blaster 0 60 blaster 2.0 [slow bullet that deals 2 damage for 3 charge] (60 pts)
 pentashot spreadshot 0 80 pentashot [shoots 5 bullets for 3 charge], (80 pts)
