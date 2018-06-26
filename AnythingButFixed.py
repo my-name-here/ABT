@@ -418,6 +418,7 @@ class player(Turtle):
 
     def lazorgo(self):
         b = bullet(90, self.pos(), (0, 255, 0))
+        b.hideturtle()
         b.damage = 1
         b.down()
         b.width(3)
