@@ -264,24 +264,60 @@ class boss(Turtle):
                     return
 
     def lazershot(self, start, direction):
-        for b in self.bullets:
-            if not b.onscreen:
-                b.goto(start)
-                b.color('red')
-                b.down()
-                b.width(5)
-                b.seth(direction)
-                while b.ycor() > -290:
-                    b.forward(5)
-                if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
-                    b.up()
-                    b.width(1)
-                    b.getscreen().update()
-                    return True
-                b.up()
-                b.width(1)
-                b.getscreen().update()
-                return False
+        b = bullet(direction, start, (255, 0, 0))
+        b.damage = 1
+        b.down()
+        b.width(3)
+        if abs(p.xcor()-b.xcor()) < max(p.turtlesize()[0]*5, 0):
+            p.
+            p.points += 1
+            updatescoreboard()
+                
+        b.forward(600)
+        screen.update()
+        b.clear()
+        b.collide()
+        return
+
+    def delete(self):
+        for i in range(boss.points):
+            p.points += 1
+            updatescoreboard()
+        self.hideturtle()
+        self.keeper.hideturtle()
+        elist.append(self)
+        elist.append(self.keeper)
+        del self.keeper
+        del self
+
+class boss1(Boss):
+    def __init__(self):
+        Boss.__init__(self)
+        Turtle.__init__(self)
+        self.up()
+        self.seth(-90)
+        self.turtlesize(20, 20, 2)
+        self.n = 1
+        self.pencolor((255, 0, 0))
+        self.goto(0, 300)
+        self.health = 200
+        self.showhealth()
+        self.points = 100
+        for i in range(200):
+            self.forward(1)
+            screen.update()
+
+    def move(self):
+        self.setx(self.xcor() + self.n)
+        if abs(self.xcor()) > 300:
+            self.n *= -1
+
+    def fire(self):
+        if not random.randint(0, 200):
+            self.fireenemy(1, 4)
+        if not random.randint(0, 200):
+            self.spray(3, 1, 2)
+>>>>>>> 9ee0774c44dc244be2d9b63235af286472de70c8
 
 def stop():
     global stopped, root
