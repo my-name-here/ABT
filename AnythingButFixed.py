@@ -318,7 +318,12 @@ def movel():
 
 def isColliding(x, y, turtle):
     '''Checks if x, y is inside the turtle'''
-    pass
+    x -= turtle.xcor()
+    y -= turtle.ycor()
+    sx, sy = turtle.shapesize()[0], turtle.shapesize()[1]#x stretch, y stretch
+    if abs(sy*tan(radians(61))*x/sx) <= y and abs(sy*tan(radians(21))*x/sx) + abs(7*sy) >= y:
+        return True
+    return False
 
 def stopmovel():
     global mov
@@ -600,7 +605,7 @@ garbage = []
 mov = 0
 #Progress for enemy level
 distance = 990## 0
-kdistance = 9## 0
+kdistance = 1## 0
 bdistance = 0
 fight = False
 stopped = False
@@ -641,7 +646,7 @@ def loop_iteration():
     if p.xcor() < -300:
         p.setx(300)
     if random.randint(0, 100) == 100 and not fight:
-        x = enemy(random.randint(p.level, p.level+1))
+        x = enemy(random.randint(p.level+1, p.level+3))####################
     for i in range(len(elist)):
         try:
             e = elist[i]
@@ -654,14 +659,15 @@ def loop_iteration():
     for b in bullets:
         b.move(elist)
         for e in elist:
-            if abs(b.ycor() - e.ycor()) < 20:
-                if abs(b.xcor() - e.xcor()) < e.turtlesize()[0]*6:
-                    if e.takeDamage(b.damage): #True if it dies
-                        if random.randint(0, 1) == 0:
-                            p.health += 1
-                    b.collide()
-                    p.points += b.damage
-                    updatescoreboard()
+            #if abs(b.ycor() - e.ycor()) < 20:
+                #if abs(b.xcor() - e.xcor()) < e.turtlesize()[0]*6:
+            if isColliding(b.xcor(), b.ycor(), e):
+                if e.takeDamage(b.damage): #True if it dies
+                    if random.randint(0, 1) == 0:
+                        p.health += 1
+                b.collide()
+                p.points += b.damage
+                updatescoreboard()
 
     for b in ebullets:
         b.move(elist)
