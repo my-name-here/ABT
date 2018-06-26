@@ -254,7 +254,7 @@ class Boss(Turtle):
         b.down()
         b.width(3)
         if abs(p.xcor()-b.xcor()) < max(p.turtlesize()[0]*5, 0):
-            p.takeDamage
+            p.health -= 1
             p.points += 1
             updatescoreboard()
                 
@@ -601,8 +601,10 @@ stopped = False
 started = False
 scoreboard = Tk()
 root = 0
-g = False
 boss = 0
+'''boss = boss()
+boss.bossness = 2## 0
+boss.hideturtle()'''
 
 screen.listen()
 screen.onkeypress(movel, "Left")
