@@ -254,7 +254,7 @@ class Boss(Turtle):
         b.down()
         b.width(3)
         if abs(p.xcor()-b.xcor()) < max(p.turtlesize()[0]*5, 0):
-            p.
+            p.takeDamage
             p.points += 1
             updatescoreboard()
                 
