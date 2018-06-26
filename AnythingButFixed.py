@@ -249,7 +249,20 @@ class Boss(Turtle):
         screen._turtles.append(e)
 
     def lazershot(self, start, direction):
-        pass
+        b = bullet(direction, start, (255, 0, 0))
+        b.damage = 1
+        b.down()
+        b.width(3)
+        if abs(p.xcor()-b.xcor()) < max(p.turtlesize()[0]*5, 0):
+            p.
+            p.points += 1
+            updatescoreboard()
+                
+        b.forward(600)
+        screen.update()
+        b.clear()
+        b.collide()
+        return
 
     def delete(self):
         for i in range(boss.points):
