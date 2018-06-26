@@ -178,7 +178,7 @@ class enemy(Turtle):
         self.hideturtle()
         del self
 
-class boss(Turtle):
+class Boss(Turtle):
     def __init__(self):
         Turtle.__init__(self)
         self.spot = 0
@@ -269,7 +269,7 @@ class boss(Turtle):
         b.down()
         b.width(3)
         if abs(p.xcor()-b.xcor()) < max(p.turtlesize()[0]*5, 0):
-            p.
+            p.health -= 1
             p.points += 1
             updatescoreboard()
                 
@@ -317,7 +317,6 @@ class boss1(Boss):
             self.fireenemy(1, 4)
         if not random.randint(0, 200):
             self.spray(3, 1, 2)
->>>>>>> 9ee0774c44dc244be2d9b63235af286472de70c8
 
 def stop():
     global stopped, root
@@ -611,8 +610,8 @@ garbage = []
 
 mov = 0
 n = 3 #Progress for enemy level
-distance = 0## 0
-kdistance = 20## 0
+distance = 900## 0
+kdistance = 2## 0
 fight = False
 stopped = False
 started = False
@@ -621,7 +620,6 @@ root = 0
 '''boss = boss()
 boss.bossness = 2## 0
 boss.hideturtle()'''
-g = False
 
 screen.listen()
 screen.onkeypress(movel, "Left")
