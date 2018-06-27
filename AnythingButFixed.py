@@ -731,8 +731,7 @@ def boss_iteration():
     boss.move()
     boss.fire()
     for b in bullets:
-        if abs(b.ycor() - boss.ycor()) < 20:
-            if abs(b.xcor() - boss.xcor()) < 100:
+        if (boss.shape() == 'classic' and isColliding(b.xcor(), b.ycor(), boss)) or abs(b.xcor() - boss.xcor()) < boss.turtlesize()[0]*6:
                 if boss.health > 0:
                     boss.takedamage(b.damage)
                 else:
