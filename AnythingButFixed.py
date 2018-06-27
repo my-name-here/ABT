@@ -12,7 +12,7 @@ import os
 #import gc
 
 class explosion(Turtle):
-    def __init__(self, pos, fade, color = (255, 0, 0), radius = 40):
+    def __init__(self, pos, fade, damage, color = (255, 0, 0), radius = 40):
         Turtle.__init__(self)
         self.fade = fade
         self.up()
@@ -21,13 +21,14 @@ class explosion(Turtle):
         self.radius = radius
         self.shape('circle')
         self.explode(1)
+        self.damage = damage
 
     def explode(self, radius, hitenemies = []):
         damagedenemies = list(hitenemies)
         self.shapesize(radius/10)
         for enemy in elist:
             if (not enemy in hitenemies) and sqrt(((enemy.xcor()-self.xcor())**2)+(enemy.ycor()-self.ycor())**2)<=radius:
-                enemy.takeDamage()
+                enemy.takeDamage(self.damage)
                 damagedenemies.append(enemy)
         if radius < self.radius:
             self.pencolor((int(self.pencolor()[0]/self.fade), int(self.pencolor()[1]/self.fade), int(self.pencolor()[2]/self.fade)))
@@ -42,7 +43,7 @@ class explosion(Turtle):
             
 
 class bullet(Turtle):
-    def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, btype = 'regular'):
+    def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, btype = 'regular', explosion = 1):
         Turtle.__init__(self)
         self.movespeed = sp #How fast you are (higher is faster)
         self.damage = 0 #How much damage a bullet deals
@@ -55,7 +56,7 @@ class bullet(Turtle):
         self.color(color)
         self.direction = direction
         self.seth(self.direction)
-        #self.start(direction, pos, color)
+        self.explosion = explosion
 
     def start(self):
         self.up()
@@ -93,21 +94,8 @@ class bullet(Turtle):
 
     def collide(self):
         if self.btype == 'bomb':
-            t = explosion(self.pos(), 1.2, radius = self.radius)
+            t = explosion(self.pos(), self.explosion, 1.2, self.radius)
         self.delete()
-
-    def explode(self, radius, turtle, hitenemies = []):
-        damagedenemies = list(hitenemies)
-        turtle.shapesize(radius/10)
-        for enemy in elist:
-            if (not enemy in hitenemies) and sqrt(((enemy.xcor()-self.xcor())**2)+(enemy.ycor()-self.ycor())**2)<=radius:
-                enemy.takeDamage()
-                damagedenemies.append(enemy)
-        if radius < self.radius:
-            turtle.pencolor((0, int(sum(turtle.pencolor())/1.25), 0))
-            root.after(50, lambda: self.explode(radius+4, turtle, damagedenemies))
-        else:
-            turtle.delete()
 
     def delete(self):
         self.hideturtle()
@@ -488,8 +476,7 @@ def shop(root, k):
         weapon = weapond.split()
         if weapon[0] not in p.weapons and weapon[1] in p.weapons and p.level >= int(weapon[2]):
             button = Button(root, text = ' '.join(weapon[4:]), command = lambda: 1+1)
-            button.configure(command=lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))
-            #button = Button(root, text = ' '.join(weapon[4:]), command = lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost))#button, weapon, cost
+            button.configure(command=lambda b=button, weapon=weapon[0], cost=int(weapon[3]): p.buy(b, weapon, cost)) #button, weapon, cost
             button.pack()
     chargeb = Button(root, text = 'max charge + 2 [self explanatory] (10 pts)', command = chargeboost)
     chargeb.pack()
@@ -646,7 +633,7 @@ def loop_iteration():
     if p.xcor() < -300:
         p.setx(300)
     if random.randint(0, 100) == 100 and not fight:
-        x = enemy(random.randint(p.level+1, p.level+3))####################
+        x = enemy(random.randint(p.level+1, p.level+2))
     for i in range(len(elist)):
         try:
             e = elist[i]
