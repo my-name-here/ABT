@@ -252,7 +252,7 @@ class Boss(Turtle):
 
     def lazershot(self, start, direction):
         b = bullet(direction, start, (255, 0, 0))
-        b.damage = 1
+        b.damage = 0
         b.down()
         b.width(3)
         if abs(p.xcor()-b.xcor()) < max(p.turtlesize()[0]*5, 0):
@@ -310,7 +310,7 @@ class boss2(Boss):
         Turtle.__init__(self)
         self.up()
         self.seth(-90)
-        self.turtlesize(20, 20, 2)
+        self.turtlesize(2, 2, 2)
         self.pencolor((255, 0, 0))
         self.shape('boss2')
         self.goto(0, 300)
@@ -323,10 +323,10 @@ class boss2(Boss):
             screen.update()
 
     def move(self):
-        self.setx(self.xcor() + 3*((self.xcor()>self.spot) - (self.xcor()>self.spot)))
+        self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
 
     def fire(self):
-        if abs(self.pos()-self.spot) < 5:
+        if abs(self.xcor()-self.spot) < 5:
             if not random.randint(0, 100):
                 self.lazershot(self.pos(), -90)
                 self.spot = p.xcor()
@@ -659,14 +659,13 @@ garbage = []
 mov = 0
 #Progress for enemy level
 distance = 990## 0
-kdistance = 1## 0
+kdistance = 19## 0
 bdistance = 0
 fight = False
 stopped = False
 started = False
 scoreboard = Tk()
 root = 0
-boss = 0
 
 screen.listen()
 screen.onkeypress(movel, "Left")
@@ -803,14 +802,12 @@ def main():
         kdistance += 1
         if kdistance % 10 == 0:
             fight = True
+            global boss
             if kdistance == 10:
-                global boss
                 boss = boss1()
             if kdistance == 20:
-                global boss
                 boss = boss2()
             if kdistance == 30:
-                global boss
                 boss = boss3()
     loop_iteration()
     if fight:
