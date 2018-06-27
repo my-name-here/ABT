@@ -255,9 +255,7 @@ class Boss(Turtle):
         b.width(3)
         if abs(p.xcor()-b.xcor()) < max(p.turtlesize()[0]*5, 0):
             p.health -= 1
-            p.points += 1
             updatescoreboard()
-                
         b.forward(600)
         screen.update()
         b.clear()
@@ -303,6 +301,33 @@ class boss1(Boss):
             self.fireenemy(1, 4)
         if not random.randint(0, 200):
             self.spray(3, 1, 2)
+
+class boss2(Boss):
+    def __init__(self):
+        Boss.__init__(self)
+        Turtle.__init__(self)
+        self.up()
+        self.seth(-90)
+        self.turtlesize(20, 20, 2)
+        self.pencolor((255, 0, 0))
+        self.shape('boss2')
+        self.goto(0, 300)
+        self.health = 200
+        self.showhealth()
+        self.points = 100
+        self.spot = p.xcor()
+        for i in range(200):
+            self.forward(1)
+            screen.update()
+
+    def move(self):
+        self.setx(self.xcor() + 3*((self.xcor()>self.spot) - (self.xcor()>self.spot)))
+
+    def fire(self):
+        if abs(self.pos()-self.spot) < 5:
+            if not random.randint(0, 100):
+                self.lazershot(self.pos(), -90)
+                self.spot = p.xcor()
 
 def stop():
     global stopped, root
@@ -434,8 +459,7 @@ class player(Turtle):
                 if e.takeDamage():
                     p.health += 1
                 p.points += 1
-                updatescoreboard()
-                
+                updatescoreboard()               
         b.forward(600)
         screen.update()
         b.clear()
