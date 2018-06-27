@@ -121,7 +121,7 @@ def garbage_collect(bullets):
 
        
 class enemy(Turtle):
-    def __init__(self, level):
+    def __init__(self, level, angle = 90):
         Turtle.__init__(self)
         self.speed(0)
         self.pencolor(255, 0, 0)
@@ -240,10 +240,12 @@ class Boss(Turtle):
                 b.seth(b.direction)
             
     def burst(self, angle, number, spread):
-        pass
+        for i in range(number):
+            b = bullet(angle, (self.xcor() + (spread-num/2)*i, self.ycor()), (255, 0, 0))
+            ebullets.append(b)
 
-    def fireenemy(self, minlevel, maxlevel):
-        e = enemy(random.randint(minlevel, maxlevel))
+    def fireenemy(self, minlevel, maxlevel, angle = -90):
+        e = enemy(random.randint(minlevel, maxlevel), angle)
         e.goto(self.pos())
         elist.append(e)
         screen._turtles.append(e)
@@ -328,6 +330,34 @@ class boss2(Boss):
             if not random.randint(0, 100):
                 self.lazershot(self.pos(), -90)
                 self.spot = p.xcor()
+
+class boss3(Boss):
+    def __init__(self):
+        Boss.__init__(self)
+        Turtle.__init__(self)
+        self.up()
+        self.seth(-90)
+        self.turtlesize(10, 20, 2)
+        self.n = 1
+        self.pencolor((255, 0, 0))
+        self.goto(0, 300)
+        self.health = 200
+        self.showhealth()
+        self.points = 100
+        for i in range(200):
+            self.forward(1)
+            screen.update()
+
+    def move(self):
+        self.setx(self.xcor() + self.n)
+        if abs(self.xcor()) > 300:
+            self.n *= -1
+
+    def fire(self):
+        if not random.randint(0, 200):
+            self.fireenemy(1, 4, self.towards(p.pos()) + random.randint(-20, 20))
+        if not random.randint(0, 200):
+            self.burst(self.towards(p.pos()), 10, 10)
 
 def stop():
     global stopped, root
@@ -677,6 +707,12 @@ def loop_iteration():
             e.move(p) #p is Player
             if elist[i].ycor() < -300:
                 e.delete()
+            if elist[i].ycor() > 300:
+                e.delete()
+            if elist[i].xcor() < -300:
+                e.delete()
+            if elist[i].xcor() > 300:
+                e.delete()
         except:
             pass
                 
@@ -770,6 +806,12 @@ def main():
             if kdistance == 10:
                 global boss
                 boss = boss1()
+            if kdistance == 20:
+                global boss
+                boss = boss2()
+            if kdistance == 30:
+                global boss
+                boss = boss3()
     loop_iteration()
     if fight:
         boss_iteration()
