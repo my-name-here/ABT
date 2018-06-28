@@ -94,7 +94,7 @@ class bullet(Turtle):
 
     def collide(self):
         if self.btype == 'bomb':
-            t = explosion(self.pos(), self.explosion, 1.2, self.radius)
+            t = explosion(self.pos(), 1.2, self.explosion, self.radius)
         self.delete()
 
     def delete(self):
@@ -156,7 +156,7 @@ class enemy(Turtle):
     def takeDamage(self, damage = 1):
         self.health -= damage
         if self.health > 0:
-            self.turtlesize(self.health, self.health, 2)
+            self.turtlesize(ceil(self.health), ceil(self.health), 2)
             return False #Youre alive
         else:
             self.delete() #Die if you're dead
@@ -238,7 +238,7 @@ class Boss(Turtle):
 
     def lazershot(self, start, direction):
         b = bullet(direction, start, (255, 0, 0))
-        b.damage = 1
+        b.damage = 0
         b.down()
         b.width(3)
         if abs(p.xcor()-b.xcor()) < max(p.turtlesize()[0]*5, 0):
@@ -292,6 +292,61 @@ class boss1(Boss):
         if not random.randint(0, 200):
             self.spray(3, 1, 2)
 
+class boss2(Boss):
+    def __init__(self):
+        Boss.__init__(self)
+        Turtle.__init__(self)
+        self.up()
+        self.seth(-90)
+        self.turtlesize(2, 2, 2)
+        self.pencolor((255, 0, 0))
+        self.shape('boss2')
+        self.goto(0, 300)
+        self.health = 200
+        self.showhealth()
+        self.points = 100
+        self.spot = p.xcor()
+        for i in range(200):
+            self.forward(1)
+            screen.update()
+
+    def move(self):
+        self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
+
+    def fire(self):
+        if abs(self.xcor()-self.spot) < 5:
+            if not random.randint(0, 100):
+                self.lazershot(self.pos(), -90)
+                self.spot = p.xcor()
+
+class boss3(Boss):
+    def __init__(self):
+        Boss.__init__(self)
+        Turtle.__init__(self)
+        self.up()
+        self.seth(-90)
+        self.turtlesize(10, 20, 2)
+        self.n = 1
+        self.pencolor((255, 0, 0))
+        self.goto(0, 300)
+        self.health = 200
+        self.showhealth()
+        self.points = 100
+        for i in range(200):
+            self.forward(1)
+            screen.update()
+
+    def move(self):
+        self.setx(self.xcor() + self.n)
+        if abs(self.xcor()) > 300:
+            self.n *= -1
+
+    def fire(self):
+        if not random.randint(0, 200):
+            self.fireenemy(1, 4, self.towards(p.pos()) + random.randint(-20, 20))
+        if not random.randint(0, 200):
+            self.burst(self.towards(p.pos()), 10, 10)
+            
 def stop():
     global stopped, root
     stopped = True
@@ -385,7 +440,7 @@ class player(Turtle):
                 b.moveToPos(p.pos())
                 b.seth(90)
             elif self.weapons[self.weapon] == 'bombs' and self.charge >= 3:
-                self.charge -= 1
+                self.charge -= 3
                 b = bullet(90, p.pos(), (0, 255, 0), 1.2, 'bomb')
                 b.damage = 1
                 bullets.append(b)
@@ -395,11 +450,11 @@ class player(Turtle):
                 self.spray(5, 3, 1, 2.5, regular = 40)
             elif self.weapons[self.weapon] == "machine_gun" and self.charge >= 4:
                 self.spray(7, 4, 1, 2, spread = 20)
-            elif self.weapons[self.weapon] == "pewpew" and self.charge >= 4:
+            elif self.weapons[self.weapon] == "pewpew" and self.charge >= 1:
                 self.charge -= 1
-                b = bullet(90, p.pos(), (0, 255, 0), 2.5, 'bomb', random.randint(0,1))
-                b.damage = random.randint(0,1)
-                b.radius = random.randint(3, 10)
+                b = bullet(90, p.pos(), (0, 255, 0), 2.8, 'bomb', random.randint(0,1))
+                b.damage = 1/3#random.randint(0,1)
+                b.radius = 2#random.randint(3, 10)
                 bullets.append(b)
                 b.moveToPos(p.pos())
                 b.seth(90)
@@ -502,7 +557,7 @@ def updatescoreboard():
         hitpoints.forget()
         weaponl.forget()
         battery.forget()
-        score = Label(scoreboard, text = 'points: ' + str(p.points), font = ('Monaco', 16))
+        score = Label(scoreboard, text = 'points: ' + str(int(p.points)), font = ('Monaco', 16))
         score.pack()
         hitpoints = Label(scoreboard, text = 'health: ' + str(p.health), font = ('Monaco', 16))
         hitpoints.pack()
@@ -512,7 +567,7 @@ def updatescoreboard():
         battery.pack()
     except TclError:
         scoreboard = Tk()
-        score = Label(scoreboard, text = 'points: ' + str(points), font = ('Monaco', 16))
+        score = Label(scoreboard, text = 'points: ' + str(int(p.points)), font = ('Monaco', 16))
         score.pack()
         hitpoints = Label(scoreboard, text = 'health: ' + str(p.health), font = ('Monaco', 16))
         hitpoints.pack()
@@ -600,14 +655,13 @@ garbage = []
 mov = 0
 #Progress for enemy level
 distance = 990## 0
-kdistance = 1## 0
+kdistance = 0## 0
 bdistance = 0
 fight = False
 stopped = False
 started = False
 scoreboard = Tk()
 root = 0
-boss = 0
 
 screen.listen()
 screen.onkeypress(movel, "Left")
@@ -739,9 +793,13 @@ def main():
         kdistance += 1
         if kdistance % 10 == 0:
             fight = True
+            global boss
             if kdistance == 10:
-                global boss
                 boss = boss1()
+            if kdistance == 20:
+                boss = boss2()
+            if kdistance == 30:
+                boss = boss3()
     loop_iteration()
     if fight:
         boss_iteration()
