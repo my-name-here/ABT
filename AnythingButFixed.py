@@ -241,7 +241,7 @@ class Boss(Turtle):
             
     def burst(self, angle, number, spread):
         for i in range(number):
-            b = bullet(angle, (self.xcor() + (spread-num/2)*i, self.ycor()), (255, 0, 0))
+            b = bullet(angle, (self.xcor() + (spread-number/2)*i, self.ycor()), (255, 0, 0))
             ebullets.append(b)
 
     def fireenemy(self, minlevel, maxlevel, angle = -90):
@@ -659,7 +659,7 @@ garbage = []
 mov = 0
 #Progress for enemy level
 distance = 990## 0
-kdistance = 19## 0
+kdistance = 9## 0
 bdistance = 0
 fight = False
 stopped = False
@@ -767,17 +767,17 @@ def boss_iteration():
     boss.fire()
     for b in bullets:
         if (boss.shape() == 'classic' and isColliding(b.xcor(), b.ycor(), boss)) or abs(b.xcor() - boss.xcor()) < boss.turtlesize()[0]*6:
-                if boss.health > 0:
-                    boss.takedamage(b.damage)
-                else:
-                    for e in elist:
-                        if not e.isvisible():
-                            garbage.append(e)
-                            elist.remove(e)
-                    fight = False
-                    break
-                b.collide()
-                updatescoreboard()
+            if boss.health > 0:
+                boss.takedamage(b.damage)
+            else:
+                for e in elist:
+                    if not e.isvisible():
+                        garbage.append(e)
+                        elist.remove(e)
+                fight = False
+                break
+            b.collide()
+            updatescoreboard()
     
 
 def main():
