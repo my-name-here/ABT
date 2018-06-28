@@ -9,7 +9,6 @@ from math import *
 import ABTShapes
 from time import time
 import os
-#import gc
 
 class explosion(Turtle):
     def __init__(self, pos, fade, damage, color = (255, 0, 0), radius = 40):
@@ -662,7 +661,6 @@ elist = [] #Holds all the enemies
 garbage = []
 
 mov = 0
-#Progress for enemy level
 distance = 990## 0
 kdistance = 24## 0
 bdistance = 0
