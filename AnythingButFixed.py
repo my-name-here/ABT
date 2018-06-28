@@ -40,6 +40,9 @@ class explosion(Turtle):
 
     def move(self, x):
         pass
+
+    def collide(self):
+        pass
             
 
 class bullet(Turtle):
@@ -94,7 +97,7 @@ class bullet(Turtle):
 
     def collide(self):
         if self.btype == 'bomb':
-            t = explosion(self.pos(), 1.2, self.explosion, self.radius)
+            t = explosion(self.pos(), 1.2, self.explosion, self.color(), self.radius)
         self.delete()
 
     def delete(self):
@@ -398,7 +401,7 @@ class player(Turtle):
         self.maxcharge = 5
         self.points = 1000000
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 0 #Number of bosses defeated
+        self.level = 1 #Number of bosses defeated
         self.up()
         self.pencolor(color)
 
@@ -457,9 +460,9 @@ class player(Turtle):
                 self.spray(7, 4, 1, 2, spread = 20)
             elif self.weapons[self.weapon] == "pewpew" and self.charge >= 1:
                 self.charge -= 1
-                b = bullet(90, p.pos(), (0, 255, 0), 2.8, 'bomb', random.randint(0,1))
+                b = bullet(90, p.pos(), (0, 255, 0), 2.8, 'bomb', 1/3)
                 b.damage = 1/3#random.randint(0,1)
-                b.radius = 2#random.randint(3, 10)
+                b.radius = random.randint(5, 15)
                 bullets.append(b)
                 b.moveToPos(p.pos())
                 b.seth(90)
@@ -642,7 +645,7 @@ def first_loop():
 colormode(255)
 color = (0, 255, 0)
 
-p = player(['blaster', 'pewpew'])
+p = player(['blaster'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
@@ -661,7 +664,7 @@ garbage = []
 mov = 0
 #Progress for enemy level
 distance = 990## 0
-kdistance = 29## 0
+kdistance = 24## 0
 bdistance = 0
 fight = False
 stopped = False
@@ -684,10 +687,10 @@ score = Label(scoreboard, text = 'points: ' + str(p.points), font = ('Monaco', 1
 score.pack()
 hitpoints = Label(scoreboard, text = 'health: ' + str(p.health), font = ('Monaco', 16))
 hitpoints.pack()
-battery = Label(scoreboard, text = 'charge: ' + str(p.charge), font = ('Monaco', 16))
-battery.pack()
 weaponl = Label(scoreboard, text = 'weapon: ' + str(p.weapons[p.weapon]), font = ('Monaco', 16))
 weaponl.pack()
+battery = Label(scoreboard, text = 'charge: ' + str(p.charge), font = ('Monaco', 16))
+battery.pack()
 
 def loop_iteration():
     '''Iterates once and returns whether you're done'''
@@ -736,7 +739,7 @@ def loop_iteration():
         shop(root, boss.bossness)
     if p.health < 1:
         print('you lose haha')
-        print('points: ', p.points)
+        print('points: ', round(p.points))
         print('distance: ', distance + 1000*kdistance)
         if p.points > get_highscore('Anything_But_That'):
             change_highscore('Anything_But_That', p.points)
