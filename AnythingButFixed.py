@@ -175,10 +175,12 @@ class Boss(Turtle):
         self.up()
     
     def showhealth(self):
+        self.keeper.up()
         self.keeper.seth(0)
         self.keeper.fillcolor('red')
         self.keeper.hideturtle()
         self.keeper.goto(0, 300)
+        self.keeper.down()
         self.keeper.begin_fill()
         self.keeper.forward(self.health/2)
         self.keeper.left(90)
@@ -228,7 +230,9 @@ class Boss(Turtle):
                 b.seth(b.direction)
             
     def burst(self, angle, number, spread):
-        pass
+        for i in range(number):
+            b = bullet(angle, (self.xcor() + (spread-number/2)*i, self.ycor()), (255, 0, 0))
+            ebullets.append(b)
 
     def fireenemy(self, minlevel, maxlevel):
         e = enemy(random.randint(minlevel, maxlevel))
@@ -632,6 +636,7 @@ def first_loop():
                 main()
             else:
                 screen.update()
+                break
 
 colormode(255)
 color = (0, 255, 0)
@@ -655,7 +660,7 @@ garbage = []
 mov = 0
 #Progress for enemy level
 distance = 990## 0
-kdistance = 0## 0
+kdistance = 9## 0
 bdistance = 0
 fight = False
 stopped = False
@@ -708,8 +713,6 @@ def loop_iteration():
     for b in bullets:
         b.move(elist)
         for e in elist:
-            #if abs(b.ycor() - e.ycor()) < 20:
-                #if abs(b.xcor() - e.xcor()) < e.turtlesize()[0]*6:
             if isColliding(b.xcor(), b.ycor(), e):
                 if e.takeDamage(b.damage): #True if it dies
                     if random.randint(0, 1) == 0:
@@ -756,19 +759,31 @@ def boss_iteration():
     boss.move()
     boss.fire()
     for b in bullets:
-        if abs(b.ycor() - boss.ycor()) < 20:
-            if abs(b.xcor() - boss.xcor()) < 100:
-                if boss.health > 0:
-                    boss.takedamage(b.damage)
-                else:
-                    for e in elist:
-                        if not e.isvisible():
-                            garbage.append(e)
-                            elist.remove(e)
-                    fight = False
-                    break
-                b.collide()
-                updatescoreboard()
+        if (boss.shape() == 'classic' and isColliding(b.xcor(), b.ycor(), boss)):
+            if boss.health > 0:
+                boss.takedamage(b.damage)
+            else:
+                for e in elist:
+                    if not e.isvisible():
+                        garbage.append(e)
+                        elist.remove(e)
+                fight = False
+                break
+            b.collide()
+            updatescoreboard()
+        elif (boss.shape() != 'classic' and abs(b.xcor() - boss.xcor()) < boss.turtlesize()[0]*6):
+            if boss.health > 0:
+                boss.takedamage(b.damage)
+            else:
+                for e in elist:
+                    if not e.isvisible():
+                        garbage.append(e)
+                        elist.remove(e)
+                fight = False
+                break
+            b.collide()
+            updatescoreboard()
+            
     
 
 def main():
