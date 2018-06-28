@@ -234,9 +234,10 @@ class Boss(Turtle):
             b = bullet(angle, (self.xcor() + (spread-number/2)*i, self.ycor()), (255, 0, 0))
             ebullets.append(b)
 
-    def fireenemy(self, minlevel, maxlevel):
+    def fireenemy(self, minlevel, maxlevel, direction = -90):
         e = enemy(random.randint(minlevel, maxlevel))
         e.goto(self.pos())
+        e.seth(direction)
         elist.append(e)
         screen._turtles.append(e)
 
@@ -396,7 +397,7 @@ class player(Turtle):
         self.chargespeed = 1
         self.maxcharge = 5
         self.points = 1000000
-        self.cap = 25 #Maximum number of bullets on the screen
+        self.cap = 10 #Maximum number of bullets on the screen
         self.level = 0 #Number of bosses defeated
         self.up()
         self.pencolor(color)
@@ -421,7 +422,7 @@ class player(Turtle):
             if self.weapons[self.weapon] == 'blaster':
                 b = bullet(90, self.pos(), (0, 255, 0))
                 bullets.append(b)
-                b.damage = 3
+                b.damage = 1
                 b.speed = 1.5
                 b.moveToPos(p.pos())
             elif self.weapons[self.weapon] == 'spreadshot' and self.charge >= 2:
@@ -479,6 +480,7 @@ class player(Turtle):
     def buy(self, button, weapon, cost):
         if self.points >= cost:
             button.forget()
+            self.cap += 3
             self.weapons.append(weapon)
             self.points -= cost
 
@@ -636,7 +638,6 @@ def first_loop():
                 main()
             else:
                 screen.update()
-                break
 
 colormode(255)
 color = (0, 255, 0)
@@ -660,7 +661,7 @@ garbage = []
 mov = 0
 #Progress for enemy level
 distance = 990## 0
-kdistance = 9## 0
+kdistance = 29## 0
 bdistance = 0
 fight = False
 stopped = False
