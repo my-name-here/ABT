@@ -48,7 +48,7 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 0
+        self.points = 100
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 1 #Number of bosses defeated
         self.debuffs = {'freeze':0}
@@ -157,6 +157,10 @@ class player(Turtle):
                     p.health += 1
                 p.points += 1
                 updatescoreboard()
+        if abs(boss.xcor()-b.xcor()) < max(boss.turtlesize()[0]*6-3, 0):
+            boss.takeDamage(1)
+            p.points += 1
+            updatescoreboard()
                 
         b.forward(600)
         screen.update()
@@ -233,6 +237,7 @@ class explosion(Turtle):
         self.radius = radius
         self.shape('circle')
         self.explode(1)
+        self.btype = 'regular'
         self.damage = damage
 
     def explode(self, radius, hitenemies = []):
@@ -351,7 +356,7 @@ class Boss(Turtle):
         self.keeper.left(90)
         self.keeper.end_fill()
 
-    def takedamage(self, damage):
+    def takeDamage(self, damage):
         self.keeper.clear()
         self.health -= damage
         self.keeper.begin_fill()
@@ -753,7 +758,7 @@ def loop_iteration():
             if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
                 b.delete()
                 p.health -= 1
-                p.debuffs['freeze'] = 15*(b.btype=='freeze')*b.damage + e.debuffs['freeze']
+                p.debuffs['freeze'] = 15*(b.btype=='freeze')*b.damage + p.debuffs['freeze']
                 updatescoreboard()
     if stopped:
         screen.onkey(main, "e")
@@ -764,8 +769,8 @@ def loop_iteration():
         print('you lose haha')
         print('points: ', round(p.points))
         print('distance: ', distance + 1000*kdistance)
-        if p.points > get_highscore('Anything_But_That'):
-            change_highscore('Anything_But_That', p.points)
+        if round(p.points) > get_highscore('Anything_But_That'):
+            change_highscore('Anything_But_That', round(p.points))
             print('NEW POINTS HIGH SCORE!!!!')
         if distance + 1000*kdistance > get_highscore('Anything_But_Thatd'):
             change_highscore('Anything_But_Thatd', distance + 1000*kdistance)
@@ -788,7 +793,7 @@ def boss_iteration():
     for b in bullets:
         if (boss.shape() == 'classic' and isColliding(b.xcor(), b.ycor(), boss)):
             if boss.health > 0:
-                boss.takedamage(b.damage)
+                boss.takeDamage(b.damage)
             else:
                 for e in elist:
                     if not e.isvisible():
@@ -800,7 +805,7 @@ def boss_iteration():
             updatescoreboard()
         elif (boss.shape() != 'classic' and abs(b.xcor() - boss.xcor()) < boss.turtlesize()[0]*6):
             if boss.health > 0:
-                boss.takedamage(b.damage)
+                boss.takeDamage(b.damage)
             else:
                 for e in elist:
                     if not e.isvisible():
@@ -836,11 +841,11 @@ def main():
             global boss
             if kdistance == 10:
                 boss = boss1()
-            if kdistance == 20:
+            elif kdistance == 20:
                 boss = boss2()
-            if kdistance == 30:
+            elif kdistance == 30:
                 boss = boss3()
-            if kdistance == 40:
+            elif kdistance == 40:
                 boss = boss4()
     loop_iteration()
     if fight:
