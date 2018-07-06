@@ -20,16 +20,14 @@ Update notes:
 -120% more gluten
 -changed version number
 -now with more files
--takeDamage now with capital letters
--2 more new weapons
+-2 new weapons
 -maybe buffed blaster 2.0 (we forgot)
 -now with sys
 -added sound files
+-fractional support
 -does anyone reade these?
 -did anyone notice the typo?
 -hello?
--...hello?
-
 '''
 
 from tkinter import *
@@ -54,7 +52,7 @@ class player(Turtle):
         self.points = 0
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 1 #Number of bosses defeated
-        self.debuffs = {'freeze':0}
+        self.debuffs = {'freeze': 0}
         self.up()
         self.pencolor(color)
 
@@ -76,14 +74,15 @@ class player(Turtle):
     def fire(self):
         if len(bullets) < self.cap:
             if self.weapons[self.weapon] == 'blaster':
-                b = bullet(90, self.pos(), (0, 255, 0), btype = 'freeze')
+                b = bullet(90, self.pos(), (0, 255, 0))
                 bullets.append(b)
                 b.damage = 1
                 b.speed = 1.5
                 b.moveToPos(p.pos())
             elif self.weapons[self.weapon] == 'freeze':
-                b = bullet(90, self.pos(), (0, 255, 0), btype = 'freeze')
+                b = bullet(90, self.pos(), (0, 255, 0))
                 b.color((0, 255, 255))
+                b.debuffs['freeze'] = 15
                 bullets.append(b)
                 b.damage = 1
                 b.speed = 1.5
@@ -172,13 +171,14 @@ class player(Turtle):
         return
             
 class bullet(Turtle):
-    def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, btype = 'regular', explosion = 1):
+    def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, btype = 'regular', explosion = 1, debuffs = {}):
         Turtle.__init__(self)
         self.movespeed = sp #How fast you are (higher is faster)
         self.damage = 0 #How much damage a bullet deals
         self.radius = 40 #Used for the bomb
         
         self.up()
+        self.debuffs = debuffs
         self.btype = btype
         self.turtlesize(0.5, 0.5)
         self.goto(pos)
@@ -336,6 +336,7 @@ class Boss(Turtle):
         self.bossness = 0
         self.health = 0
         self.keeper = Turtle()
+        self.debuffs = {'freeze': 0}
         self.up()
     
     def showhealth(self):
@@ -750,7 +751,8 @@ def loop_iteration():
                     if random.randint(0, 1) == 0:
                         p.health += 1
                 else:
-                    e.debuffs['freeze'] = 15*(b.btype=='freeze')*b.damage + e.debuffs['freeze']
+                    for debuff in b.debuffs:
+                        e.debuffs[debuff] += b.debuffs[debuff]
                 b.collide()
                 p.points += b.damage
                 updatescoreboard()
@@ -761,7 +763,8 @@ def loop_iteration():
             if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
                 b.delete()
                 p.health -= 1
-                p.debuffs['freeze'] = 15*(b.btype=='freeze')*b.damage + p.debuffs['freeze']
+                for debuff in b.debuffs:
+                    p.debuffs[debuff] += b.debuffs[debuff]
                 updatescoreboard()
     if stopped:
         screen.onkey(main, "e")
@@ -797,6 +800,8 @@ def boss_iteration():
         if (boss.shape() == 'classic' and isColliding(b.xcor(), b.ycor(), boss)):
             if boss.health > 0:
                 boss.takeDamage(b.damage)
+                for debuff in b.debuffs:
+                    boss.debuffs[debuff] += b.debuffs[debuff]
             else:
                 for e in elist:
                     if not e.isvisible():
@@ -808,6 +813,8 @@ def boss_iteration():
             updatescoreboard()
         elif (boss.shape() != 'classic' and abs(b.xcor() - boss.xcor()) < boss.turtlesize()[0]*6):
             if boss.health > 0:
+                for debuff in b.debuffs:
+                    boss.debuffs[debuff] += b.debuffs[debuff]
                 boss.takeDamage(b.damage)
             else:
                 for e in elist:
