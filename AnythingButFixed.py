@@ -49,7 +49,7 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 0
+        self.points = 100000
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 1 #Number of bosses defeated
         self.debuffs = {'freeze': 0}
@@ -80,9 +80,8 @@ class player(Turtle):
                 b.speed = 1.5
                 b.moveToPos(p.pos())
             elif self.weapons[self.weapon] == 'freeze':
-                b = bullet(90, self.pos(), (0, 255, 0))
+                b = bullet(90, self.pos(), (0, 255, 0), debuffs = {'freeze':15})
                 b.color((0, 255, 255))
-                b.debuffs['freeze'] = 15
                 bullets.append(b)
                 b.damage = 1
                 b.speed = 1.5
@@ -427,9 +426,8 @@ class Boss(Turtle):
             p.points += 1
             updatescoreboard()
         self.hideturtle()
-        self.keeper.hideturtle()
-        elist.append(self)
-        elist.append(self.keeper)
+        garbage.append(self)
+        garbage.append(self.keeper)
         p.level += 1
         del self.keeper
         del self
@@ -803,10 +801,7 @@ def boss_iteration():
                 for debuff in b.debuffs:
                     boss.debuffs[debuff] += b.debuffs[debuff]
             else:
-                for e in elist:
-                    if not e.isvisible():
-                        garbage.append(e)
-                        elist.remove(e)
+                garbage_collect(garbage)
                 fight = False
                 break
             b.collide()
