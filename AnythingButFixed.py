@@ -13,14 +13,17 @@ Update notes:
 -fixed boss 2 and also made him exist
 -not as random
 -60% less gluten
+-fixed freeze
+-added freeze
 -added update notes
 -now with git (#notsponsored)
 -changed tutorial
 -price reduction (50% off)
 -120% more gluten
+-protip: exploit bugs
 -changed version number
 -now with more files
--2 new weapons
+-2 more new weapons
 -maybe buffed blaster 2.0 (we forgot)
 -now with sys
 -added sound files
@@ -28,6 +31,8 @@ Update notes:
 -does anyone reade these?
 -did anyone notice the typo?
 -hello?
+-...hello?
+
 '''
 
 from tkinter import *
