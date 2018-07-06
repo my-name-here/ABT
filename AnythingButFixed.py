@@ -13,17 +13,14 @@ Update notes:
 -fixed boss 2 and also made him exist
 -not as random
 -60% less gluten
--fixed freeze
--added freeze
 -added update notes
 -now with git (#notsponsored)
 -changed tutorial
 -price reduction (50% off)
 -120% more gluten
--protip: exploit bugs
 -changed version number
 -now with more files
--2 more new weapons
+-2 new weapons
 -maybe buffed blaster 2.0 (we forgot)
 -now with sys
 -added sound files
@@ -31,8 +28,6 @@ Update notes:
 -does anyone reade these?
 -did anyone notice the typo?
 -hello?
--...hello?
-
 '''
 
 from tkinter import *
@@ -541,26 +536,27 @@ class boss4(Boss):
         Turtle.__init__(self)
         self.up()
         self.seth(-90)
-        self.turtlesize(2, 2, 2)
+        self.turtlesize(20, 20, 2)
+        self.n = 1
         self.pencolor((255, 0, 0))
-        self.shape('boss2')
         self.goto(0, 300)
         self.health = 200
         self.showhealth()
         self.points = 100
-        self.spot = p.xcor()
         for i in range(200):
             self.forward(1)
             screen.update()
 
     def move(self):
-        self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
+        self.setx(self.xcor() + self.n)
+        if abs(self.xcor()) > 300:
+            self.n *= -1
 
     def fire(self):
-        if abs(self.xcor()-self.spot) < 5:
-            if not random.randint(0, 100):
-                self.lazershot(self.pos(), -90)
-                self.spot = p.xcor()
+        if not random.randint(0, 200):
+            self.fireenemy(1, 4)
+        if not random.randint(0, 200):
+            self.spray(3, 1, 2)
             
 def isColliding(x, y, turtle):
     '''Checks if x, y is inside the turtle'''
@@ -740,7 +736,11 @@ def stop():
                 
 def loop_iteration():
     '''Iterates once and returns whether you're done'''
-    p.setx(p.xcor() + mov)
+    if p.debuffs['freeze'] <= 0L
+        p.setx(p.xcor() + mov)
+    else:
+        p.debuffs['freeze'] -= 0.25
+        self.fillcolor((0, min(255, int(200*self.debuffs['freeze'])), min(255, int(200*self.debuffs['freeze']))))
     if p.charge < p.maxcharge and distance % 20 == 0:
         p.charge += p.chargespeed
         p.charge = min(p.charge, p.maxcharge)
@@ -776,13 +776,12 @@ def loop_iteration():
 
     for b in ebullets:
         b.move(elist)
-        if abs(b.ycor() - p.ycor()) < 20:
-            if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
-                b.delete()
-                p.health -= 1
-                for debuff in b.debuffs:
-                    p.debuffs[debuff] += b.debuffs[debuff]
-                updatescoreboard()
+        if isColliding(b.xcor(), b.ycor(), p):
+            b.delete()
+            p.health -= 1
+            for debuff in b.debuffs:
+                p.debuffs[debuff] += b.debuffs[debuff]
+            updatescoreboard()
     if stopped:
         screen.onkey(main, "e")
         screen.onkey(main, "E")
@@ -831,10 +830,7 @@ def boss_iteration():
                     boss.debuffs[debuff] += b.debuffs[debuff]
                 boss.takeDamage(b.damage)
             else:
-                for e in elist:
-                    if not e.isvisible():
-                        garbage.append(e)
-                        elist.remove(e)
+                garbage_collect(garbage)
                 fight = False
                 break
             b.collide()
@@ -885,7 +881,7 @@ def main():
 colormode(255)
 color = (0, 255, 0)
 
-p = player(['blaster', 'freeze'])
+p = player(['blaster'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
