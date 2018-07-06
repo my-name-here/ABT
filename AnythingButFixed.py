@@ -22,6 +22,7 @@ class player(Turtle):
         self.points = 1000000
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 1 #Number of bosses defeated
+        self.debuffs = {'freeze':0}
         self.up()
         self.pencolor(color)
 
@@ -43,7 +44,14 @@ class player(Turtle):
     def fire(self):
         if len(bullets) < self.cap:
             if self.weapons[self.weapon] == 'blaster':
-                b = bullet(90, self.pos(), (0, 255, 0))
+                b = bullet(90, self.pos(), (0, 255, 0), btype = 'freeze')
+                bullets.append(b)
+                b.damage = 1
+                b.speed = 1.5
+                b.moveToPos(p.pos())
+            elif self.weapons[self.weapon] == 'freeze':
+                b = bullet(90, self.pos(), (0, 255, 0), btype = 'freeze')
+                b.color((0, 255, 255))
                 bullets.append(b)
                 b.damage = 1
                 b.speed = 1.5
@@ -231,23 +239,31 @@ class enemy(Turtle):
         self.right(90)
         self.goto(random.randint(-300, 300), 300)
         self.going = 1
+        self.debuffs = {'freeze':0}
         elist.append(self)
 
     def move(self, p):
-        self.forward(0.5)
-        if self.ycor() < -300 or self.ycor() > 300:
-            self.delete()
-        if self.level == 5:
-            self.shape('5enemy')
-            self.setx(self.xcor() + self.going)
-            if self.xcor() > 300:
-                self.setx(-300)
-            if self.xcor() < -300:
-                self.setx(300)
-        elif self.level >= 6:
-            a = self.towards(p)
-        if not random.randint(0, 100):
-            self.shoot()
+        if self.debuffs['freeze'] <= 0:
+            self.forward(0.5)
+            if self.ycor() < -300 or self.ycor() > 300:
+                self.delete()
+            if self.level == 5:
+                self.shape('5enemy')
+                self.setx(self.xcor() + self.going)
+                if self.xcor() > 300:
+                    self.setx(-300)
+                if self.xcor() < -300:
+                    self.setx(300)
+            elif self.level >= 6:
+                a = self.towards(p)
+            if not random.randint(0, 100):
+                self.shoot()
+        else:
+            self.debuffs['freeze'] -= 0.25
+            '''self.fillcolor((0, 200, 200))
+            if self.debuffs['freeze'] <= 0:
+                self.fillcolor((0, 0, 0))'''
+            self.fillcolor((0, min(255, int(200*self.debuffs['freeze'])), min(255, int(200*self.debuffs['freeze']))))
 
     def shoot(self):
         self.going = self.going * -1
@@ -268,7 +284,7 @@ class enemy(Turtle):
         self.health -= damage
         if self.health > 0:
             self.turtlesize(ceil(self.health), ceil(self.health), 2)
-            return False #Youre alive
+            return False #You're alive
         else:
             self.delete() #Die if you're dead
             return True
@@ -658,7 +674,7 @@ def loop_iteration():
             e.move(p) #p is Player
             if elist[i].ycor() < -300:
                 e.delete()
-        except:
+        except IndexError:
             pass
                 
     for b in bullets:
@@ -668,6 +684,8 @@ def loop_iteration():
                 if e.takeDamage(b.damage): #True if it dies
                     if random.randint(0, 1) == 0:
                         p.health += 1
+                else:
+                    e.debuffs['freeze'] = 15*(b.btype=='freeze')*b.damage + e.debuffs['freeze']
                 b.collide()
                 p.points += b.damage
                 updatescoreboard()
@@ -678,6 +696,7 @@ def loop_iteration():
             if abs(b.xcor() - p.xcor()) < p.turtlesize()[0]*5:
                 b.delete()
                 p.health -= 1
+                p.debuffs['freeze'] = 15*(b.btype=='freeze')*b.damage + e.debuffs['freeze']
                 updatescoreboard()
     if stopped:
         screen.onkey(main, "e")
@@ -778,7 +797,7 @@ def main():
 colormode(255)
 color = (0, 255, 0)
 
-p = player(['blaster'])
+p = player(['blaster', 'freeze'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
