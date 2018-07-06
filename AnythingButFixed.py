@@ -20,13 +20,16 @@ Update notes:
 -120% more gluten
 -changed version number
 -now with more files
--2 new weapons
+-takeDamage now with capital letters
+-2 more new weapons
 -maybe buffed blaster 2.0 (we forgot)
 -now with sys
 -added sound files
 -does anyone reade these?
 -did anyone notice the typo?
 -hello?
+-...hello?
+
 '''
 
 from tkinter import *
