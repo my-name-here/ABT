@@ -380,8 +380,10 @@ class Boss(Turtle):
         if self.health <= 0:
             self.delete()
                     
-    def shoot(self):
-        b = bullet(-90, self.pos())
+    def shoot(self, direction = -90, debuffs = {}):
+        b = bullet(direction, self.pos(), debuffs = {})
+        if 'freeze' in debuffs.keys():
+            b.color((0, 255, 255))
         ebullets.append(b)
 
     def spray(self, num, damage, speed, spread = 10, regular = False):
@@ -467,30 +469,43 @@ class boss1(Boss):
 
 class boss2(Boss):
     def __init__(self):
+        print('An ancient power is stirring...')
+        print('Bill has awoken')
         Boss.__init__(self)
         Turtle.__init__(self)
         self.up()
         self.seth(-90)
-        self.turtlesize(2, 2, 2)
+        self.turtlesize(5, 5, 2)
         self.pencolor((255, 0, 0))
-        self.shape('boss2')
+        self.shape('classic')
         self.goto(0, 300)
         self.health = 200
         self.showhealth()
         self.points = 100
-        self.spot = p.xcor()
+        self.spraying = 0
         for i in range(200):
             self.forward(1)
             screen.update()
 
     def move(self):
-        self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
+        self.setx(self.xcor() + 1)
+        if abs(self.xcor()) > 300:
+            self.setx(-300)
 
     def fire(self):
-        if abs(self.xcor()-self.spot) < 5:
-            if not random.randint(0, 100):
-                self.lazershot(self.pos(), -90)
-                self.spot = p.xcor()
+        if self.health > 195:
+            if not random.randint(0, 200):
+                self.shoot(direction = -90)
+        else:
+            if not random.randint(0, 200):
+                self.spraying = 100
+            if self.spraying > 0:
+                self.spraying -= 1
+                if random.randint(0, 1):
+                    self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30})
+                else:
+                    self.shoot(direction = random.randint(-30, 30)-90)
+            
 
 class boss3(Boss):
     def __init__(self):
@@ -888,7 +903,7 @@ garbage = []
 
 mov = 0
 distance = 990## 0
-kdistance = 29## 0
+kdistance = 19## 0
 bdistance = 0
 fight = False
 stopped = False
