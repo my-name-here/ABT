@@ -1,6 +1,34 @@
 # Anything but That
 # version 0.2
 
+'''
+Update notes:
+
+-faster
+-shorter
+-3 new bosses
+-3 new weapons
+-changed point economy
+-buffed boss 1
+-fixed boss 2 and also made him exist
+-not as random
+-60% less gluten
+-added update notes
+-now with git (#notsponsored)
+-changed tutorial
+-price reduction (50% off)
+-120% more gluten
+-changed version number
+-now with more files
+-2 new weapons
+-maybe buffed blaster 2.0 (we forgot)
+-now with sys
+-added sound files
+-does anyone reade these?
+-did anyone notice the typo?
+-hello?
+'''
+
 from tkinter import *
 from turtle import *
 import random
@@ -9,6 +37,7 @@ from math import *
 import ABTShapes
 from time import time
 import os
+import sys
 
 class player(Turtle):
     def __init__(self, weapons):
@@ -477,7 +506,35 @@ class boss3(Boss):
         if not random.randint(0, 200):
             self.fireenemy(1, 4, self.towards(p.pos()) + random.randint(-20, 20))
         if not random.randint(0, 200):
-            self.burst(self.towards(p.pos()), 10, 10)
+            self.burst(self.towards(p.pos()), 10, 20)
+
+class boss4(Boss):
+    def __init__(self):
+        Boss.__init__(self)
+        Turtle.__init__(self)
+        self.up()
+        self.seth(-90)
+        self.turtlesize(20, 20, 2)
+        self.n = 1
+        self.pencolor((255, 0, 0))
+        self.goto(0, 300)
+        self.health = 200
+        self.showhealth()
+        self.points = 100
+        for i in range(200):
+            self.forward(1)
+            screen.update()
+
+    def move(self):
+        self.setx(self.xcor() + self.n)
+        if abs(self.xcor()) > 300:
+            self.n *= -1
+
+    def fire(self):
+        if not random.randint(0, 200):
+            self.fireenemy(1, 4)
+        if not random.randint(0, 200):
+            self.spray(3, 1, 2)
             
 def isColliding(x, y, turtle):
     '''Checks if x, y is inside the turtle'''
@@ -783,6 +840,8 @@ def main():
                 boss = boss2()
             if kdistance == 30:
                 boss = boss3()
+            if kdistance == 40:
+                boss = boss4()
     loop_iteration()
     if fight:
         boss_iteration()
@@ -815,7 +874,7 @@ garbage = []
 
 mov = 0
 distance = 990## 0
-kdistance = 24## 0
+kdistance = 29## 0
 bdistance = 0
 fight = False
 stopped = False
