@@ -517,27 +517,26 @@ class boss4(Boss):
         Turtle.__init__(self)
         self.up()
         self.seth(-90)
-        self.turtlesize(20, 20, 2)
-        self.n = 1
+        self.turtlesize(2, 2, 2)
         self.pencolor((255, 0, 0))
+        self.shape('boss2')
         self.goto(0, 300)
         self.health = 200
         self.showhealth()
         self.points = 100
+        self.spot = p.xcor()
         for i in range(200):
             self.forward(1)
             screen.update()
 
     def move(self):
-        self.setx(self.xcor() + self.n)
-        if abs(self.xcor()) > 300:
-            self.n *= -1
+        self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
 
     def fire(self):
-        if not random.randint(0, 200):
-            self.fireenemy(1, 4)
-        if not random.randint(0, 200):
-            self.spray(3, 1, 2)
+        if abs(self.xcor()-self.spot) < 5:
+            if not random.randint(0, 100):
+                self.lazershot(self.pos(), -90)
+                self.spot = p.xcor()
             
 def isColliding(x, y, turtle):
     '''Checks if x, y is inside the turtle'''
