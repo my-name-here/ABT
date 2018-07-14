@@ -736,7 +736,7 @@ def stop():
                 
 def loop_iteration():
     '''Iterates once and returns whether you're done'''
-    if p.debuffs['freeze'] <= 0L
+    if p.debuffs['freeze'] <= 0:
         p.setx(p.xcor() + mov)
     else:
         p.debuffs['freeze'] -= 0.25
