@@ -253,7 +253,7 @@ class explosion(Turtle):
             self.pencolor((int(self.pencolor()[0]/self.fade), int(self.pencolor()[1]/self.fade), int(self.pencolor()[2]/self.fade)))
             scoreboard.after(50, lambda: self.explode(radius+4, damagedenemies))
         else:
-            bullets.append(self)
+            garbage.append(self)
             self.hideturtle()
             del self
 
@@ -545,10 +545,13 @@ class boss4(Boss):
             
 def isColliding(x, y, turtle):
     '''Checks if x, y is inside the turtle'''
-    x -= turtle.xcor()
-    y -= turtle.ycor()
+ #   x -= turtle.xcor()
+#    y -= turtle.ycor()
+    t = radians(-(turtle.heading()+90))
+    nx = ((x-turtle.xcor())*cos(t)-(y-turtle.ycor())*sin(t))
+    ny = ((y-turtle.ycor())*cos(t)+(x-turtle.xcor())*sin(t))+turtle.shapesize()[2]
     sx, sy = turtle.shapesize()[0], turtle.shapesize()[1]#x stretch, y stretch
-    if abs(sy*tan(radians(61))*x/sx) <= y and abs(sy*tan(radians(21))*x/sx) + abs(7*sy) >= y:
+    if abs(sy*tan(radians(61))*nx/sx) <= ny and abs(sy*tan(radians(21))*nx/sx) + abs(7*sy) >= ny:
         return True
     return False
 
@@ -721,7 +724,7 @@ def stop():
                 
 def loop_iteration():
     '''Iterates once and returns whether you're done'''
-    if p.debuffs['freeze'] <= 0L
+    if p.debuffs['freeze'] <= 0:
         p.setx(p.xcor() + mov)
     else:
         p.debuffs['freeze'] -= 0.25
@@ -875,7 +878,7 @@ ABTShapes.registerABTShapes(screen)
 screen.bgcolor(0, 0, 0)
 p.turtlesize(3, 4, 2)
 p.left(90)
-p.back(275)
+p.back(260)
 
 bullets = [] #Holds the players bulletsd
 ebullets = [] #Holds the enemy bullets
