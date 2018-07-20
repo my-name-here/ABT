@@ -49,7 +49,7 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 100000
+        self.points = 500
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 1 #Number of bosses defeated
         self.debuffs = {'freeze': 0}
@@ -899,7 +899,7 @@ garbage = []
 
 mov = 0
 distance = 990## 0
-kdistance = 19## 0
+kdistance = 29## 0
 bdistance = 0
 fight = False
 stopped = False
