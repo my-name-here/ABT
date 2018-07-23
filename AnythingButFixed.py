@@ -14,6 +14,8 @@ Update notes:
 -not as random
 -60% less gluten
 -added update notes
+-Bill
+-Fixed hitboxes for everyone
 -now with git (#notsponsored)
 -changed tutorial
 -price reduction (50% off)
@@ -45,14 +47,14 @@ class player(Turtle):
         Turtle.__init__(self)
         self.weapons = weapons
         self.weapon = 0
-        self.health = 20
+        self.health = 300#20
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 500
+        self.points = 100000
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 1 #Number of bosses defeated
-        self.debuffs = {'freeze': 0}
+        self.debuffs = {'freeze': 0, 'invisible': 0}
         self.up()
         self.pencolor(color)
 
@@ -275,7 +277,7 @@ class enemy(Turtle):
         self.right(90)
         self.goto(random.randint(-300, 300), 300)
         self.going = 1
-        self.debuffs = {'freeze':0}
+        self.debuffs = {'freeze': 0, 'invisible': 0}
         elist.append(self)
 
     def move(self, p):
@@ -296,14 +298,12 @@ class enemy(Turtle):
                 self.shoot()
         else:
             self.debuffs['freeze'] -= 0.25
-            '''self.fillcolor((0, 200, 200))
-            if self.debuffs['freeze'] <= 0:
-                self.fillcolor((0, 0, 0))'''
             self.fillcolor((0, min(255, int(200*self.debuffs['freeze'])), min(255, int(200*self.debuffs['freeze']))))
 
     def shoot(self):
         self.going = self.going * -1
         b = bullet(-90, self.pos(), (255, 0, 0))
+#        b = bullet(270, self.pos(), (255, 0, 0), debuffs = {'invisible':15})
         ebullets.append(b)
         return
 
@@ -317,6 +317,7 @@ class enemy(Turtle):
         self.seth(-90)
 
     def takeDamage(self, damage = 1):
+        print(damage)
         self.health -= damage
         if self.health > 0:
             self.turtlesize(ceil(self.health), ceil(self.health), 2)
@@ -335,7 +336,7 @@ class Boss(Turtle):
         self.bossness = 0
         self.health = 0
         self.keeper = Turtle()
-        self.debuffs = {'freeze': 0}
+        self.debuffs = {'freeze': 0, 'invisible':0}
         self.up()
     
     def showhealth(self):
@@ -375,10 +376,8 @@ class Boss(Turtle):
         if self.health <= 0:
             self.delete()
                     
-    def shoot(self, direction = -90, debuffs = {}):
-        b = bullet(direction, self.pos(), debuffs = {})
-        if 'freeze' in debuffs.keys():
-            b.color((0, 255, 255))
+    def shoot(self):
+        b = bullet(-90, self.pos())
         ebullets.append(b)
 
     def spray(self, num, damage, speed, spread = 10, regular = False):
@@ -404,7 +403,6 @@ class Boss(Turtle):
         e = enemy(random.randint(minlevel, maxlevel))
         e.goto(self.pos())
         e.seth(direction)
-        elist.append(e)
         screen._turtles.append(e)
 
     def lazershot(self, start, direction):
@@ -464,43 +462,30 @@ class boss1(Boss):
 
 class boss2(Boss):
     def __init__(self):
-        print('An ancient power is stirring...')
-        print('Bill has awoken')
         Boss.__init__(self)
         Turtle.__init__(self)
         self.up()
         self.seth(-90)
-        self.turtlesize(5, 5, 2)
+        self.turtlesize(2, 2, 2)
         self.pencolor((255, 0, 0))
-        self.shape('classic')
+        self.shape('boss2')
         self.goto(0, 300)
         self.health = 200
         self.showhealth()
         self.points = 100
-        self.spraying = 0
+        self.spot = p.xcor()
         for i in range(200):
             self.forward(1)
             screen.update()
 
     def move(self):
-        self.setx(self.xcor() + 1)
-        if abs(self.xcor()) > 300:
-            self.setx(-300)
+        self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
 
     def fire(self):
-        if self.health > 195:
-            if not random.randint(0, 200):
-                self.shoot(direction = -90)
-        else:
-            if not random.randint(0, 200):
-                self.spraying = 100
-            if self.spraying > 0:
-                self.spraying -= 1
-                if random.randint(0, 1):
-                    self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30})
-                else:
-                    self.shoot(direction = random.randint(-30, 30)-90)
-            
+        if abs(self.xcor()-self.spot) < 5:
+            if not random.randint(0, 100):
+                self.lazershot(self.pos(), -90)
+                self.spot = p.xcor()
 
 class boss3(Boss):
     def __init__(self):
@@ -741,6 +726,11 @@ def loop_iteration():
     '''Iterates once and returns whether you're done'''
     if p.debuffs['freeze'] <= 0:
         p.setx(p.xcor() + mov)
+        if p.debuffs['invisible'] > 0:
+            p.hideturtle()
+            p.debuffs['invisible'] -= 0.25
+        else:
+            p.showturtle()
     else:
         p.debuffs['freeze'] -= 0.25
         self.fillcolor((0, min(255, int(200*self.debuffs['freeze'])), min(255, int(200*self.debuffs['freeze']))))
@@ -902,7 +892,7 @@ garbage = []
 
 mov = 0
 distance = 990## 0
-kdistance = 29## 0
+kdistance = 39## 0
 bdistance = 0
 fight = False
 stopped = False
