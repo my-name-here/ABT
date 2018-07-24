@@ -130,7 +130,7 @@ class player(Turtle):
             elif self.weapons[self.weapon] == "pewpew" and self.charge >= 1:
                 self.charge -= 1
                 b = bullet(90, p.pos(), (0, 255, 0), 2.8, 'bomb', 1/3)
-                b.damage = 1/3
+                b.damage = 1/3#1/3
                 b.radius = random.randint(5, 15)
                 bullets.append(b)
                 b.moveToPos(p.pos())
@@ -389,8 +389,14 @@ class Boss(Turtle):
         if self.health <= 0:
             self.delete()
                     
-    def shoot(self):
-        b = bullet(-90, self.pos())
+    def shoot(self, direction = -90, debuffs = {}):
+        b = bullet(direction, self.pos(), debuffs = debuffs)
+        if 'freeze' in debuffs.keys():
+            b.color((0, 255, 255))
+        elif 'ion' in debuffs.keys():
+            b.color((255, 255, 0))
+        elif 'invisible' in debuffs.keys():
+            b.color((150, 150, 150))
         ebullets.append(b)
 
     def spray(self, num, damage, speed, spread = 10, regular = False):
@@ -483,10 +489,12 @@ class boss2(Boss):
         self.pencolor((255, 0, 0))
         self.shape('boss2')
         self.goto(0, 300)
-        self.health = 200
+        self.health = 195#
         self.showhealth()
         self.points = 100
         self.spot = p.xcor()
+        self.spraying = 0
+        self.alternate = 0
         for i in range(200):
             self.forward(1)
             screen.update()
@@ -495,10 +503,28 @@ class boss2(Boss):
         self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
 
     def fire(self):
-        if abs(self.xcor()-self.spot) < 5:
-            if not random.randint(0, 100):
-                self.lazershot(self.pos(), -90)
-                self.spot = p.xcor()
+##        if abs(self.xcor()-self.spot) < 5:
+##            if not random.randint(0, 100):
+##                self.lazershot(self.pos(), -90)
+##                self.spot = p.xcor()
+        alimit = self.health/20
+        slimit = 100-self.health/4
+        if self.health > 195:
+            if not random.randint(0, 200):
+                self.shoot(direction = -90)
+        else:
+            if not random.randint(0, 150) and not self.spraying:
+                self.spraying = int(slimit)
+            if self.spraying > 0:
+                if not self.alternate:
+                    self.spraying -= 1
+                    if random.randint(0, 1):
+                        self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30})
+                    else:
+                        self.shoot(direction = random.randint(-30, 30)-90)
+                self.alternate += 1
+                if self.alternate >= alimit:
+                    self.alternate = 0
 
 class boss3(Boss):
     def __init__(self):
@@ -752,7 +778,7 @@ def loop_iteration():
         p.setx(p.xcor() + mov)
     else:
         p.debuffs['freeze'] -= 0.25
-        self.fillcolor((0, min(255, int(200*p.debuffs['freeze'])), min(255, int(200*p.debuffs['freeze']))))
+        p.fillcolor((0, min(255, int(200*p.debuffs['freeze'])), min(255, int(200*p.debuffs['freeze']))))
     cdistance += 1
     if p.charge < p.maxcharge and cdistance % 20 == 0:
         p.charge += p.chargespeed
@@ -791,10 +817,12 @@ def loop_iteration():
     for b in ebullets:
         b.move(elist)
         if isColliding(b.xcor(), b.ycor(), p):
-            b.delete()
             p.health -= 1
+            print(b.debuffs)
             for debuff in b.debuffs:
+                print(debuff)
                 p.debuffs[debuff] += b.debuffs[debuff]
+            b.delete()
             updatescoreboard()
     if stopped:
         screen.onkey(main, "e")
