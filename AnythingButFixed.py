@@ -7,7 +7,7 @@ Update notes:
 -faster
 -shorter
 -3 new bosses
--3 new weapons
+-4 new weapons
 -changed point economy
 -buffed boss 1
 -fixed boss 2 and also made him exist
@@ -15,6 +15,8 @@ Update notes:
 -60% less gluten
 -added update notes
 -Bill
+-3 new status effects
+-Introduced status effects
 -Fixed hitboxes for everyone
 -now with git (#notsponsored)
 -changed tutorial
@@ -130,7 +132,7 @@ class player(Turtle):
             elif self.weapons[self.weapon] == "pewpew" and self.charge >= 1:
                 self.charge -= 1
                 b = bullet(90, p.pos(), (0, 255, 0), 2.8, 'bomb', 1/3)
-                b.damage = 1/3#1/3
+                b.damage = 1/3
                 b.radius = random.randint(5, 15)
                 bullets.append(b)
                 b.moveToPos(p.pos())
@@ -584,8 +586,6 @@ class boss4(Boss):
             
 def isColliding(x, y, turtle):
     '''Checks if x, y is inside the turtle'''
- #   x -= turtle.xcor()
-#    y -= turtle.ycor()
     t = radians(-(turtle.heading()+90))
     nx = ((x-turtle.xcor())*cos(t)-(y-turtle.ycor())*sin(t))
     ny = ((y-turtle.ycor())*cos(t)+(x-turtle.xcor())*sin(t))+turtle.shapesize()[2]
