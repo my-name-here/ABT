@@ -910,8 +910,8 @@ elist = [] #Holds all the enemies
 garbage = []
 
 mov = 0
-distance = 990## 0
-kdistance = 19## 0
+distance = 0## 0
+kdistance = 0## 0
 bdistance = 0
 fight = False
 stopped = False
