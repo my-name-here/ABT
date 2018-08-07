@@ -53,9 +53,9 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 0
+        self.points = 1000000
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 1 #Number of bosses defeated + 1
+        self.level = 5 #Number of bosses defeated + 1
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.up()
         self.pencolor(color)
@@ -937,7 +937,7 @@ garbage = []
 mov = 0
 distance = 990## 0
 kdistance = 1## 0
-cdistance = 0
+cdistance = 0#This is the charge count
 fight = False
 stopped = False
 started = False
