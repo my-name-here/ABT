@@ -7,13 +7,17 @@ Update notes:
 -faster
 -shorter
 -3 new bosses
--3 new weapons
+-4 new weapons
 -changed point economy
 -buffed boss 1
 -fixed boss 2 and also made him exist
 -not as random
 -60% less gluten
 -added update notes
+-Bill
+-3 new status effects
+-Introduced status effects
+-Fixed hitboxes for everyone
 -now with git (#notsponsored)
 -changed tutorial
 -price reduction (50% off)
@@ -49,10 +53,10 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 500
+        self.points = 0
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 1 #Number of bosses defeated
-        self.debuffs = {'freeze': 0}
+        self.level = 1 #Number of bosses defeated + 1
+        self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.up()
         self.pencolor(color)
 
@@ -72,17 +76,26 @@ class player(Turtle):
                 b.seth(b.direction)
 
     def fire(self):
-        if len(bullets) < self.cap:
+        if len(bullets) < self.cap and self.debuffs['ion'] <= 0:
             if self.weapons[self.weapon] == 'blaster':
                 b = bullet(90, self.pos(), (0, 255, 0))
                 bullets.append(b)
                 b.damage = 1
                 b.speed = 1.5
                 b.moveToPos(p.pos())
-            elif self.weapons[self.weapon] == 'freeze':
+            elif self.weapons[self.weapon] == 'freeze' and self.charge >= 1:
                 b = bullet(90, self.pos(), (0, 255, 0), debuffs = {'freeze':15})
                 b.color((0, 255, 255))
                 bullets.append(b)
+                self.charge -= 1
+                b.damage = 1
+                b.speed = 1.5
+                b.moveToPos(p.pos())
+            elif self.weapons[self.weapon] == 'ion' and self.charge >= 1:
+                b = bullet(90, self.pos(), (0, 255, 0), debuffs = {'ion':15})
+                b.color((255, 255, 0))
+                bullets.append(b)
+                self.charge -= 1
                 b.damage = 1
                 b.speed = 1.5
                 b.moveToPos(p.pos())
@@ -91,7 +104,7 @@ class player(Turtle):
             elif self.weapons[self.weapon] == 'lazor' and self.charge >= 3:
                 self.charge -= 3
                 self.lazorgo()
-            elif self.weapons[self.weapon] == 'blaster_2.0' and self.charge >= 3:
+            elif self.weapons[self.weapon] == 'blaster_2.0' and self.charge >= 2:
                 b = bullet(90, p.pos(), (0, 255, 0))
                 bullets.append(b)
                 self.charge -= 2
@@ -119,7 +132,7 @@ class player(Turtle):
             elif self.weapons[self.weapon] == "pewpew" and self.charge >= 1:
                 self.charge -= 1
                 b = bullet(90, p.pos(), (0, 255, 0), 2.8, 'bomb', 1/3)
-                b.damage = 1/3#1/3
+                b.damage = 1/3
                 b.radius = random.randint(5, 15)
                 bullets.append(b)
                 b.moveToPos(p.pos())
@@ -275,10 +288,15 @@ class enemy(Turtle):
         self.right(90)
         self.goto(random.randint(-300, 300), 300)
         self.going = 1
-        self.debuffs = {'freeze':0}
+        self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         elist.append(self)
 
     def move(self, p):
+        if self.debuffs['ion'] > 0:
+            self.pencolor((min(255, int(200*self.debuffs['ion'])), min(255, int(200*self.debuffs['ion'])), 0))
+            self.debuffs['ion'] -= 0.25
+        else:
+            self.pencolor(255, 0, 0)
         if self.debuffs['freeze'] <= 0:
             self.forward(0.5)
             if self.ycor() < -300 or self.ycor() > 300:
@@ -296,15 +314,13 @@ class enemy(Turtle):
                 self.shoot()
         else:
             self.debuffs['freeze'] -= 0.25
-            '''self.fillcolor((0, 200, 200))
-            if self.debuffs['freeze'] <= 0:
-                self.fillcolor((0, 0, 0))'''
             self.fillcolor((0, min(255, int(200*self.debuffs['freeze'])), min(255, int(200*self.debuffs['freeze']))))
 
     def shoot(self):
-        self.going = self.going * -1
-        b = bullet(-90, self.pos(), (255, 0, 0))
-        ebullets.append(b)
+        if self.debuffs['ion'] <= 0:
+            self.going = self.going * -1
+            b = bullet(-90, self.pos(), (255, 0, 0))
+            ebullets.append(b)
         return
 
     def resetstuff(self):
@@ -335,7 +351,7 @@ class Boss(Turtle):
         self.bossness = 0
         self.health = 0
         self.keeper = Turtle()
-        self.debuffs = {'freeze': 0}
+        self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.up()
     
     def showhealth(self):
@@ -379,6 +395,10 @@ class Boss(Turtle):
         b = bullet(direction, self.pos(), debuffs = debuffs)
         if 'freeze' in debuffs.keys():
             b.color((0, 255, 255))
+        elif 'ion' in debuffs.keys():
+            b.color((255, 255, 0))
+        elif 'invisible' in debuffs.keys():
+            b.color((150, 150, 150))
         ebullets.append(b)
 
     def spray(self, num, damage, speed, spread = 10, regular = False):
@@ -404,7 +424,6 @@ class Boss(Turtle):
         e = enemy(random.randint(minlevel, maxlevel))
         e.goto(self.pos())
         e.seth(direction)
-        elist.append(e)
         screen._turtles.append(e)
 
     def lazershot(self, start, direction):
@@ -464,19 +483,18 @@ class boss1(Boss):
 
 class boss2(Boss):
     def __init__(self):
-        print('An ancient power is stirring...')
-        print('Bill has awoken')
         Boss.__init__(self)
         Turtle.__init__(self)
         self.up()
         self.seth(-90)
-        self.turtlesize(5, 5, 2)
+        self.turtlesize(2, 2, 2)
         self.pencolor((255, 0, 0))
-        self.shape('classic')
+        self.shape('boss2')
         self.goto(0, 300)
         self.health = 195#
         self.showhealth()
         self.points = 100
+        self.spot = p.xcor()
         self.spraying = 0
         self.alternate = 0
         for i in range(200):
@@ -484,11 +502,13 @@ class boss2(Boss):
             screen.update()
 
     def move(self):
-        self.setx(self.xcor() + 1)
-        if abs(self.xcor()) > 300:
-            self.setx(-300)
+        self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
 
     def fire(self):
+##        if abs(self.xcor()-self.spot) < 5:
+##            if not random.randint(0, 100):
+##                self.lazershot(self.pos(), -90)
+##                self.spot = p.xcor()
         alimit = self.health/20
         slimit = 100-self.health/4
         if self.health > 195:
@@ -507,7 +527,6 @@ class boss2(Boss):
                 self.alternate += 1
                 if self.alternate >= alimit:
                     self.alternate = 0
-            
 
 class boss3(Boss):
     def __init__(self):
@@ -567,8 +586,6 @@ class boss4(Boss):
             
 def isColliding(x, y, turtle):
     '''Checks if x, y is inside the turtle'''
- #   x -= turtle.xcor()
-#    y -= turtle.ycor()
     t = radians(-(turtle.heading()+90))
     nx = ((x-turtle.xcor())*cos(t)-(y-turtle.ycor())*sin(t))
     ny = ((y-turtle.ycor())*cos(t)+(x-turtle.xcor())*sin(t))+turtle.shapesize()[2]
@@ -622,7 +639,7 @@ def updatescoreboard():
         battery.pack()
 
 def updatecharge(): #Delete if this doesn't make things faster
-    global scoreboard, battery
+    global scoreboard, score, hitpoints, battery, weaponl
     try:
         battery.forget()
         battery = Label(scoreboard, text = 'charge: ' + str(int(p.charge)), font = ('Monaco', 16))
@@ -746,14 +763,27 @@ def stop():
                 
 def loop_iteration():
     '''Iterates once and returns whether you're done'''
+    global cdistance
+    if p.debuffs['invisible'] > 0:
+        p.hideturtle()
+        p.debuffs['invisible'] -= 0.25
+    else:
+        p.showturtle()
+    if p.debuffs['ion'] > 0:
+        p.pencolor((min(255, int(200*p.debuffs['ion'])), min(255, int(200*p.debuffs['ion'])), 0))
+        p.debuffs['ion'] -= 0.25
+    else:
+        p.pencolor(0, 255, 0)
     if p.debuffs['freeze'] <= 0:
         p.setx(p.xcor() + mov)
     else:
         p.debuffs['freeze'] -= 0.25
         p.fillcolor((0, min(255, int(200*p.debuffs['freeze'])), min(255, int(200*p.debuffs['freeze']))))
-    if p.charge < p.maxcharge and distance % 20 == 0:
+    cdistance += 1
+    if p.charge < p.maxcharge and cdistance % 20 == 0:
         p.charge += p.chargespeed
         p.charge = min(p.charge, p.maxcharge)
+        cdistance = 0
         updatecharge()
     if p.xcor() > 300:
         p.setx(-300)
@@ -815,13 +845,8 @@ def loop_iteration():
     return False
                         
 def boss_iteration():
-    global bdistance, distance, kdistance, fight, boss
+    global distance, kdistance, fight, boss
     distance = 0
-    bdistance += 1
-    if p.charge < p.maxcharge and bdistance % 20 == 0:
-        p.charge += p.chargespeed
-        p.charge = min(p.charge, p.maxcharge)
-        bdistance = 0
     boss.move()
     boss.fire()
     for b in bullets:
