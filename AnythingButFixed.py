@@ -3,37 +3,35 @@
 
 '''
 Update notes:
--added Todolist
+-Bill
 -faster
 -shorter
--added a list of shareholders
--now using the metric system
+-now with sys
 -3 new bosses
 -4 new weapons
--changed point economy
+-2 new weapons
 -buffed boss 1
--fixed boss 2 and also made him exist
 -not as random
+-added Todolist
 -60% less gluten
+-120% more gluten
+-changed tutorial
+-added sound files
 -added update notes
--Bill
+-fractional support
+-now with more files
 -3 new status effects
+-changed point economy
+-changed version number
+-price reduction (50% off)
 -Introduced status effects
+-now using the metric system
 -Fixed hitboxes for everyone
 -now with git (#notsponsored)
--changed tutorial
--price reduction (50% off)
--120% more gluten
--changed version number
--now with more files
--2 new weapons
+-added a list of shareholders
+-sorted update notes by length
 -maybe buffed blaster 2.0 (we forgot)
--now with sys
--added sound files
--fractional support
--does anyone reade these?
--did anyone notice the typo?
--hello?
+-fixed boss 2 and also made him exist
 '''
 
 from tkinter import *
@@ -322,6 +320,11 @@ class enemy(Turtle):
         self.speed(0)
         self.pencolor(255, 0, 0)
         self.level = level
+        if self.level == 5:
+            self.shape('5enemy')
+        if self.level >= 6:
+            self.shape('circle')
+            self.flying = 150
         self.up()
         self.health = level
         self.turtlesize(self.health, self.health, 2)
@@ -349,7 +352,24 @@ class enemy(Turtle):
                 if self.xcor() < -300:
                     self.setx(300)
             elif self.level >= 6:
-                a = self.towards(p)
+                if self.flying > 1:
+                    a = self.towards(p)
+                    if self.heading()-a>=0:
+                        self.right(2)
+                    else:
+                        self.left(2)
+                    self.flying -= 1
+                elif self.flying == 1:
+                    self.flying = -50
+                elif self.flying == -1:
+                    self.flying = 100
+                elif self.flying < -1:
+                    if 90<self.heading()<270:
+                        self.right(2)
+                    else:
+                        self.left(2)
+                    self.flying += 1
+                self.forward(2)
             if not random.randint(0, 100):
                 self.shoot()
         else:
@@ -366,7 +386,8 @@ class enemy(Turtle):
     def takeDamage(self, damage = 1):
         self.health -= damage
         if self.health > 0:
-            self.turtlesize(ceil(self.health), ceil(self.health), 2)
+            if self.level <= 5:
+                self.turtlesize(ceil(self.health), ceil(self.health), 2)
             return False #You're alive
         else:
             self.delete() #Die if you're dead
@@ -897,7 +918,7 @@ def loop_iteration():
     for b in bullets:
         b.move(elist)
         for e in elist:
-            if isColliding(b.xcor(), b.ycor(), e):
+            if (isColliding(b.xcor(), b.ycor(), e) and e.level <= 5) or (sqrt((round(abs(b.xcor()-e.xcor()))^2) + (round(abs(b.ycor()-e.ycor()))^2)) <= 10):
                 if e.takeDamage(b.damage): #True if it dies
                     if random.randint(0, 1) == 0:
                         p.health += 1
