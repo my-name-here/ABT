@@ -52,7 +52,7 @@ class player(Turtle):
         self.health = 20
         self.charge = 0
         self.chargespeed = 1
-        self.maxcharge = 5
+        self.maxcharge = 6
         self.points = 1000000
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 5 #Number of bosses defeated + 1
@@ -292,9 +292,17 @@ class enemy(Turtle):
         self.speed(0)
         self.pencolor(255, 0, 0)
         self.level = level
+        if self.level == 5:
+            self.shape('5enemy')
+        if self.level >= 6:
+            self.shape('circle')
+            self.flying = 30
         self.up()
-        self.health = level
-        self.turtlesize(self.health, self.health, 2)
+        self.health = min(level, 7)
+        if self.level <= 5:
+            self.turtlesize(self.health, self.health, 2)
+        else:
+            self.turtlesize(1, 1, 2)
         self.right(90)
         self.goto(random.randint(-300, 300), 300)
         self.going = 1
@@ -312,14 +320,31 @@ class enemy(Turtle):
             if self.ycor() < -300 or self.ycor() > 300:
                 self.delete()
             if self.level == 5:
-                self.shape('5enemy')
                 self.setx(self.xcor() + self.going)
                 if self.xcor() > 300:
                     self.setx(-300)
                 if self.xcor() < -300:
                     self.setx(300)
             elif self.level >= 6:
-                a = self.towards(p)
+                if self.flying > 1:
+                    a = self.towards(p)
+                    if self.heading()-a>=0:
+                        self.right(2)
+                    else:
+                        self.left(2)
+                    self.flying -= 1
+                elif self.flying == 1:
+                    self.flying = -50
+                elif self.flying == -1:
+                    self.flying = 100
+                elif self.flying < -1:
+                    a= 90
+                    if self.heading()-a>=0:
+                        self.right(2)
+                    else:
+                        self.left(2)
+                    self.flying += 1
+                self.forward(2)
             if not random.randint(0, 100):
                 self.shoot()
         else:
@@ -345,7 +370,8 @@ class enemy(Turtle):
     def takeDamage(self, damage = 1):
         self.health -= damage
         if self.health > 0:
-            self.turtlesize(ceil(self.health), ceil(self.health), 2)
+            if self.level <= 5:
+                self.turtlesize(ceil(self.health), ceil(self.health), 2)
             return False #You're alive
         else:
             self.delete() #Die if you're dead
@@ -951,7 +977,7 @@ garbage = []
 
 mov = 0
 distance = 990## 0
-kdistance = 19## 0
+kdistance = 0## 0
 bdistance = 0
 cdistance = 0
 cdistance = 0#This is the charge count
