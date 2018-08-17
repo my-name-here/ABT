@@ -3,7 +3,7 @@
 
 '''
 Update notes:
-
+-added Todolist
 -faster
 -shorter
 -3 new bosses
