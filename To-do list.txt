@@ -1,10 +1,10 @@
 Minibosses
 Bosses
-Better better enemies 
-Friendlys
+Better better enemies
 Cooldown??!.?
 Collision
 Player buffs
 Optimazation
+Fix pewpew
 Weapons: Wave Chain Cluster
 Balancing 
