@@ -3,36 +3,34 @@
 
 '''
 Update notes:
--added Todolist
+-Bill
 -faster
 -shorter
--now using the metric system
+-now with sys
 -3 new bosses
 -4 new weapons
--changed point economy
+-2 new weapons
 -buffed boss 1
--fixed boss 2 and also made him exist
 -not as random
+-added Todolist
 -60% less gluten
+-120% more gluten
+-changed tutorial
+-added sound files
 -added update notes
--Bill
+-fractional support
+-now with more files
 -3 new status effects
+-changed point economy
+-changed version number
+-price reduction (50% off)
 -Introduced status effects
+-now using the metric system
 -Fixed hitboxes for everyone
 -now with git (#notsponsored)
--changed tutorial
--price reduction (50% off)
--120% more gluten
--changed version number
--now with more files
--2 new weapons
+-sorted update notes by length
 -maybe buffed blaster 2.0 (we forgot)
--now with sys
--added sound files
--fractional support
--does anyone reade these?
--did anyone notice the typo?
--hello?
+-fixed boss 2 and also made him exist
 '''
 
 from tkinter import *
@@ -297,7 +295,7 @@ class enemy(Turtle):
             self.shape('5enemy')
         if self.level >= 6:
             self.shape('circle')
-            self.flying = 30
+            self.flying = 150
         self.up()
         self.health = min(level, 7)
         if self.level <= 5:
@@ -339,8 +337,7 @@ class enemy(Turtle):
                 elif self.flying == -1:
                     self.flying = 100
                 elif self.flying < -1:
-                    a= 90
-                    if self.heading()-a>=0:
+                    if 90<self.heading()<270:
                         self.right(2)
                     else:
                         self.left(2)
@@ -362,7 +359,8 @@ class enemy(Turtle):
     def takeDamage(self, damage = 1):
         self.health -= damage
         if self.health > 0:
-            self.turtlesize(ceil(self.health), ceil(self.health), 2)
+            if self.level <= 5:
+                self.turtlesize(ceil(self.health), ceil(self.health), 2)
             return False #You're alive
         else:
             self.delete() #Die if you're dead
@@ -412,8 +410,7 @@ class friendly(Turtle):
     def takeDamage(self, damage = 1):
         self.health -= damage
         if self.health > 0:
-            if self.level <= 5:
-                self.turtlesize(ceil(self.health), ceil(self.health), 2)
+            self.turtlesize(ceil(self.health), ceil(self.health), 2)
             return False #You're alive
         else:
             self.delete() #Die if you're dead
@@ -896,7 +893,7 @@ def loop_iteration():
     for b in bullets:
         b.move(elist)
         for e in elist:
-            if isColliding(b.xcor(), b.ycor(), e):
+            if (isColliding(b.xcor(), b.ycor(), e) and e.level <= 5) or (sqrt((round(abs(b.xcor()-e.xcor()))^2) + (round(abs(b.ycor()-e.ycor()))^2)) <= 10):
                 if e.takeDamage(b.damage): #True if it dies
                     if random.randint(0, 1) == 0:
                         p.health += 1
