@@ -163,11 +163,8 @@ class player(Turtle):
             self.weapons.append(weapon)
             self.points -= cost
 
-    def lightningbolt(self, pointa, pointb):
+    def lightningbolt(self, pointa, pointb, drawer):
         r = sqrt((pointa[0]-pointb[0])**2+(pointa[1]-pointb[1])**2)
-        drawer = Turtle()
-        drawer.pencolor(255, 255, 0)
-        drawer.hideturtle()
         drawer.up()
         drawer.goto(pointa)
         drawer.down()
@@ -192,7 +189,11 @@ class player(Turtle):
         del drawer
 
     def chaingo(self):
-        self.lightningbolt((0, 0), (300, 300))
+        drawer = Turtle()
+        drawer.pencolor(255, 255, 0)
+        drawer.hideturtle()
+        
+        self.lightningbolt((0, 0), (300, 300), drawer)
 
     def lazorgo(self):
         b = bullet(90, self.pos(), (0, 255, 0))
@@ -829,6 +830,9 @@ def first_loop():
                 main()
             else:
                 screen.update()
+
+def distance(pointa, pointb):
+    return sqrt((pointa[0]-pointb[0])**2+(pointa[1]-pointb[1])**2)
                 
 def stop():
     global stopped, root
