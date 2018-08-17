@@ -164,7 +164,7 @@ class player(Turtle):
             self.points -= cost
 
     def lightningbolt(self, pointa, pointb, drawer):
-        r = sqrt((pointa[0]-pointb[0])**2+(pointa[1]-pointb[1])**2)
+        r = objectdistance(pointa, pointb)
         drawer.up()
         drawer.goto(pointa)
         drawer.down()
@@ -189,9 +189,12 @@ class player(Turtle):
         del drawer
 
     def chaingo(self):
-        drawer = Turtle()
-        drawer.pencolor(255, 255, 0)
-        drawer.hideturtle()
+        mypos = (self.xcor(), self.ycor())
+        hitable = list(elist+flist)
+        withinrange = []
+        for thing in hitable:
+            if objectdistance(mypos, (thing.xcor(), thing.ycor())) < 30:
+                
         
         self.lightningbolt((0, 0), (300, 300), drawer)
 
@@ -831,7 +834,7 @@ def first_loop():
             else:
                 screen.update()
 
-def distance(pointa, pointb):
+def objectdistance(pointa, pointb):
     return sqrt((pointa[0]-pointb[0])**2+(pointa[1]-pointb[1])**2)
                 
 def stop():
