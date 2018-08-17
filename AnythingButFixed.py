@@ -219,9 +219,19 @@ class bullet(Turtle):
             if bestenemy != '':
                 x = self.heading()-90
                 self.seth(x+(self.towards(bestenemy)-90>x)-(self.towards(bestenemy)-90<x)+90)
-            self.forward(self.movespeed)
-        else:
-            self.forward(self.movespeed)
+        elif self.btype == 'phoming':
+            t = self.towards(p)
+            s = t-270
+            if s > 0:
+                self.left(1)
+            else:
+                self.right(1)
+            if abs(self.heading()-270) > 30:
+                if self.heading()-270 > 0:
+                    self.seth(300)
+                else:
+                    self.seth(240)
+        self.forward(self.movespeed)
         if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
             self.delete()
         if self.xcor() < -300 or self.xcor() > 300:
@@ -433,8 +443,8 @@ class Boss(Turtle):
         if self.health <= 0:
             self.delete()
                     
-    def shoot(self, direction = -90, debuffs = {}):
-        b = bullet(direction, self.pos(), debuffs = debuffs)
+    def shoot(self, direction = -90, debuffs = {}, btype = 'regular'):
+        b = bullet(direction, self.pos(), debuffs = debuffs, btype = btype)
         if 'freeze' in debuffs.keys():
             b.color((0, 255, 255))
         elif 'ion' in debuffs.keys():
@@ -529,14 +539,12 @@ class boss2(Boss):
         Turtle.__init__(self)
         self.up()
         self.seth(-90)
-        self.turtlesize(2, 2, 2)
+        self.turtlesize(5, 5, 2)
         self.pencolor((255, 0, 0))
-        self.shape('boss2')
         self.goto(0, 300)
-        self.health = 195#
+        self.health = 99
         self.showhealth()
         self.points = 100
-        self.spot = p.xcor()
         self.spraying = 0
         self.alternate = 0
         for i in range(200):
@@ -544,14 +552,16 @@ class boss2(Boss):
             screen.update()
 
     def move(self):
-        self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
+        self.setx(self.xcor() + 1)
+        if self.xcor() > 300:
+            self.setx(-300)
 
     def fire(self):
 ##        if abs(self.xcor()-self.spot) < 5:
 ##            if not random.randint(0, 100):
 ##                self.lazershot(self.pos(), -90)
 ##                self.spot = p.xcor()
-        alimit = self.health/20
+        alimit = self.health/10
         slimit = 100-self.health/4
         if self.health > 195:
             if not random.randint(0, 200):
@@ -562,10 +572,16 @@ class boss2(Boss):
             if self.spraying > 0:
                 if not self.alternate:
                     self.spraying -= 1
-                    if random.randint(0, 1):
-                        self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30})
+                    if self.health > 100:
+                        if random.randint(0, 1):
+                            self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30})
+                        else:
+                            self.shoot(direction = random.randint(-30, 30)-90)
                     else:
-                        self.shoot(direction = random.randint(-30, 30)-90)
+                        if random.randint(0, 1):
+                            self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30}, btype = 'phoming')
+                        else:
+                            self.shoot(direction = random.randint(-30, 30)-90, btype = 'phoming')
                 self.alternate += 1
                 if self.alternate >= alimit:
                     self.alternate = 0
@@ -604,27 +620,26 @@ class boss4(Boss):
         Turtle.__init__(self)
         self.up()
         self.seth(-90)
-        self.turtlesize(20, 20, 2)
-        self.n = 1
+        self.turtlesize(2, 2, 2)
         self.pencolor((255, 0, 0))
+        self.shape('boss2')
         self.goto(0, 300)
         self.health = 200
         self.showhealth()
         self.points = 100
+        self.spot = p.xcor()
         for i in range(200):
             self.forward(1)
             screen.update()
 
     def move(self):
-        self.setx(self.xcor() + self.n)
-        if abs(self.xcor()) > 300:
-            self.n *= -1
+        self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
 
     def fire(self):
-        if not random.randint(0, 200):
-            self.fireenemy(1, 4)
-        if not random.randint(0, 200):
-            self.spray(3, 1, 2)
+        if abs(self.xcor()-self.spot) < 5:
+            if not random.randint(0, 100):
+                self.lazershot(self.pos(), -90)
+                self.spot = p.xcor()
             
 def isColliding(x, y, turtle):
     '''Checks if x, y is inside the turtle'''
@@ -1004,7 +1019,9 @@ garbage = []
 
 mov = 0
 distance = 990## 0
-kdistance = 1## 0
+kdistance = 19## 0
+bdistance = 0
+cdistance = 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False
