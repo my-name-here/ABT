@@ -324,7 +324,10 @@ class enemy(Turtle):
             self.flying = 150
         self.up()
         self.health = level
-        self.turtlesize(self.health, self.health, 2)
+        if self.level <= 5:
+            self.turtlesize(self.health, self.health, 2)
+        else:
+            self.turtlesize(2, 2, 2)
         self.right(90)
         self.goto(random.randint(-300, 300), 300)
         self.going = 1
@@ -915,7 +918,7 @@ def loop_iteration():
     for b in bullets:
         b.move(elist)
         for e in elist:
-            if (isColliding(b.xcor(), b.ycor(), e) and e.level <= 5) or (sqrt((round(abs(b.xcor()-e.xcor()))^2) + (round(abs(b.ycor()-e.ycor()))^2)) <= 10):
+            if (isColliding(b.xcor(), b.ycor(), e) and e.level <= 5) or (distance(e.pos(), b.pos()) <= 10):
                 if e.takeDamage(b.damage): #True if it dies
                     if random.randint(0, 1) == 0:
                         p.health += 1
