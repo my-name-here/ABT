@@ -6,6 +6,7 @@ Update notes:
 -added Todolist
 -faster
 -shorter
+-now using the metric system
 -3 new bosses
 -4 new weapons
 -changed point economy
@@ -323,14 +324,55 @@ class enemy(Turtle):
             ebullets.append(b)
         return
 
-    def resetstuff(self):
-        for b in self.bullets:
-            b.takeOffScreen()
-        self.health = self.level
+    def takeDamage(self, damage = 1):
+        self.health -= damage
+        if self.health > 0:
+            self.turtlesize(ceil(self.health), ceil(self.health), 2)
+            return False #You're alive
+        else:
+            self.delete() #Die if you're dead
+            return True
+
+    def delete(self):
         self.hideturtle()
+        del self
+
+class friendly(Turtle):
+    def __init__(self):
+        Turtle.__init__(self)
+        self.speed(0)
+        self.pencolor(0, 200, 0)
+        self.up()
+        self.health = 4
         self.turtlesize(self.health, self.health, 2)
-        self.goto(random.randint(-300, 300), 300)
-        self.seth(-90)
+        if random.randint(0, 1):
+            self.goto(-300, random.randint(-200, 200))
+        else:
+            self.right(180)
+            self.goto(300, random.randint(-200, 200))
+        self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
+        flist.append(self)
+
+    def move(self, p):
+        if self.debuffs['ion'] > 0:
+            self.pencolor((min(255, int(200*self.debuffs['ion'])), min(255, int(200*self.debuffs['ion'])), 0))
+            self.debuffs['ion'] -= 0.25
+        else:
+            self.pencolor(0, 200, 0)
+        if self.debuffs['freeze'] <= 0:
+            self.forward(0.5)
+            if self.ycor() < -300 or self.ycor() > 300:
+                self.delete()
+        else:
+            self.debuffs['freeze'] -= 0.25
+            self.fillcolor((0, min(255, int(200*self.debuffs['freeze'])), min(255, int(200*self.debuffs['freeze']))))
+
+    def shoot(self):
+        if self.debuffs['ion'] <= 0:
+            self.going = self.going * -1
+            b = bullet(-90, self.pos(), (255, 0, 0))
+            ebullets.append(b)
+        return
 
     def takeDamage(self, damage = 1):
         self.health -= damage
@@ -791,12 +833,22 @@ def loop_iteration():
         p.setx(300)
     if random.randint(0, 100) == 100 and not fight:
         x = enemy(random.randint(p.level+1, p.level+2))
+    if random.randint(0, 200) == 100 and not fight:
+        x = friendly()
     for i in range(len(elist)):
         try:
             e = elist[i]
             e.move(p) #p is Player
             if elist[i].ycor() < -300:
                 e.delete()
+        except IndexError:
+            pass
+    for i in range(len(flist)):
+        try:
+            f = flist[i]
+            f.move(p) #p is Player
+            if flist[i].ycor() < -300:
+                f.delete()
         except IndexError:
             pass
                 
@@ -812,6 +864,17 @@ def loop_iteration():
                         e.debuffs[debuff] += b.debuffs[debuff]
                 b.collide()
                 p.points += b.damage
+                updatescoreboard()
+        for f in flist:
+            if isColliding(b.xcor(), b.ycor(), f):
+                if f.takeDamage(b.damage): #True if it dies
+                    if random.randint(0, 1) == 0:
+                        p.health -= 1
+                else:
+                    for debuff in b.debuffs:
+                        f.debuffs[debuff] += b.debuffs[debuff]
+                b.collide()
+                p.points -= b.damage
                 updatescoreboard()
 
     for b in ebullets:
@@ -889,6 +952,10 @@ def main():
         if not e.isvisible():
             garbage.append(e)
             elist.remove(e)
+    for f in flist:
+        if not f.isvisible():
+            garbage.append(f)
+            flist.remove(f)
     distance += 1
     if distance % 1000 == 0:
         distance = 0
@@ -932,6 +999,7 @@ p.back(260)
 bullets = [] #Holds the players bulletsd
 ebullets = [] #Holds the enemy bullets
 elist = [] #Holds all the enemies
+flist = [] #Holds all the friendly's
 garbage = []
 
 mov = 0
@@ -942,7 +1010,7 @@ fight = False
 stopped = False
 started = False
 scoreboard = Tk()
-root = 0
+root = 0 #measured in grams
 
 screen.listen()
 screen.onkeypress(movel, "Left")
