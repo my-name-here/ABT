@@ -6,6 +6,7 @@ Update notes:
 -Bill
 -faster
 -shorter
+-added bats
 -now with sys
 -3 new bosses
 -4 new weapons
@@ -321,16 +322,16 @@ class enemy(Turtle):
         self.speed(0)
         self.pencolor(255, 0, 0)
         self.level = level
-        if self.level == 5:
-            self.shape('5enemy')
-        if self.level >= 6:
-            self.shape('circle')
-            self.flying = 150
         self.up()
         self.health = level
-        if self.level <= 5:
+        if self.level < 5:
+            self.turtlesize(self.health, self.health, 2)
+        if self.level == 5:
+            self.shape('5enemy')
             self.turtlesize(self.health, self.health, 2)
         elif 6 <= self.level <= 7:
+            self.shape('circle')
+            self.flying = 150
             self.turtlesize(1, 1, 2)
         self.right(90)
         self.goto(random.randint(-300, 300), 300)
