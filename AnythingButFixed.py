@@ -53,8 +53,8 @@ class player(Turtle):
         self.weapon = 0
         self.health = 20
         self.charge = 0
-        self.chargespeed = 1
-        self.maxcharge = 5
+        self.chargespeed = 100
+        self.maxcharge = 500
         self.points = 1000000
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 5 #Number of bosses defeated
@@ -227,12 +227,12 @@ class player(Turtle):
         b.width(3)
         b.write("blap", font = ("Comic Sans MS", 20, "normal"))
         for e in elist:
-            if abs(e.xcor()-b.xcor()) < max(e.turtlesize()[0]*6-3, 0):
+            if abs(e.xcor()-b.xcor()) < e.getWidth():
                 if e.takeDamage():
-                    p.health += 1
+                    p.health += random.randint(0, 1)
                 p.points += 1
                 updatescoreboard()
-        if abs(boss.xcor()-b.xcor()) < max(boss.turtlesize()[0]*6-3, 0):
+        if type(boss) != int and abs(boss.xcor()-b.xcor()) < max(boss.turtlesize()[0]*6-3, 0):
             boss.takeDamage(1)
             p.points += 1
             updatescoreboard()
@@ -345,7 +345,10 @@ class enemy(Turtle):
         self.level = level
         self.up()
         self.health = level
-        self.turtlesize(self.health, self.health, 2)
+        if self.level <= 5:
+            self.turtlesize(self.health, self.health, 2)
+        elif 6 <= self.level <= 7:
+            self.turtlesize(1, 1, 2)
         self.right(90)
         self.goto(random.randint(-300, 300), 300)
         self.going = 1
@@ -369,13 +372,36 @@ class enemy(Turtle):
                     self.setx(-300)
                 if self.xcor() < -300:
                     self.setx(300)
-            elif self.level >= 6:
-                a = self.towards(p)
+            elif 6 <= self.level <= 7:
+                if self.flying > 1:
+                    a = self.towards(p)
+                    if self.heading()-a>=0:
+                        self.right(2)
+                    else:
+                        self.left(2)
+                    self.flying -= 1
+                elif self.flying == 1:
+                    self.flying = -50
+                elif self.flying == -1:
+                    self.flying = 100
+                elif self.flying < -1:
+                    if 90<self.heading()<270:
+                        self.right(2)
+                    else:
+                        self.left(2)
+                    self.flying += 1
+                self.forward(2)
             if not random.randint(0, 100):
                 self.shoot()
         else:
             self.debuffs['freeze'] -= 0.25
             self.fillcolor((0, min(255, int(200*self.debuffs['freeze'])), min(255, int(200*self.debuffs['freeze']))))
+
+    def getWidth(self):
+        if self.level <= 5:
+            return max(self.turtlesize()[0]*6-3, 0)
+        if 6 <= self.level <= 7:
+            return 20
 
     def shoot(self):
         if self.debuffs['ion'] <= 0:
@@ -813,6 +839,8 @@ def garbage_collect(bullets):
     '''Takes in turtles and deletes them'''
     for b in bullets:
         bullets.remove(b)
+        if type(b) == Boss:
+            boss = 0
         screen._turtles.remove(b)
 
 def start_tutorial():
@@ -918,7 +946,8 @@ def loop_iteration():
     for b in bullets:
         b.move(elist)
         for e in elist:
-            if isColliding(b.xcor(), b.ycor(), e):
+            if (isColliding(b.xcor(), b.ycor(), e) and e.level <= 5) or\
+            (objectdistance(e.pos(), b.pos()) <= 10 and 6 <= e.level <= 7):
                 if e.takeDamage(b.damage): #True if it dies
                     if random.randint(0, 1) == 0:
                         p.health += 1
@@ -1074,6 +1103,7 @@ stopped = False
 started = False
 scoreboard = Tk()
 root = 0 #measured in grams
+boss = 0
 
 screen.listen()
 screen.onkeypress(movel, "Left")
