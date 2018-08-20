@@ -3,36 +3,39 @@
 
 '''
 Update notes:
--Bill
+-added Todolist
 -faster
 -shorter
 -added bats
 -now with sys
+-added a list of shareholders
+-now using the metric system
 -3 new bosses
 -4 new weapons
--2 new weapons
--buffed boss 1
--not as random
--added Todolist
--60% less gluten
--120% more gluten
--changed tutorial
--added sound files
--added update notes
--fractional support
--now with more files
--3 new status effects
 -changed point economy
--changed version number
--price reduction (50% off)
+-buffed boss 1
+-fixed boss 2 and also made him exist
+-not as random
+-60% less gluten
+-added update notes
+-Bill
+-3 new status effects
 -Introduced status effects
--now using the metric system
 -Fixed hitboxes for everyone
 -now with git (#notsponsored)
--added a list of shareholders
--sorted update notes by length
+-changed tutorial
+-price reduction (50% off)
+-120% more gluten
+-changed version number
+-now with more files
+-2 new weapons
 -maybe buffed blaster 2.0 (we forgot)
--fixed boss 2 and also made him exist
+-now with sys
+-added sound files
+-fractional support
+-does anyone reade these?
+-did anyone notice the typo?
+-hello?
 '''
 
 from tkinter import *
@@ -52,11 +55,11 @@ class player(Turtle):
         self.weapon = 0
         self.health = 20
         self.charge = 0
-        self.chargespeed = 100
-        self.maxcharge = 500
-        self.points = 1000000
+        self.chargespeed = 1
+        self.maxcharge = 5
+        self.points = 0
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 3 #Number of bosses defeated + 1
+        self.level = 0 #Number of bosses defeated
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.up()
         self.pencolor(color)
@@ -140,7 +143,7 @@ class player(Turtle):
                 b.seth(90)
             elif self.weapons[self.weapon] == "chain" and self.charge >= 2:
                 self.charge -= 2
-                self.chaingo()
+                self.chaingo(elist+flist, (self.xcor(), self.ycor()))
         updatecharge()
         return
     
@@ -180,23 +183,43 @@ class player(Turtle):
             drawer.goto(pointer.xcor(), pointer.ycor())
             pointer.backward(x)
             pointer.left(90)
-        screen.update()
-        drawer.clear()
-        garbage.append(drawer)
+        
+        
         garbage.append(pointer)
         del pointer
-        del drawer
 
-    def chaingo(self):
-        mypos = (self.xcor(), self.ycor())
-        hitable = list(elist+flist)
-        withinrange = []
+    def chaingo(self, hitable, place, drawer = 0): #Doesn't hit bosses
+        if drawer == 0:
+            drawer = Turtle()
+            drawer.width(4)
+            drawer.pencolor(255, 255, 0)
+            drawer.hideturtle()
+        hitable = list(hitable)
+        closest = 0
+        c1osestd = float('inf')
         for thing in hitable:
-            if objectdistance(mypos, (thing.xcor(), thing.ycor())) < 30:
-                pass
-                
-        
-        self.lightningbolt((0, 0), (300, 300), drawer)
+            x = objectdistance(place, (thing.xcor(), thing.ycor()))
+            if x < 100 and x < c1osestd:
+                closest = thing
+                c1osestd = x
+        if closest != 0:
+            hitable.remove(closest)
+            self.lightningbolt(place, (closest.xcor(), closest.ycor()), drawer)
+            self.chaingo(hitable, (closest.xcor(), closest.ycor()), drawer)
+            if closest in flist:
+                if closest.takeDamage():
+                    p.health -= random.randint(0, 1)
+                p.points -= 1
+            else:
+                if closest.takeDamage():
+                    p.health += random.randint(0, 1)
+                p.points += 1
+            updatescoreboard()
+        else:
+            screen.update()
+            drawer.clear()
+            garbage.append(drawer)
+            del drawer
 
     def lazorgo(self):
         b = bullet(90, self.pos(), (0, 255, 0))
@@ -600,14 +623,12 @@ class boss2(Boss):
         Turtle.__init__(self)
         self.up()
         self.seth(-90)
-        self.turtlesize(2, 2, 2)
+        self.turtlesize(5, 5, 2)
         self.pencolor((255, 0, 0))
-        self.shape('boss2')
         self.goto(0, 300)
-        self.health = 195#
+        self.health = 99
         self.showhealth()
         self.points = 100
-        self.spot = p.xcor()
         self.spraying = 0
         self.alternate = 0
         for i in range(200):
@@ -615,14 +636,16 @@ class boss2(Boss):
             screen.update()
 
     def move(self):
-        self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
+        self.setx(self.xcor() + 1)
+        if self.xcor() > 300:
+            self.setx(-300)
 
     def fire(self):
 ##        if abs(self.xcor()-self.spot) < 5:
 ##            if not random.randint(0, 100):
 ##                self.lazershot(self.pos(), -90)
 ##                self.spot = p.xcor()
-        alimit = self.health/20
+        alimit = self.health/10
         slimit = 100-self.health/4
         if self.health > 195:
             if not random.randint(0, 200):
@@ -633,10 +656,16 @@ class boss2(Boss):
             if self.spraying > 0:
                 if not self.alternate:
                     self.spraying -= 1
-                    if random.randint(0, 1):
-                        self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30})
+                    if self.health > 100:
+                        if random.randint(0, 1):
+                            self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30})
+                        else:
+                            self.shoot(direction = random.randint(-30, 30)-90)
                     else:
-                        self.shoot(direction = random.randint(-30, 30)-90)
+                        if random.randint(0, 1):
+                            self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30}, btype = 'phoming')
+                        else:
+                            self.shoot(direction = random.randint(-30, 30)-90, btype = 'phoming')
                 self.alternate += 1
                 if self.alternate >= alimit:
                     self.alternate = 0
@@ -675,27 +704,26 @@ class boss4(Boss):
         Turtle.__init__(self)
         self.up()
         self.seth(-90)
-        self.turtlesize(20, 20, 2)
-        self.n = 1
+        self.turtlesize(2, 2, 2)
         self.pencolor((255, 0, 0))
+        self.shape('boss2')
         self.goto(0, 300)
         self.health = 200
         self.showhealth()
         self.points = 100
+        self.spot = p.xcor()
         for i in range(200):
             self.forward(1)
             screen.update()
 
     def move(self):
-        self.setx(self.xcor() + self.n)
-        if abs(self.xcor()) > 300:
-            self.n *= -1
+        self.setx(self.xcor() + 3*((self.xcor()<self.spot) - (self.xcor()>self.spot)))
 
     def fire(self):
-        if not random.randint(0, 200):
-            self.fireenemy(1, 4)
-        if not random.randint(0, 200):
-            self.spray(3, 1, 2)
+        if abs(self.xcor()-self.spot) < 5:
+            if not random.randint(0, 100):
+                self.lazershot(self.pos(), -90)
+                self.spot = p.xcor()
             
 def isColliding(x, y, turtle):
     '''Checks if x, y is inside the turtle'''
@@ -909,7 +937,7 @@ def loop_iteration():
         p.setx(300)
     if random.randint(0, 100) == 100 and not fight:
         x = enemy(random.randint(p.level+1, p.level+2))
-    if random.randint(0, 200) == 100 and not fight:
+    if p.level > 3 and random.randint(0, 200) == 100 and not fight:
         x = friendly()
     for i in range(len(elist)):
         try:
@@ -1080,8 +1108,8 @@ flist = [] #Holds all the friendly's
 garbage = []
 
 mov = 0
-distance = 990## 0
-kdistance = 1## 0
+distance = 0## 0
+kdistance = 0## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False
