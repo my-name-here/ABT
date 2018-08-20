@@ -49,14 +49,14 @@ import sys
 class player(Turtle):
     def __init__(self, weapons):
         Turtle.__init__(self)
-        self.weapons = weapons
-        self.hotbarweapons = weapons
+        self.weapons = list(weapons)
+        self.hotbarweapons = list(weapons)
         self.weapon = 0
         self.health = 20
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 0
+        self.points = 100000
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 0 #Number of bosses defeated
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
@@ -80,13 +80,13 @@ class player(Turtle):
 
     def fire(self):
         if len(bullets) < self.cap and self.debuffs['ion'] <= 0:
-            if self.weapons[self.weapon] == 'blaster':
+            if self.hotbarweapons[self.weapon] == 'blaster':
                 b = bullet(90, self.pos(), (0, 255, 0))
                 bullets.append(b)
                 b.damage = 1
                 b.speed = 1.5
                 b.moveToPos(p.pos())
-            elif self.weapons[self.weapon] == 'freeze' and self.charge >= 1:
+            elif self.hotbarweapons[self.weapon] == 'freeze' and self.charge >= 1:
                 b = bullet(90, self.pos(), (0, 255, 0), debuffs = {'freeze':15})
                 b.color((0, 255, 255))
                 bullets.append(b)
@@ -94,7 +94,7 @@ class player(Turtle):
                 b.damage = 1
                 b.speed = 1.5
                 b.moveToPos(p.pos())
-            elif self.weapons[self.weapon] == 'ion' and self.charge >= 1:
+            elif self.hotbarweapons[self.weapon] == 'ion' and self.charge >= 1:
                 b = bullet(90, self.pos(), (0, 255, 0), debuffs = {'ion':15})
                 b.color((255, 255, 0))
                 bullets.append(b)
@@ -102,37 +102,37 @@ class player(Turtle):
                 b.damage = 1
                 b.speed = 1.5
                 b.moveToPos(p.pos())
-            elif self.weapons[self.weapon] == 'spreadshot' and self.charge >= 2:
+            elif self.hotbarweapons[self.weapon] == 'spreadshot' and self.charge >= 2:
                 self.spray(3, 2, 1, 1.5)
-            elif self.weapons[self.weapon] == 'lazor' and self.charge >= 3:
+            elif self.hotbarweapons[self.weapon] == 'lazor' and self.charge >= 3:
                 self.charge -= 3
                 self.lazorgo()
-            elif self.weapons[self.weapon] == 'blaster_2.0' and self.charge >= 2:
+            elif self.hotbarweapons[self.weapon] == 'blaster_2.0' and self.charge >= 2:
                 b = bullet(90, p.pos(), (0, 255, 0))
                 bullets.append(b)
                 self.charge -= 2
                 b.damage = 2
                 b.speed = 1
                 b.moveToPos(p.pos())
-            elif self.weapons[self.weapon] == 'homing_missile' and self.charge >= 2:
+            elif self.hotbarweapons[self.weapon] == 'homing_missile' and self.charge >= 2:
                 b = bullet(90, p.pos(), (0, 255, 0), 1.5, 'homing')
                 bullets.append(b)
                 self.charge -= 2
                 b.damage = 1
                 b.moveToPos(p.pos())
                 b.seth(90)
-            elif self.weapons[self.weapon] == 'bombs' and self.charge >= 3:
+            elif self.hotbarweapons[self.weapon] == 'bombs' and self.charge >= 3:
                 self.charge -= 3
                 b = bullet(90, p.pos(), (0, 255, 0), 1.2, 'bomb')
                 b.damage = 1
                 bullets.append(b)
                 b.moveToPos(p.pos())
                 b.seth(90)
-            elif self.weapons[self.weapon] == 'pentashot' and self.charge >= 3:
+            elif self.hotbarweapons[self.weapon] == 'pentashot' and self.charge >= 3:
                 self.spray(5, 3, 1, 2.5, regular = 40)
-            elif self.weapons[self.weapon] == "machine_gun" and self.charge >= 4:
+            elif self.hotbarweapons[self.weapon] == "machine_gun" and self.charge >= 4:
                 self.spray(7, 4, 1, 2, spread = 20)
-            elif self.weapons[self.weapon] == "pewpew" and self.charge >= 1:
+            elif self.hotbarweapons[self.weapon] == "pewpew" and self.charge >= 1:
                 self.charge -= 1
                 b = bullet(90, p.pos(), (0, 255, 0), 2.8, 'bomb', 1/3)
                 b.damage = 1/3
@@ -140,8 +140,8 @@ class player(Turtle):
                 bullets.append(b)
                 b.moveToPos(p.pos())
                 b.seth(90)
-            elif self.weapons[self.weapon] == "chain" and self.charge >= 2:
-                self.charge -= 2
+            elif self.hotbarweapons[self.weapon] == "chain" and self.charge >= 4:
+                self.charge -= 4
                 self.chaingo(elist+flist, (self.xcor(), self.ycor()))
         updatecharge()
         return
@@ -154,7 +154,7 @@ class player(Turtle):
 
     def changeWeapon(self):
         self.weapon += 1
-        self.weapon %= len(self.weapons)
+        self.weapon %= len(self.hotbarweapons)
         updatescoreboard()
     
     def buy(self, button, weapon, cost):
@@ -162,6 +162,7 @@ class player(Turtle):
             button.forget()
             self.cap += 3
             self.weapons.append(weapon)
+            self.hotbarweapons.append(weapon)
             self.points -= cost
 
     def lightningbolt(self, pointa, pointb, drawer):
@@ -780,7 +781,7 @@ def updatescoreboard():
         score.pack()
         hitpoints = Label(scoreboard, text = 'health: ' + str(p.health), font = ('Monaco', 16))
         hitpoints.pack()
-        weaponl = Label(scoreboard, text = 'weapon: ' + str(p.weapons[p.weapon]), font = ('Monaco', 16))
+        weaponl = Label(scoreboard, text = 'weapon: ' + str(p.hotbarweapons[p.weapon]), font = ('Monaco', 16))
         weaponl.pack()
         battery = Label(scoreboard, text = 'charge: ' + str(int(p.charge)), font = ('Monaco', 16))
         battery.pack()
@@ -790,7 +791,7 @@ def updatescoreboard():
         score.pack()
         hitpoints = Label(scoreboard, text = 'health: ' + str(p.health), font = ('Monaco', 16))
         hitpoints.pack()
-        weaponl = Label(scoreboard, text = 'weapon: ' + str(p.weapons[p.weapon]), font = ('Monaco', 16))
+        weaponl = Label(scoreboard, text = 'weapon: ' + str(p.hotbarweapons[p.weapon]), font = ('Monaco', 16))
         weaponl.pack()
         battery = Label(scoreboard, text = 'charge: ' + str(int(p.charge)), font = ('Monaco', 16))
         battery.pack()
@@ -807,7 +808,7 @@ def updatecharge(): #Delete if this doesn't make things faster
         score.pack()
         hitpoints = Label(scoreboard, text = 'health: ' + str(p.health), font = ('Monaco', 16))
         hitpoints.pack()
-        weaponl = Label(scoreboard, text = 'weapon: ' + str(p.weapons[p.weapon]), font = ('Monaco', 16))
+        weaponl = Label(scoreboard, text = 'weapon: ' + str(p.hotbarweapons[p.weapon]), font = ('Monaco', 16))
         weaponl.pack()
         battery = Label(scoreboard, text = 'charge: ' + str(int(p.charge)), font = ('Monaco', 16))
         battery.pack()
@@ -840,11 +841,25 @@ def shop(root, k):#k???
         hb = Button(root, text = 'health + 1 [self explanatory] (20 pts)', command = healthboost)
         hb.pack()
     if p.level > 1:
-        hb = Button(root, text = 'increase charge speed [self explanatory] (20 pts)', command = csboost)
-        hb.pack()
+        cb = Button(root, text = 'increase charge speed [self explanatory] (20 pts)', command = csboost)
+        cb.pack()
+    hb = Button(root, text = 'Change weapon loadout', command = lambda: loadout(k))
+    hb.pack()
 
-def changewaepons(root, k, weapons):
-    pass
+def changewaepons(k, weapons):
+    global root
+    newhotbarweapons = []
+    for w in range(len(weapons)):
+        if weapons[w].get():
+            newhotbarweapons.append(p.weapons[w])
+    if len(newhotbarweapons) == 0:
+        newhotbarweapons.append('blaster')
+    p.hotbarweapons = newhotbarweapons
+    p.weapon = 0
+    root.destroy()
+    root = Tk()
+    shop(root, k)
+    updatescoreboard
 
 def loadout(k):
     global root
@@ -853,14 +868,14 @@ def loadout(k):
 
     weapons = []
     for w in p.weapons:
-        var = IntVar()
+        var = IntVar(root)
         var.set(int(w in p.hotbarweapons))
 
-        c = Checkbutton(master, text=w, variable=var)
+        c = Checkbutton(root, text=w, variable=var)
         c.pack()
         weapons.append(var)
 
-    back = Button(root, text = 'SAVE AND EXIT', command = lambda: changewaepons(root, k, weapons))
+    back = Button(root, text = 'SAVE AND EXIT', command = lambda: changewaepons(k, weapons))
     back.pack()
         
         
@@ -901,7 +916,7 @@ def start_tutorial():
     turtor.seth(-90)
     turtor.shapesize(2)
     turtor.shape('turtle')
-    turtor.pencolor('green')
+    turtor.pencolor((0, 255, 0))
     turtor.goto(20, 20)
     turtor.write('Hi there', font=("Ariel", 10, "normal"))
     turtor.goto(0, 0)
@@ -1023,9 +1038,7 @@ def loop_iteration():
         b.move(elist)
         if isColliding(b.xcor(), b.ycor(), p):
             p.health -= 1
-            print(b.debuffs)
             for debuff in b.debuffs:
-                print(debuff)
                 p.debuffs[debuff] += b.debuffs[debuff]
             b.delete()
             updatescoreboard()
@@ -1127,7 +1140,7 @@ def main():
 colormode(255)
 color = (0, 255, 0)
 
-p = player(['blaster', 'chain'])
+p = player(['blaster'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
