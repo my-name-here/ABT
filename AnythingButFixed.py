@@ -836,7 +836,7 @@ def shop(root, k):#k???
 def changewaepons(root, k, weapons):
     pass
 
-def loadout(root, k):
+def loadout(k):
     global root
     root.destroy()
     root = Tk()
@@ -844,8 +844,9 @@ def loadout(root, k):
     weapons = []
     for w in p.weapons:
         var = IntVar()
+        var.set(int(w in p.hotbarweapons))
 
-        c = Checkbutton(master, text="Expand", variable=var)
+        c = Checkbutton(master, text=w, variable=var)
         c.pack()
         weapons.append(var)
 
