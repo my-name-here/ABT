@@ -3,35 +3,37 @@
 
 '''
 Update notes:
--Bill
+-added Todolist
 -faster
 -shorter
--now with sys
+-added a list of shareholders
+-now using the metric system
 -3 new bosses
 -4 new weapons
--2 new weapons
--buffed boss 1
--not as random
--added Todolist
--60% less gluten
--120% more gluten
--changed tutorial
--added sound files
--added update notes
--fractional support
--now with more files
--3 new status effects
 -changed point economy
--changed version number
--price reduction (50% off)
+-buffed boss 1
+-fixed boss 2 and also made him exist
+-not as random
+-60% less gluten
+-added update notes
+-Bill
+-3 new status effects
 -Introduced status effects
--now using the metric system
 -Fixed hitboxes for everyone
 -now with git (#notsponsored)
--added a list of shareholders
--sorted update notes by length
+-changed tutorial
+-price reduction (50% off)
+-120% more gluten
+-changed version number
+-now with more files
+-2 new weapons
 -maybe buffed blaster 2.0 (we forgot)
--fixed boss 2 and also made him exist
+-now with sys
+-added sound files
+-fractional support
+-does anyone reade these?
+-did anyone notice the typo?
+-hello?
 '''
 
 from tkinter import *
@@ -55,7 +57,7 @@ class player(Turtle):
         self.maxcharge = 5
         self.points = 1000000
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 5 #Number of bosses defeated + 1
+        self.level = 5 #Number of bosses defeated
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.up()
         self.pencolor(color)
@@ -139,7 +141,7 @@ class player(Turtle):
                 b.seth(90)
             elif self.weapons[self.weapon] == "chain" and self.charge >= 2:
                 self.charge -= 2
-                self.chaingo()
+                self.chaingo(elist+flist, (self.xcor(), self.ycor()))
         updatecharge()
         return
     
@@ -179,22 +181,43 @@ class player(Turtle):
             drawer.goto(pointer.xcor(), pointer.ycor())
             pointer.backward(x)
             pointer.left(90)
-        screen.update()
-        drawer.clear()
-        garbage.append(drawer)
+        
+        
         garbage.append(pointer)
         del pointer
-        del drawer
 
-    def chaingo(self):
-        mypos = (self.xcor(), self.ycor())
-        hitable = list(elist+flist)
-        withinrange = []
+    def chaingo(self, hitable, place, drawer = 0): #Doesn't hit bosses
+        if drawer == 0:
+            drawer = Turtle()
+            drawer.width(4)
+            drawer.pencolor(255, 255, 0)
+            drawer.hideturtle()
+        hitable = list(hitable)
+        closest = 0
+        c1osestd = float('inf')
         for thing in hitable:
-            if objectdistance(mypos, (thing.xcor(), thing.ycor())) < 30:
-                
-        
-        self.lightningbolt((0, 0), (300, 300), drawer)
+            x = objectdistance(place, (thing.xcor(), thing.ycor()))
+            if x < 100 and x < c1osestd:
+                closest = thing
+                c1osestd = x
+        if closest != 0:
+            hitable.remove(closest)
+            self.lightningbolt(place, (closest.xcor(), closest.ycor()), drawer)
+            self.chaingo(hitable, (closest.xcor(), closest.ycor()), drawer)
+            if closest in flist:
+                if closest.takeDamage():
+                    p.health -= random.randint(0, 1)
+                p.points -= 1
+            else:
+                if closest.takeDamage():
+                    p.health += random.randint(0, 1)
+                p.points += 1
+            updatescoreboard()
+        else:
+            screen.update()
+            drawer.clear()
+            garbage.append(drawer)
+            del drawer
 
     def lazorgo(self):
         b = bullet(90, self.pos(), (0, 255, 0))
@@ -320,11 +343,6 @@ class enemy(Turtle):
         self.speed(0)
         self.pencolor(255, 0, 0)
         self.level = level
-        if self.level == 5:
-            self.shape('5enemy')
-        if self.level >= 6:
-            self.shape('circle')
-            self.flying = 150
         self.up()
         self.health = level
         self.turtlesize(self.health, self.health, 2)
@@ -352,24 +370,7 @@ class enemy(Turtle):
                 if self.xcor() < -300:
                     self.setx(300)
             elif self.level >= 6:
-                if self.flying > 1:
-                    a = self.towards(p)
-                    if self.heading()-a>=0:
-                        self.right(2)
-                    else:
-                        self.left(2)
-                    self.flying -= 1
-                elif self.flying == 1:
-                    self.flying = -50
-                elif self.flying == -1:
-                    self.flying = 100
-                elif self.flying < -1:
-                    if 90<self.heading()<270:
-                        self.right(2)
-                    else:
-                        self.left(2)
-                    self.flying += 1
-                self.forward(2)
+                a = self.towards(p)
             if not random.randint(0, 100):
                 self.shoot()
         else:
@@ -386,8 +387,7 @@ class enemy(Turtle):
     def takeDamage(self, damage = 1):
         self.health -= damage
         if self.health > 0:
-            if self.level <= 5:
-                self.turtlesize(ceil(self.health), ceil(self.health), 2)
+            self.turtlesize(ceil(self.health), ceil(self.health), 2)
             return False #You're alive
         else:
             self.delete() #Die if you're dead
@@ -918,7 +918,7 @@ def loop_iteration():
     for b in bullets:
         b.move(elist)
         for e in elist:
-            if (isColliding(b.xcor(), b.ycor(), e) and e.level <= 5) or (sqrt((round(abs(b.xcor()-e.xcor()))^2) + (round(abs(b.ycor()-e.ycor()))^2)) <= 10):
+            if isColliding(b.xcor(), b.ycor(), e):
                 if e.takeDamage(b.damage): #True if it dies
                     if random.randint(0, 1) == 0:
                         p.health += 1

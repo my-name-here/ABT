@@ -8,4 +8,5 @@ Player buffs
 Optimazation
 Fix pewpew
 Weapons: Wave Chain Cluster
-Balancing 
+Balancing
+Name the bosses
