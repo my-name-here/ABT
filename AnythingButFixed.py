@@ -3,37 +3,34 @@
 
 '''
 Update notes:
--added Todolist
+-Bill
 -faster
 -shorter
--added a list of shareholders
--now using the metric system
+-now with sys
 -3 new bosses
 -4 new weapons
--changed point economy
+-2 new weapons
 -buffed boss 1
--fixed boss 2 and also made him exist
 -not as random
+-added Todolist
 -60% less gluten
+-120% more gluten
+-changed tutorial
+-added sound files
 -added update notes
--Bill
+-fractional support
+-now with more files
 -3 new status effects
+-changed point economy
+-changed version number
+-price reduction (50% off)
 -Introduced status effects
+-now using the metric system
 -Fixed hitboxes for everyone
 -now with git (#notsponsored)
--changed tutorial
--price reduction (50% off)
--120% more gluten
--changed version number
--now with more files
--2 new weapons
+-sorted update notes by length
 -maybe buffed blaster 2.0 (we forgot)
--now with sys
--added sound files
--fractional support
--does anyone reade these?
--did anyone notice the typo?
--hello?
+-fixed boss 2 and also made him exist
 '''
 
 from tkinter import *
@@ -343,6 +340,11 @@ class enemy(Turtle):
         self.speed(0)
         self.pencolor(255, 0, 0)
         self.level = level
+        if self.level == 5:
+            self.shape('5enemy')
+        elif self.level >= 6:
+            self.shape('circle')
+            self.flying = 150
         self.up()
         self.health = level
         if self.level <= 5:
@@ -452,6 +454,8 @@ class friendly(Turtle):
         else:
             self.debuffs['freeze'] -= 0.25
             self.fillcolor((0, min(255, int(200*self.debuffs['freeze'])), min(255, int(200*self.debuffs['freeze']))))
+        if self.xcor() > 310 or self.xcor() < -310:
+            self.delete()
 
     def shoot(self):
         if self.debuffs['ion'] <= 0:
