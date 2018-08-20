@@ -7,6 +7,6 @@ Collision
 Player buffs
 Optimazation
 Fix pewpew
-Weapons: Wave Cluster
+Weapons: Wave Cluster Minelayer
 Balancing
 Name the bosses

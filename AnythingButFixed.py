@@ -787,7 +787,7 @@ def updatecharge(): #Delete if this doesn't make things faster
         battery = Label(scoreboard, text = 'charge: ' + str(int(p.charge)), font = ('Monaco', 16))
         battery.pack()
 
-def shop(root, k):
+def shop(root, k):#k???
     global weapons
     c = Canvas(root)
     c.pack()
@@ -817,6 +817,9 @@ def shop(root, k):
     if p.level > 1:
         hb = Button(root, text = 'increase charge speed [self explanatory] (20 pts)', command = csboost)
         hb.pack()
+
+def loadout(root, k):
+    root
         
 def healthboost():
     global p
@@ -1118,7 +1121,6 @@ screen.onkey(p.changeWeapon, "w")
 screen.onkey(p.changeWeapon, "W")
 screen.onkeypress(p.fire, "space")
 screen.title('Anything but That')
-os.system('xset r off')
 
 score = Label(scoreboard, text = 'points: ' + str(p.points), font = ('Monaco', 16))
 score.pack()
