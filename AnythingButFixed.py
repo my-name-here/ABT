@@ -60,6 +60,7 @@ class player(Turtle):
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 0 #Number of bosses defeated
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
+        self.bulletprice = {'blaster': 1, 'spreadshot': 3, 'lazor': 0, 'pewpew': 1, 'blaster_2.0': 1, 'freeze': 1, 'ion': 1, 'chain': 0, 'pentashot': 5, 'machine_gun': 7, 'homing_missile': 1, 'bombs': 1} #This contains the amount of bullets used for each weapon
         self.up()
         self.pencolor(color)
 
@@ -79,7 +80,7 @@ class player(Turtle):
                 b.seth(b.direction)
 
     def fire(self):
-        if len(bullets) < self.cap and self.debuffs['ion'] <= 0:
+        if len(bullets)+self.bulletprice[self.hotbarweapons[self.weapon]] <= self.cap and self.debuffs['ion'] <= 0:
             if self.hotbarweapons[self.weapon] == 'blaster':
                 b = bullet(90, self.pos(), (0, 255, 0))
                 bullets.append(b)
@@ -1137,7 +1138,7 @@ def main():
 colormode(255)
 color = (0, 255, 0)
 
-p = player(['blaster', 'chain'])
+p = player(['blaster', 'pentashot'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
