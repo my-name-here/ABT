@@ -1138,7 +1138,7 @@ def main():
 colormode(255)
 color = (0, 255, 0)
 
-p = player(['blaster', 'pentashot'])
+p = player(['blaster'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
