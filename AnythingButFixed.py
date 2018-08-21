@@ -234,7 +234,7 @@ class player(Turtle):
                     p.health += random.randint(0, 1)
                 p.points += 1
                 updatescoreboard()
-        if type(boss) != int and abs(boss.xcor()-b.xcor()) < max(boss.turtlesize()[0]*6-3, 0):
+        if fight and abs(boss.xcor()-b.xcor()) < max(boss.turtlesize()[0]*6-3, 0):
             boss.takeDamage(1)
             p.points += 1
             updatescoreboard()
