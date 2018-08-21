@@ -6,15 +6,16 @@ Update notes:
 -Bill
 -faster
 -shorter
+-now without sys
 -added bats
 -now with sys
+-added a list of shareholders
 -3 new bosses
 -4 new weapons
 -2 new weapons
 -buffed boss 1
 -not as random
 -added Todolist
--now without sys
 -60% less gluten
 -120% more gluten
 -changed tutorial
@@ -30,7 +31,6 @@ Update notes:
 -now using the metric system
 -Fixed hitboxes for everyone
 -now with git (#notsponsored)
--added a list of shareholders
 -sorted update notes by length
 -maybe buffed blaster 2.0 (we forgot)
 -fixed boss 2 and also made him exist
@@ -142,7 +142,10 @@ class player(Turtle):
                 b.seth(90)
             elif self.hotbarweapons[self.weapon] == "chain" and self.charge >= 4:
                 self.charge -= 4
-                self.chaingo(elist+flist, (self.xcor(), self.ycor()))
+                x = elist+flist
+                if fight:
+                    x.append(boss)
+                self.chaingo(x, (self.xcor(), self.ycor()))
         updatecharge()
         return
     
@@ -188,12 +191,14 @@ class player(Turtle):
         garbage.append(pointer)
         del pointer
 
-    def chaingo(self, hitable, place, drawer = 0): #Doesn't hit bosses
+    def chaingo(self, hitable, place, drawer = 0):
+        ion = False
         if drawer == 0:
             drawer = Turtle()
             drawer.width(4)
             drawer.pencolor(255, 255, 0)
             drawer.hideturtle()
+            ion = True
         hitable = list(hitable)
         closest = 0
         c1osestd = float('inf')
@@ -206,6 +211,8 @@ class player(Turtle):
             hitable.remove(closest)
             self.lightningbolt(place, (closest.xcor(), closest.ycor()), drawer)
             self.chaingo(hitable, (closest.xcor(), closest.ycor()), drawer)
+            if ion:
+                closest.debuffs['ion'] += 15
             if closest in flist:
                 if closest.takeDamage():
                     p.health -= random.randint(0, 1)
@@ -246,7 +253,7 @@ class player(Turtle):
         return
             
 class bullet(Turtle):
-    def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, btype = 'regular', explosion = 1, debuffs = {}, torus = False):
+    def __init__(self, direction, pos, color = (255, 0, 0), sp = 1.5, btype = 'regular', explosion = 1, debuffs = {}):
         Turtle.__init__(self)
         self.movespeed = sp #How fast you are (higher is faster)
         self.damage = 0 #How much damage a bullet deals
@@ -261,7 +268,6 @@ class bullet(Turtle):
         self.direction = direction
         self.seth(self.direction)
         self.explosion = explosion
-        self.torus = torus
 
     def start(self):
         self.up()
@@ -282,26 +288,13 @@ class bullet(Turtle):
             if bestenemy != '':
                 x = self.heading()-90
                 self.seth(x+(self.towards(bestenemy)-90>x)-(self.towards(bestenemy)-90<x)+90)
-        elif self.btype == 'phoming':
-            t = self.towards(p)
-            s = t-270
-            if s > 0:
-                self.left(1)
-            else:
-                self.right(1)
-            if abs(self.heading()-270) > 30:
-                if self.heading()-270 > 0:
-                    self.seth(300)
-                else:
-                    self.seth(240)
-        self.forward(self.movespeed)
+            self.forward(self.movespeed)
+        else:
+            self.forward(self.movespeed)
         if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
             self.delete()
         if self.xcor() < -300 or self.xcor() > 300:
-            if self.torus:
-                self.setx(round(self.xcor()*-0.99))
-            else:
-                self.delete()
+            self.delete()
 
     def moveToPos(self, pos):
         self.goto(pos)
@@ -532,7 +525,7 @@ class Boss(Turtle):
         self.keeper.left(90)
         self.keeper.end_fill()
 
-    def takeDamage(self, damage):
+    def takeDamage(self, damage = 1):
         self.keeper.clear()
         self.health -= damage
         self.keeper.begin_fill()
@@ -548,8 +541,8 @@ class Boss(Turtle):
         if self.health <= 0:
             self.delete()
                     
-    def shoot(self, direction = -90, debuffs = {}, btype = 'regular', torus = False):
-        b = bullet(direction, self.pos(), debuffs = debuffs, btype = btype, torus = torus)
+    def shoot(self, direction = -90, debuffs = {}):
+        b = bullet(direction, self.pos(), debuffs = debuffs)
         if 'freeze' in debuffs.keys():
             b.color((0, 255, 255))
         elif 'ion' in debuffs.keys():
@@ -633,10 +626,10 @@ class boss1(Boss):
             self.n *= -1
 
     def fire(self):
-        if not random.randint(0, 100):
+        if not random.randint(0, 200):
             self.fireenemy(1, 4)
-        if not random.randint(0, 100):
-            self.spray(5, 1, 2)
+        if not random.randint(0, 200):
+            self.spray(3, 1, 2)
 
 class boss2(Boss):
     def __init__(self):
@@ -647,7 +640,7 @@ class boss2(Boss):
         self.turtlesize(5, 5, 2)
         self.pencolor((255, 0, 0))
         self.goto(0, 300)
-        self.health = 200
+        self.health = 99
         self.showhealth()
         self.points = 100
         self.spraying = 0
@@ -662,6 +655,10 @@ class boss2(Boss):
             self.setx(-300)
 
     def fire(self):
+##        if abs(self.xcor()-self.spot) < 5:
+##            if not random.randint(0, 100):
+##                self.lazershot(self.pos(), -90)
+##                self.spot = p.xcor()
         alimit = self.health/10
         slimit = 100-self.health/4
         if self.health > 195:
@@ -675,14 +672,14 @@ class boss2(Boss):
                     self.spraying -= 1
                     if self.health > 100:
                         if random.randint(0, 1):
-                            self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30}, torus = True)
+                            self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30})
                         else:
-                            self.shoot(direction = random.randint(-30, 30)-90, torus = True)
+                            self.shoot(direction = random.randint(-30, 30)-90)
                     else:
                         if random.randint(0, 1):
-                            self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30}, btype = 'phoming', torus = True)
+                            self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30}, btype = 'phoming')
                         else:
-                            self.shoot(direction = random.randint(-30, 30)-90, btype = 'phoming', torus = True)
+                            self.shoot(direction = random.randint(-30, 30)-90, btype = 'phoming')
                 self.alternate += 1
                 if self.alternate >= alimit:
                     self.alternate = 0
@@ -1140,7 +1137,7 @@ def main():
 colormode(255)
 color = (0, 255, 0)
 
-p = player(['blaster'])
+p = player(['blaster', 'chain'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
@@ -1158,8 +1155,8 @@ flist = [] #Holds all the friendly's
 garbage = []
 
 mov = 0
-distance = 990## 0
-kdistance = 19## 0
+distance = 0## 0
+kdistance = 0## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False

@@ -1,4 +1,5 @@
 Press space to get to the next message:::Press space to shoot.:::Press w to cycle through your weapons.:::You can press e to pause the game.
 It will also open the shop.:::I'll be in there to sell you weapons for the
 points you get from hitting enemies.:::When you kill an enemy you may be able to use
-their scrap to fix your ship and get more health.:::Here's a blaster. Use it safely.:::I almost forgot, arrow keys to move.:::Bye bye
+their scrap to fix your ship and get more health.:::Friendlys are green and make you lose
+points when hit and health when killed.:::Here's a blaster. Use it safely.:::I almost forgot, arrow keys to move.:::Use e to skip the tutorial in the future:::Bye bye

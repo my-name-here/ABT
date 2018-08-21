@@ -1,12 +1,11 @@
 Minibosses
 Bosses
-Swap in weapons
 Better better enemies
 Cooldown??!.?
 Collision
 Player buffs
 Optimazation
 Fix pewpew
-Weapons: Wave Cluster Minelayer
+Weapons: Wave Cluster Minelayer Spear
 Balancing
 Name the bosses
