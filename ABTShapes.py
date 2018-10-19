@@ -3,6 +3,7 @@ from tkinter import *
 import random
 
 #x = Turtle()
+#x.hideturtle()
 #y = x.getscreen()
 #y.colormode(255)
 
@@ -37,7 +38,30 @@ def registerABTShapes(screen):
     fe = i.get_poly()
     i.clear()
     screen.register_shape('5enemy', fe)
-    
+    ''
+    i.up()
+    #i.goto(0, 0)
+    i.clear()
+    i.begin_poly()
+    i.seth(0)
+    radius = 5
+    i.right(90)
+    i.forward(radius)
+    i.down()
+    i.left(90)
+    i.circle(radius)
+    i.right(90)
+    i.backward(1)
+    i.left(90)
+    i.circle(radius-1)
+    i.up()
+    i.goto(0,0)
+    i.down()
+    i.end_poly()
+    c = i.get_poly()
+    screen.register_shape('Circle', c)
+    i.clear()
+    ''
     i.begin_poly()
     i.seth(0)
     i.begin_fill()

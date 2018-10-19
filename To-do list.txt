@@ -11,3 +11,6 @@ Balancing
 Name the bosses
 Bullet phasing using lines
 Fix sliding glitch (Only on Peter’s computer)
+Get rid of root.after
+Fix the line
+Stop Peter from adding to this list

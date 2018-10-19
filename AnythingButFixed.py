@@ -337,6 +337,7 @@ class explosion(Turtle):
             self.pencolor((int(self.pencolor()[0]/self.fade), int(self.pencolor()[1]/self.fade), int(self.pencolor()[2]/self.fade)))
             scoreboard.after(50, lambda: self.explode(radius+4, damagedenemies))
         else:
+            print('hi')
             garbage.append(self)
             self.hideturtle()
             del self
