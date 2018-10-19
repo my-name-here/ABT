@@ -903,13 +903,11 @@ def garbage_collect(turtles):
     '''Takes in turtles and deletes them'''
     for b in turtles:
         turtles.remove(b)
-        if type(b) == Boss:
-            boss = 0
         if not(str(type(b)) == "<class '__main__.explosion'>" and b.framesleft > 0):
             screen._turtles.remove(b)
         else:
             b.framesleft -= 1
-            turtles.append(b) #This puts the explosion back in the list so it can be removed next time
+            turtles.append(b) #This puts the explosion back in the list so it can be removed next
 
 def start_tutorial():
     screen.onkey(lambda: speech(turtor, []), "e")
