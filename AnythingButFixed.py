@@ -60,7 +60,12 @@ class player(Turtle):
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 0 #Number of bosses defeated; should be 0
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
-        self.bulletprice = {'blaster': 1, 'spreadshot': 3, 'lazor': 0, 'pewpew': 1, 'blaster_2.0': 1, 'freeze': 1, 'ion': 1, 'chain': 0, 'pentashot': 5, 'machine_gun': 7, 'homing_missile': 1, 'bombs': 1} #This contains the amount of bullets used for each weapon
+        self.bulletprice = {'blaster': 1, 'spreadshot': 3,
+                            'lazor': 0, 'pewpew': 1,
+                            'blaster_2.0': 1, 'freeze': 1,
+                            'ion': 1, 'chain': 0, 'pentashot': 5,
+                            'machine_gun': 7, 'homing_missile': 1,
+                            'bombs': 1} #This contains the amount of bullets used for each weapon
         self.up()
         self.pencolor(color)
 
@@ -1011,29 +1016,30 @@ def loop_iteration():
                 
     for b in bullets:
         b.move(elist)
-        for e in elist:
-            if (isColliding(b.xcor(), b.ycor(), e) and e.level <= 5) or\
-            (objectdistance(e.pos(), b.pos()) <= 10 and 6 <= e.level <= 7):
-                if e.takeDamage(b.damage): #True if it dies
-                    if random.randint(0, 1) == 0:
-                        p.health += 1
-                else:
-                    for debuff in b.debuffs:
-                        e.debuffs[debuff] += b.debuffs[debuff]
-                b.collide()
-                p.points += b.damage
-                updatescoreboard()
-        for f in flist:
-            if isColliding(b.xcor(), b.ycor(), f):
-                if f.takeDamage(b.damage): #True if it dies
-                    if random.randint(0, 1) == 0:
-                        p.health -= 1
-                else:
-                    for debuff in b.debuffs:
-                        f.debuffs[debuff] += b.debuffs[debuff]
-                b.collide()
-                p.points -= b.damage
-                updatescoreboard()
+        if type(b) == bullet: #This should be removed if nothing adds nonbullet things to bullet
+            for e in elist:
+                if (isColliding(b.xcor(), b.ycor(), e) and e.level <= 5) or\
+                (objectdistance(e.pos(), b.pos()) <= 13 and 6 <= e.level <= 7):
+                    if e.takeDamage(b.damage): #True if it dies
+                        if random.randint(0, 1) == 0:
+                            p.health += 1
+                    else:
+                        for debuff in b.debuffs:
+                            e.debuffs[debuff] += b.debuffs[debuff]
+                    b.collide()
+                    p.points += b.damage
+                    updatescoreboard()
+            for f in flist:
+                if isColliding(b.xcor(), b.ycor(), f):
+                    if f.takeDamage(b.damage): #True if it dies
+                        if random.randint(0, 1) == 0:
+                            p.health -= 1
+                    else:
+                        for debuff in b.debuffs:
+                            f.debuffs[debuff] += b.debuffs[debuff]
+                    b.collide()
+                    p.points -= b.damage
+                    updatescoreboard()
 
     for b in ebullets:
         b.move(elist)
