@@ -6,16 +6,15 @@ Update notes:
 -Bill
 -faster
 -shorter
--now without sys
 -added bats
 -now with sys
--added a list of shareholders
 -3 new bosses
 -4 new weapons
 -2 new weapons
 -buffed boss 1
 -not as random
 -added Todolist
+-now without sys
 -60% less gluten
 -120% more gluten
 -changed tutorial
@@ -30,6 +29,7 @@ Update notes:
 -Introduced status effects
 -now using the metric system
 -Fixed hitboxes for everyone
+-added a list of shareholders
 -now with git (#notsponsored)
 -sorted update notes by length
 -maybe buffed blaster 2.0 (we forgot)
@@ -627,10 +627,10 @@ class boss1(Boss):
             self.n *= -1
 
     def fire(self):
-        if not random.randint(0, 200):
+        if not random.randint(0, 100):
             self.fireenemy(1, 4)
-        if not random.randint(0, 200):
-            self.spray(3, 1, 2)
+        if not random.randint(0, 100):
+            self.spray(5, 1, 2)
 
 class boss2(Boss):
     def __init__(self):
