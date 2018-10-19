@@ -4,36 +4,37 @@
 '''
 Update notes:
 -Bill
--faster
--shorter
--added bats
--now with sys
+-Faster
+-Shorter
+-Added bats
+-Now with sys
 -3 new bosses
 -4 new weapons
 -2 new weapons
--buffed boss 1
--not as random
--added Todolist
--now without sys
+-Buffed boss 1
+-Not as random
+-Added Todolist
+-Now without sys
 -60% less gluten
 -120% more gluten
--changed tutorial
--added sound files
--added update notes
--fractional support
--now with more files
+-Changed tutorial
+-Added sound files
+-Added update notes
+-Fractional support
+-Now with more files
 -3 new status effects
--changed point economy
--changed version number
--price reduction (50% off)
+-Changed point economy
+-Changed version number
+-Price reduction (50% off)
 -Introduced status effects
--now using the metric system
+-Now using the metric system
 -Fixed hitboxes for everyone
--added a list of shareholders
--now with git (#notsponsored)
--sorted update notes by length
--maybe buffed blaster 2.0 (we forgot)
--fixed boss 2 and also made him exist
+-Added a list of shareholders
+-Now with git (#notsponsored)
+-Sorted update notes by length
+-Maybe buffed blaster 2.0 (we forgot)
+-Fixed boss 2 and also made him exist
+-Tricked milo into being part of the development team
 '''
 
 from tkinter import *
@@ -56,13 +57,9 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 100000
+        self.points = 0
         self.cap = 10 #Maximum number of bullets on the screen
-<<<<<<< HEAD
-        self.level = 2 #Number of bosses defeated; should be 0
-=======
-        self.level = 5 #Number of bosses defeated
->>>>>>> 4442c68607a9e5b0d1153a1707dcc097c5d1f6e1
+        self.level = 0 #Number of bosses defeated; should be 0
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.bulletprice = {'blaster': 1, 'spreadshot': 3,
                             'lazor': 0, 'pewpew': 1,
@@ -329,11 +326,7 @@ class explosion(Turtle):
         self.shape('circle')
         self.btype = 'regular'
         self.damage = damage
-<<<<<<< HEAD
         self.explode(1)
-=======
-        bullets.append(self)
->>>>>>> 4442c68607a9e5b0d1153a1707dcc097c5d1f6e1
 
     def explode(self, radius, hitenemies = []):
         damagedenemies = list(hitenemies)
@@ -1183,7 +1176,7 @@ garbage = []
 
 mov = 0
 distance = 0## 0
-kdistance = 9## 0
+kdistance = 0## 0
 cdistance = 0#This is the charge count
 stopped = False
 started = False
