@@ -4,8 +4,10 @@ Better better enemies
 Cooldown??!.?
 Collision
 Player buffs
-Optimazation
+Optimization
 Fix pewpew
 Weapons: Wave Cluster Minelayer Spear
 Balancing
 Name the bosses
+Bullet phasing using lines
+Fix sliding glitch (Only on Peter’s computer)

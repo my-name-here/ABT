@@ -58,7 +58,7 @@ class player(Turtle):
         self.maxcharge = 5
         self.points = 100000
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 0 #Number of bosses defeated
+        self.level = 2 #Number of bosses defeated; should be 0
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.bulletprice = {'blaster': 1, 'spreadshot': 3, 'lazor': 0, 'pewpew': 1, 'blaster_2.0': 1, 'freeze': 1, 'ion': 1, 'chain': 0, 'pentashot': 5, 'machine_gun': 7, 'homing_missile': 1, 'bombs': 1} #This contains the amount of bullets used for each weapon
         self.up()
@@ -305,7 +305,7 @@ class bullet(Turtle):
         self.seth(self.direction)
 
     def collide(self):
-        if self.btype == 'bomb':
+        if self.btype == 'bomb': #Add piercing here
             t = explosion(self.pos(), 1.2, self.explosion, self.color(), self.radius)
         self.delete()
 
@@ -322,9 +322,9 @@ class explosion(Turtle):
         self.pencolor((0, 255, 0))
         self.radius = radius
         self.shape('circle')
-        self.explode(1)
         self.btype = 'regular'
         self.damage = damage
+        self.explode(1)
 
     def explode(self, radius, hitenemies = []):
         damagedenemies = list(hitenemies)
