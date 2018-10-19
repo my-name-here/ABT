@@ -58,7 +58,11 @@ class player(Turtle):
         self.maxcharge = 5
         self.points = 100000
         self.cap = 10 #Maximum number of bullets on the screen
+<<<<<<< HEAD
+        self.level = 2 #Number of bosses defeated; should be 0
+=======
         self.level = 5 #Number of bosses defeated
+>>>>>>> 4442c68607a9e5b0d1153a1707dcc097c5d1f6e1
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.bulletprice = {'blaster': 1, 'spreadshot': 3,
                             'lazor': 0, 'pewpew': 1,
@@ -303,7 +307,7 @@ class bullet(Turtle):
         self.seth(self.direction)
 
     def collide(self):
-        if self.btype == 'bomb':
+        if self.btype == 'bomb': #Add piercing here
             t = explosion(self.pos(), 1.2, self.explosion, self.color(), self.radius)
         self.delete()
 
@@ -325,7 +329,11 @@ class explosion(Turtle):
         self.shape('circle')
         self.btype = 'regular'
         self.damage = damage
+<<<<<<< HEAD
+        self.explode(1)
+=======
         bullets.append(self)
+>>>>>>> 4442c68607a9e5b0d1153a1707dcc097c5d1f6e1
 
     def explode(self, radius, hitenemies = []):
         damagedenemies = list(hitenemies)
@@ -338,6 +346,7 @@ class explosion(Turtle):
             self.pencolor((int(self.pencolor()[0]/self.fade), int(self.pencolor()[1]/self.fade), int(self.pencolor()[2]/self.fade)))
             scoreboard.after(50, lambda: self.explode(radius+4, damagedenemies)) ###### FIX AUGH WHAT ####
         else:
+            print('hi')
             garbage.append(self)
             self.hideturtle()
             del self
@@ -1174,7 +1183,7 @@ garbage = []
 
 mov = 0
 distance = 0## 0
-kdistance = 0## 0
+kdistance = 9## 0
 cdistance = 0#This is the charge count
 stopped = False
 started = False
