@@ -39,7 +39,7 @@ def registerABTShapes(screen):
     i.clear()
     screen.register_shape('5enemy', fe)
     ''
-    i.up()
+    i.up() #This section was created to make hollow circles for explosions
     #i.goto(0, 0)
     i.clear()
     i.begin_poly()

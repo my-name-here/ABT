@@ -5,7 +5,6 @@ Cooldown??!.?
 Collision
 Player buffs
 Optimization
-Fix pewpew
 Weapons: Wave Cluster Minelayer Spear
 Balancing
 Name the bosses
