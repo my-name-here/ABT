@@ -60,7 +60,12 @@ class player(Turtle):
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 5 #Number of bosses defeated
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
-        self.bulletprice = {'blaster': 1, 'spreadshot': 3, 'lazor': 0, 'pewpew': 1, 'blaster_2.0': 1, 'freeze': 1, 'ion': 1, 'chain': 0, 'pentashot': 5, 'machine_gun': 7, 'homing_missile': 1, 'bombs': 1} #This contains the amount of bullets used for each weapon
+        self.bulletprice = {'blaster': 1, 'spreadshot': 3,
+                            'lazor': 0, 'pewpew': 1,
+                            'blaster_2.0': 1, 'freeze': 1,
+                            'ion': 1, 'chain': 0, 'pentashot': 5,
+                            'machine_gun': 7, 'homing_missile': 1,
+                            'bombs': 1} #This contains the amount of bullets used for each weapon
         self.up()
         self.pencolor(color)
 
@@ -1032,7 +1037,7 @@ def loop_iteration():
         if type(b) == bullet:
             for e in elist:
                 if (isColliding(b.xcor(), b.ycor(), e) and e.level <= 5) or\
-                (objectdistance(e.pos(), b.pos()) <= 10 and 6 <= e.level <= 7):
+                (objectdistance(e.pos(), b.pos()) <= 13 and 6 <= e.level <= 7):
                     if e.takeDamage(b.damage): #True if it dies
                         if random.randint(0, 1) == 0:
                             p.health += 1
