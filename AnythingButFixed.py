@@ -1157,7 +1157,7 @@ garbage = []
 
 mov = 0
 distance = 0## 0
-kdistance = 0## 0
+kdistance = 9## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False
