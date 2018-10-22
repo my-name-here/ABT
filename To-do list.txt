@@ -11,7 +11,6 @@ Name the bosses
 Create Bullet phasing using lines
 Fix sliding glitch (Only on Peter’s computer)
 Get rid of root.after
-Call “machine_gun” “shotgun”
 Fix the line in explosion
 Laser stick ships. (Glow red before shooting)
 Implement turtle.get_shapepoly()

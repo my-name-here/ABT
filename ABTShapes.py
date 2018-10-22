@@ -45,7 +45,7 @@ def registerABTShapes(screen):
     i.goto(0, 0)
     i.clear()
     i.seth(0)
-    radius = 5
+    radius = 10
     i.right(90)
     i.forward(radius)
     i.down()
