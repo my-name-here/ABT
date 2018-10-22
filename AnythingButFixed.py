@@ -327,7 +327,7 @@ class explosion(Turtle):
         self.goto(pos)
         self.pencolor((0, 255, 0))
         self.radius = radius
-        self.shape('circle')
+        self.shape('Circle')
         self.btype = 'regular'
         self.damage = damage
         self.framesleft = 1 #This is how many frames are left before this object can be garbage collected
@@ -1143,6 +1143,7 @@ def main():
         except:
             pass
     screen.onkey(stop, "e")
+    screen.onkey(stop, "E")
     screen.update()
 
 colormode(255)

@@ -40,23 +40,29 @@ def registerABTShapes(screen):
     screen.register_shape('5enemy', fe)
     ''
     i.up() #This section was created to make hollow circles for explosions
-    #i.goto(0, 0)
-    i.clear()
+    i.fillcolor(0, 255, 0)
     i.begin_poly()
+    i.goto(0, 0)
+    i.clear()
     i.seth(0)
     radius = 5
     i.right(90)
     i.forward(radius)
     i.down()
     i.left(90)
+    i.end_poly()
+    c = i.get_poly()
+    i.begin_poly()
+    i.begin_fill()
     i.circle(radius)
     i.right(90)
     i.backward(1)
     i.left(90)
     i.circle(radius-1)
-    i.up()
+    '''i.up()
     i.goto(0,0)
-    i.down()
+    i.down()'''
+    i.end_fill()
     i.end_poly()
     c = i.get_poly()
     screen.register_shape('Circle', c)
@@ -150,5 +156,5 @@ def registerABTShapes(screen):
     screen.register_shape('bat', bt)
     i.clear()
 
-##registerABTShapes(y)
+#registerABTShapes(y)
     
