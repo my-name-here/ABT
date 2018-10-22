@@ -1,6 +1,6 @@
 from turtle import *
 from tkinter import *
-import random
+import random #This can be removed
 
 #x = Turtle()
 #x.hideturtle()
@@ -40,8 +40,7 @@ def registerABTShapes(screen):
     screen.register_shape('5enemy', fe)
     ###----------New shape----------###
     i.up() #This section was created to make hollow circles for explosions
-    i.fillcolor(0, 255, 0)
-    i.pensize(5)
+    #i.pensize(5)
     i.begin_poly()
     i.goto(0, 0)
     i.clear()
@@ -54,10 +53,9 @@ def registerABTShapes(screen):
     i.end_poly()
     c = i.get_poly()
     i.begin_poly()
-    i.begin_fill()
+    i.circle(radius)
     i.circle(radius)
     i.right(90)
-    i.end_fill()
     i.end_poly()
     c = i.get_poly()
     screen.register_shape('Circle', c)

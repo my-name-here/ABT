@@ -59,7 +59,7 @@ class player(Turtle):
         self.maxcharge = 5
         self.points = 0
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 0 #Number of bosses defeated; should be 0
+        self.level = 3 #Number of bosses defeated; should start as 0
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.bulletprice = {'blaster': 1, 'spreadshot': 3,
                             'lazor': 0, 'pewpew': 1,
@@ -336,7 +336,7 @@ class explosion(Turtle):
 
     def explode(self, radius, hitenemies = []):
         damagedenemies = list(hitenemies)
-        self.shapesize(radius/10, outline = 4)
+        self.shapesize(radius/10, outline = 3)#Maybe outline should decrease as the explosion gets bigger?
         for enemy in elist:
             if (not enemy in hitenemies) and sqrt(((enemy.xcor()-self.xcor())**2)+(enemy.ycor()-self.ycor())**2)<=radius:
                 enemy.takeDamage(self.damage)
@@ -347,12 +347,6 @@ class explosion(Turtle):
         else:
             self.hideturtle()
             garbage.append(self) #Explosion gets garbage-collected too fast. This causes hideturtle to fail
-
-    def move(self, x):# delete these soon
-        pass
-
-    def collide(self):
-        pass
      
 class enemy(Turtle):
     def __init__(self, level):
