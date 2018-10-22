@@ -31,7 +31,7 @@ Update notes:
 -Fixed hitboxes for everyone
 -Added a list of shareholders
 -Now with git (#notsponsored)
--Sorted update notes by length
+-Sorted update notes by length (#sponsered)
 -Maybe buffed blaster 2.0 (we forgot)
 -Fixed boss 2 and also made him exist
 -Tricked milo into being part of the development team
@@ -57,15 +57,15 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 0
+        self.points = 1000000
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 3 #Number of bosses defeated; should start as 0
+        self.level = 2 #Number of bosses defeated; should start as 0
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.bulletprice = {'blaster': 1, 'spreadshot': 3,
                             'lazor': 0, 'pewpew': 1,
                             'blaster_2.0': 1, 'freeze': 1,
                             'ion': 1, 'chain': 0, 'pentashot': 5,
-                            'machine_gun': 7, 'homing_missile': 1,
+                            'shotgun': 7, 'homing_missile': 1,
                             'bombs': 1} #This contains the amount of bullets used for each weapon
         self.up()
         self.pencolor(color)
@@ -137,7 +137,7 @@ class player(Turtle):
                 b.seth(90)
             elif self.hotbarweapons[self.weapon] == 'pentashot' and self.charge >= 3:
                 self.spray(5, 3, 1, 2.5, regular = 40)
-            elif self.hotbarweapons[self.weapon] == "machine_gun" and self.charge >= 4:
+            elif self.hotbarweapons[self.weapon] == "shotgun" and self.charge >= 4:
                 self.spray(7, 4, 1, 2, spread = 20)
             elif self.hotbarweapons[self.weapon] == "pewpew" and self.charge >= 1:
                 self.charge -= 1
