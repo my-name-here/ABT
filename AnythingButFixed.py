@@ -336,7 +336,7 @@ class explosion(Turtle):
 
     def explode(self, radius, hitenemies = []):
         damagedenemies = list(hitenemies)
-        self.shapesize(radius/10)
+        self.shapesize(radius/10, outline = 4)
         for enemy in elist:
             if (not enemy in hitenemies) and sqrt(((enemy.xcor()-self.xcor())**2)+(enemy.ycor()-self.ycor())**2)<=radius:
                 enemy.takeDamage(self.damage)
@@ -346,7 +346,7 @@ class explosion(Turtle):
             scoreboard.after(50, lambda: self.explode(radius+4, damagedenemies))
         else:
             self.hideturtle()
-            garbage.append(self) #Explosion gets bargbage collected too fast. This causes hideturtle to fail
+            garbage.append(self) #Explosion gets garbage-collected too fast. This causes hideturtle to fail
 
     def move(self, x):# delete these soon
         pass

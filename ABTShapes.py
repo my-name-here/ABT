@@ -38,9 +38,10 @@ def registerABTShapes(screen):
     fe = i.get_poly()
     i.clear()
     screen.register_shape('5enemy', fe)
-    ''
+    ###----------New shape----------###
     i.up() #This section was created to make hollow circles for explosions
     i.fillcolor(0, 255, 0)
+    i.pensize(5)
     i.begin_poly()
     i.goto(0, 0)
     i.clear()
@@ -56,18 +57,15 @@ def registerABTShapes(screen):
     i.begin_fill()
     i.circle(radius)
     i.right(90)
-    i.backward(1)
-    i.left(90)
-    i.circle(radius-1)
-    '''i.up()
-    i.goto(0,0)
-    i.down()'''
     i.end_fill()
     i.end_poly()
     c = i.get_poly()
     screen.register_shape('Circle', c)
-    i.clear()
-    ''
+    i.reset()#Reset clears all the data; This should be used more often to avoid scenarios where
+    i.hideturtle()#the order that these shapes are created in matters. Make sure to add hideturtle after reset
+    ###----------New shape----------###
+    i.pencolor(255, 0, 0)
+    i.fillcolor(0, 0, 0)
     i.begin_poly()
     i.seth(0)
     i.begin_fill()
@@ -116,7 +114,7 @@ def registerABTShapes(screen):
     bt = i.get_poly()
     screen.register_shape('boss2', bt)
     i.clear()
-
+    ###----------New shape----------###
     i.up()
     i.seth(0)
     i.goto(0, 0)

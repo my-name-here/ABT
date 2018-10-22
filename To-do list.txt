@@ -15,3 +15,4 @@ Call “machine_gun” “shotgun”
 Fix the line in explosion
 Laser stick ships. (Glow red before shooting)
 Stop Peter from adding to this list
+Implement turtle.get_shapepoly()
