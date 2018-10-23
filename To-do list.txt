@@ -10,9 +10,9 @@ Balancing
 Name the bosses
 Create Bullet phasing using lines
 Fix sliding glitch (Only on Peter’s computer)
-Get rid of root.after
-Fix the line in explosion
 Laser stick ships. (Glow red before shooting)
 Implement turtle.get_shapepoly()
-Ideas:
-Potentially make it so leveling up increases bullet cap, not new weapons
+Clean up
+Make the todo list 16 things long
+Laser doesn’t hit friendlies
+Ideas: Potentially make it so leveling up increases bullet cap, not new weapons
