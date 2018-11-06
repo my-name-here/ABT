@@ -3,6 +3,7 @@
 
 '''
 Update notes:
+Alex is using git
 Cleared update notes (#Sponsered)
 '''
 
