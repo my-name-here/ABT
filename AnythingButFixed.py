@@ -1,5 +1,5 @@
 # Anything but That
-# version 0.8
+# version 0.83
 
 '''
 Update notes:
@@ -31,9 +31,9 @@ Update notes:
 -Fixed hitboxes for everyone
 -Added a list of shareholders
 -Now with git (#notsponsored)
--Sorted update notes by length
 -Maybe buffed blaster 2.0 (we forgot)
 -Fixed boss 2 and also made him exist
+-Sorted update notes by length (#sponsered)
 -Tricked milo into being part of the development team
 '''
 
@@ -59,13 +59,13 @@ class player(Turtle):
         self.maxcharge = 5
         self.points = 0
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 0 #Number of bosses defeated; should be 0
+        self.level = 0 #Number of bosses defeated; should start as 0
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.bulletprice = {'blaster': 1, 'spreadshot': 3,
                             'lazor': 0, 'pewpew': 1,
                             'blaster_2.0': 1, 'freeze': 1,
                             'ion': 1, 'chain': 0, 'pentashot': 5,
-                            'machine_gun': 7, 'homing_missile': 1,
+                            'shotgun': 7, 'homing_missile': 1,
                             'bombs': 1} #This contains the amount of bullets used for each weapon
         self.up()
         self.pencolor(color)
@@ -137,7 +137,7 @@ class player(Turtle):
                 b.seth(90)
             elif self.hotbarweapons[self.weapon] == 'pentashot' and self.charge >= 3:
                 self.spray(5, 3, 1, 2.5, regular = 40)
-            elif self.hotbarweapons[self.weapon] == "machine_gun" and self.charge >= 4:
+            elif self.hotbarweapons[self.weapon] == "shotgun" and self.charge >= 4:
                 self.spray(7, 4, 1, 2, spread = 20)
             elif self.hotbarweapons[self.weapon] == "pewpew" and self.charge >= 1:
                 self.charge -= 1
@@ -322,12 +322,13 @@ class bullet(Turtle):
 class explosion(Turtle):
     def __init__(self, pos, fade, damage, color = (255, 0, 0), radius = 40):
         Turtle.__init__(self)
+        animations.append(self) #####
         self.fade = fade
         self.up()
         self.goto(pos)
         self.pencolor((0, 255, 0))
         self.radius = radius
-        self.shape('circle')
+        self.shape('Circle')
         self.btype = 'regular'
         self.damage = damage
         self.framesleft = 1 #This is how many frames are left before this object can be garbage collected
@@ -336,23 +337,21 @@ class explosion(Turtle):
 
     def explode(self, radius, hitenemies = []):
         damagedenemies = list(hitenemies)
-        self.shapesize(radius/10)
+        self.shapesize(radius/10, outline = 4)#Maybe outline should decrease as the explosion gets bigger?
         for enemy in elist:
             if (not enemy in hitenemies) and sqrt(((enemy.xcor()-self.xcor())**2)+(enemy.ycor()-self.ycor())**2)<=radius:
                 enemy.takeDamage(self.damage)
                 damagedenemies.append(enemy)
         if radius < self.radius:
             self.pencolor((int(self.pencolor()[0]/self.fade), int(self.pencolor()[1]/self.fade), int(self.pencolor()[2]/self.fade)))
-            scoreboard.after(50, lambda: self.explode(radius+4, damagedenemies))
+            #scoreboard.after(50, lambda: self.explode(radius+4, damagedenemies)) #####
+            self.next = lambda self: self.explode(radius+2, damagedenemies) #####
         else:
             self.hideturtle()
-            garbage.append(self) #Explosion gets bargbage collected too fast. This causes hideturtle to fail
+            #garbage.append(self) #Explosion gets garbage-collected too fast. This causes hideturtle to fail #####
 
-    def move(self, x):# delete these soon
-        pass
-
-    def collide(self):
-        pass
+    def next(self): #####
+        self.explode(1) #####
      
 class enemy(Turtle):
     def __init__(self, level):
@@ -909,11 +908,7 @@ def garbage_collect(turtles):
     '''Takes in turtles and deletes them'''
     for b in turtles:
         turtles.remove(b)
-        if not(str(type(b)) == "<class '__main__.explosion'>" and b.framesleft > 0):
-            screen._turtles.remove(b)
-        else:
-            b.framesleft -= 1
-            turtles.append(b) #This puts the explosion back in the list so it can be removed next
+        screen._turtles.remove(b)
 
 def start_tutorial():
     screen.onkey(lambda: speech(turtor, []), "e")
@@ -1119,6 +1114,11 @@ def main():
         if not f.isvisible():
             garbage.append(f)
             flist.remove(f)
+    for a in animations: #####
+        a.next(a) #####
+        if not a.isvisible(): #####
+            animations.remove(a) #####
+            garbage.append(a)#####
     distance += 1
     if distance % 1000 == 0:
         distance = 0
@@ -1143,6 +1143,7 @@ def main():
         except:
             pass
     screen.onkey(stop, "e")
+    screen.onkey(stop, "E")
     screen.update()
 
 colormode(255)
@@ -1163,7 +1164,8 @@ bullets = [] #Holds the players bulletsd
 ebullets = [] #Holds the enemy bullets
 elist = [] #Holds all the enemies
 flist = [] #Holds all the friendly's
-garbage = []
+garbage = [] #Holds all the garbage (stuff to be deleted
+animations = [] #####
 
 mov = 0
 distance = 0## 0

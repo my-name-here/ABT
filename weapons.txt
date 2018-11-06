@@ -6,6 +6,6 @@ freeze blaster_2.0 1 80 freeze gun [bullet that temporarily freezes enemies] (80
 ion blaster_2.0 1 80 ion blaster [bullet that temporarily stuns enemies preventing them from firing] (80 pts)
 chain ion 3 180 lightning zapper [fires a lightning bolt that chains through enemies for 4 charge] (180 pts)
 pentashot spreadshot 1 80 pentashot [shoots 5 bullets for 3 charge], (80 pts)
-machine_gun spreadshot 2 80 machine gun [shoots 7 bullets for 4 charge], (80 pts)
+shotgun spreadshot 2 80 shotgun [shoots 7 bullets for 4 charge], (80 pts)
 homing_missile blaster 2 120 homing missile [its OBFISHMUS what this does] (120 pts)
 bombs blaster 2 80 bombs [its OBFISHMUS what this does] (80 pts)
