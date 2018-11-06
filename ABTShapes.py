@@ -1,6 +1,5 @@
 from turtle import *
 from tkinter import *
-import random #This can be removed
 
 #x = Turtle()
 #x.hideturtle()

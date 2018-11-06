@@ -11,8 +11,16 @@ Name the bosses
 Create Bullet phasing using lines
 Fix sliding glitch (Only on Peter’s computer)
 Laser stick ships. (Glow red before shooting)
+Fix weapons not switching
 Implement turtle.get_shapepoly()
 Clean up
+Make lazor an animation
+Fix bill
+Fix lazor boss’s hitbox
+Bosses can’t take debuffs
 Make the todo list 16 things long
-Laser doesn’t hit friendlies
+Laser doesn’t hit friendlies with the correct hitbox using shapepoly
+Make explosion subclass animation
+Fix laser boss hitbox
+Remove k??? From shop
 Ideas: Potentially make it so leveling up increases bullet cap, not new weapons

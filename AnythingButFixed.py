@@ -3,38 +3,7 @@
 
 '''
 Update notes:
--Bill
--Faster
--Shorter
--Added bats
--Now with sys
--3 new bosses
--4 new weapons
--2 new weapons
--Buffed boss 1
--Not as random
--Added Todolist
--Now without sys
--60% less gluten
--120% more gluten
--Changed tutorial
--Added sound files
--Added update notes
--Fractional support
--Now with more files
--3 new status effects
--Changed point economy
--Changed version number
--Price reduction (50% off)
--Introduced status effects
--Now using the metric system
--Fixed hitboxes for everyone
--Added a list of shareholders
--Now with git (#notsponsored)
--Maybe buffed blaster 2.0 (we forgot)
--Fixed boss 2 and also made him exist
--Sorted update notes by length (#sponsered)
--Tricked milo into being part of the development team
+Cleared update notes (#Sponsered)
 '''
 
 from tkinter import *
@@ -242,7 +211,7 @@ class player(Turtle):
         b.down()
         b.width(3)
         b.write("blap", font = ("Comic Sans MS", 20, "normal"))
-        for e in elist:
+        for e in elist+flist:
             if abs(e.xcor()-b.xcor()) < e.getWidth():
                 if e.takeDamage():
                     p.health += random.randint(0, 1)
@@ -317,12 +286,11 @@ class bullet(Turtle):
 
     def delete(self):
         self.hideturtle()
-        del self #Pretty sure this doesn't do anything
         
 class explosion(Turtle):
     def __init__(self, pos, fade, damage, color = (255, 0, 0), radius = 40):
         Turtle.__init__(self)
-        animations.append(self) #####
+        animations.append(self)
         self.fade = fade
         self.up()
         self.goto(pos)
@@ -331,8 +299,6 @@ class explosion(Turtle):
         self.shape('Circle')
         self.btype = 'regular'
         self.damage = damage
-        self.framesleft = 1 #This is how many frames are left before this object can be garbage collected
-        #This ensures self.hideturtle() is finished before the turtle is deleted
         self.explode(1)
 
     def explode(self, radius, hitenemies = []):
@@ -344,14 +310,13 @@ class explosion(Turtle):
                 damagedenemies.append(enemy)
         if radius < self.radius:
             self.pencolor((int(self.pencolor()[0]/self.fade), int(self.pencolor()[1]/self.fade), int(self.pencolor()[2]/self.fade)))
-            #scoreboard.after(50, lambda: self.explode(radius+4, damagedenemies)) #####
-            self.next = lambda self: self.explode(radius+2, damagedenemies) #####
+            self.next = lambda self: self.explode(radius+2, damagedenemies)
         else:
             self.hideturtle()
-            #garbage.append(self) #Explosion gets garbage-collected too fast. This causes hideturtle to fail #####
+            #garbage.append(self) #Explosion gets garbage-collected too fast. This causes hideturtle to fail 
 
-    def next(self): #####
-        self.explode(1) #####
+    def next(self):
+        self.explode(1)
      
 class enemy(Turtle):
     def __init__(self, level):
@@ -448,7 +413,6 @@ class enemy(Turtle):
 
     def delete(self):
         self.hideturtle()
-        del self #Pretty sure this doesn't do anything
 
 class friendly(Turtle):
     def __init__(self):
@@ -498,9 +462,11 @@ class friendly(Turtle):
             self.delete() #Die if you're dead
             return True
 
+    def getWidth(self):
+        return 3 #This needs to be the width
+
     def delete(self):
         self.hideturtle()
-        del self #Pretty sure this doesn't do anything
 
 class Boss(Turtle):
     def __init__(self):
@@ -608,7 +574,6 @@ class Boss(Turtle):
         garbage.append(self.keeper)
         p.level += 1
         del self.keeper #Pretty sure this doesn't do anything
-        del self #Pretty sure this doesn't do anything
 
 class boss1(Boss):
     def __init__(self):
@@ -847,7 +812,7 @@ def shop(root, k):#k???
     if p.level > 1:
         cb = Button(root, text = 'increase charge speed [self explanatory] (20 pts)', command = csboost)
         cb.pack()
-    hb = Button(root, text = 'Change weapon loadout', command = lambda: loadout(k))
+    hb = Button(root, text = 'Change weapon loadout', command = lambda: loadout(p.level))
     hb.pack()
 
 def changewaepons(k, weapons):
@@ -1114,11 +1079,11 @@ def main():
         if not f.isvisible():
             garbage.append(f)
             flist.remove(f)
-    for a in animations: #####
-        a.next(a) #####
-        if not a.isvisible(): #####
-            animations.remove(a) #####
-            garbage.append(a)#####
+    for a in animations: 
+        a.next(a) 
+        if not a.isvisible(): 
+            animations.remove(a) 
+            garbage.append(a)
     distance += 1
     if distance % 1000 == 0:
         distance = 0
@@ -1149,7 +1114,7 @@ def main():
 colormode(255)
 color = (0, 255, 0)
 
-p = player(['blaster', 'bombs'])
+p = player(['blaster'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
@@ -1164,8 +1129,8 @@ bullets = [] #Holds the players bulletsd
 ebullets = [] #Holds the enemy bullets
 elist = [] #Holds all the enemies
 flist = [] #Holds all the friendly's
-garbage = [] #Holds all the garbage (stuff to be deleted
-animations = [] #####
+garbage = [] #Holds all the garbage (stuff to be deleted)
+animations = [] #Holds animations
 
 mov = 0
 distance = 0## 0
