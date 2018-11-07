@@ -16,6 +16,7 @@ Implement turtle.get_shapepoly()
 Clean up
 Make lazor an animation
 Fix bill
+———————Linear collision with shapepoly——————— Enemies move before bullets, Make arelinesintersecting method
 Fix lazor boss’s hitbox
 Bosses can’t take debuffs
 Make the todo list 16 things long
