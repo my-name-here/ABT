@@ -1138,8 +1138,8 @@ garbage = [] #Holds all the garbage (stuff to be deleted)
 animations = [] #Holds animations
 
 mov = 0
-distance = 900## 0
-kdistance = 19## 0
+distance = 0## 0
+kdistance = 0## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False
