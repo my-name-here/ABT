@@ -266,6 +266,10 @@ class bullet(Turtle):
                 x = self.heading()-90
                 self.seth(x+(self.towards(bestenemy)-90>x)-(self.towards(bestenemy)-90<x)+90)
             self.forward(self.movespeed)
+        elif self.btype == 'phoming':
+            x = self.heading()-90
+            self.seth(x+(self.towards(p)-90>x)-(self.towards(p)-90<x)+90)
+            self.forward(self.movespeed)
         else:
             self.forward(self.movespeed)
         if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
@@ -515,8 +519,8 @@ class Boss(Turtle):
         if self.health <= 0:
             self.delete()
                     
-    def shoot(self, direction = -90, debuffs = {}):
-        b = bullet(direction, self.pos(), debuffs = debuffs)
+    def shoot(self, direction = -90, debuffs = {}, btype = 'regular'):
+        b = bullet(direction, self.pos(), btype = btype, debuffs = debuffs)
         if 'freeze' in debuffs.keys():
             b.color((0, 255, 255))
         elif 'ion' in debuffs.keys():
@@ -1134,8 +1138,8 @@ garbage = [] #Holds all the garbage (stuff to be deleted)
 animations = [] #Holds animations
 
 mov = 0
-distance = 0## 0
-kdistance = 0## 0
+distance = 900## 0
+kdistance = 19## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False
