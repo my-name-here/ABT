@@ -23,6 +23,7 @@ Bosses can’t take debuffs
 Make the todo list 16 things long
 Laser doesn’t hit friendlies with the correct hitbox using shapepoly
 Make explosion subclass animation
+Make explosions brighter
 Fix laser boss hitbox
 Remove k??? From shop
 Ideas: Potentially make it so leveling up increases bullet cap, not new weapons

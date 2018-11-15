@@ -27,16 +27,16 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 0
+        self.points = 1000000
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 0 #Number of bosses defeated; should start as 0
+        self.level = 3 #Number of bosses defeated; should start as 0
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.bulletprice = {'blaster': 1, 'spreadshot': 3,
                             'lazor': 0, 'pewpew': 1,
                             'blaster_2.0': 1, 'freeze': 1,
                             'ion': 1, 'chain': 0, 'pentashot': 5,
                             'shotgun': 7, 'homing_missile': 1,
-                            'bombs': 1} #This contains the amount of bullets used for each weapon
+                            'bombs': 1, 'wave': 0} #This contains the amount of bullets used for each weapon
         self.up()
         self.pencolor(color)
 
@@ -123,6 +123,9 @@ class player(Turtle):
                 if fight:
                     x.append(boss)
                 self.chaingo(x, (self.xcor(), self.ycor()))
+            elif self.hotbarweapons[self.weapon] == "wave" and self.charge >= 3:
+                self.charge -= 4
+                self.wavego()
         updatecharge()
         return
     
@@ -205,6 +208,11 @@ class player(Turtle):
             garbage.append(drawer)
             del drawer #Pretty sure this doesn't do anything
 
+    def wavego(self):
+        for i in range(5): #Hits within a 500 radius
+            e = explosion(self.pos(), 1.01, 1, (0, 255, 0), radius = 20*i) #Creates explosion objects
+            
+
     def lazorgo(self):
         b = bullet(90, self.pos(), (0, 255, 0))
         b.hideturtle()
@@ -286,7 +294,7 @@ class bullet(Turtle):
 
     def collide(self):
         if self.btype == 'bomb': #Add piercing here
-            t = explosion(self.pos(), 1.2, self.explosion, self.color(), self.radius)
+            t = explosion(self.pos(), 1.12, self.explosion, self.pencolor(), self.radius)
         self.delete()
 
     def delete(self):
@@ -299,12 +307,13 @@ class explosion(Turtle):
         self.fade = fade
         self.up()
         self.goto(pos)
-        self.pencolor((0, 255, 0))
+        self.pencolor([int(x) for x in color])#Integizes the list
+        self.color = color
         self.radius = radius
         self.shape('Circle')
         self.btype = 'regular'
         self.damage = damage
-        self.explode(1)
+        self.next()
 
     def explode(self, radius, hitenemies = []):
         damagedenemies = list(hitenemies)
@@ -314,8 +323,9 @@ class explosion(Turtle):
                 enemy.takeDamage(self.damage)
                 damagedenemies.append(enemy)
         if radius < self.radius:
-            self.pencolor((int(self.pencolor()[0]/self.fade), int(self.pencolor()[1]/self.fade), int(self.pencolor()[2]/self.fade)))
-            self.next = lambda self: self.explode(radius+2, damagedenemies)
+            self.color = (self.color[0]/self.fade, self.color[1]/self.fade, self.color[2]/self.fade)
+            self.pencolor((int(self.color[0]/self.fade), int(self.color[1]/self.fade), int(self.color[2]/self.fade)))
+            self.next = lambda: self.explode(radius+2, damagedenemies) #Modifies the next function
         else:
             self.hideturtle()
             #garbage.append(self) #Explosion gets garbage-collected too fast. This causes hideturtle to fail 
@@ -1085,7 +1095,7 @@ def main():
             garbage.append(f)
             flist.remove(f)
     for a in animations: 
-        a.next(a) 
+        a.next() 
         if not a.isvisible(): 
             animations.remove(a) 
             garbage.append(a)
