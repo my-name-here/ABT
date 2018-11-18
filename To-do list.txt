@@ -23,4 +23,5 @@ Laser doesn’t hit friendlies with the correct hitbox using shapepoly
 Make explosion subclass animation
 Fix laser boss hitbox
 Remove k??? From shop
+Make good gameplay
 Ideas: Potentially make it so leveling up increases bullet cap, not new weapons

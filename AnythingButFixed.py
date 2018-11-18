@@ -26,7 +26,7 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 0
+        self.points = 10000000
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 0 #Number of bosses defeated; should start as 0
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
@@ -955,7 +955,7 @@ def loop_iteration():
     if p.xcor() < -300:
         p.setx(300)
     if random.randint(0, 100) == 100 and not fight:
-        x = enemy(random.randint(p.level+1, p.level+2))
+        x = enemy(random.randint(p.level+1, p.level+3))
     if p.level > 3 and random.randint(0, 200) == 100 and not fight:
         x = friendly()
     for i in range(len(elist)):
@@ -1114,7 +1114,7 @@ def main():
 colormode(255)
 color = (0, 255, 0)
 
-p = player(['blaster'])
+p = player(['blaster', 'bombs'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
@@ -1134,7 +1134,7 @@ animations = [] #Holds animations
 
 mov = 0
 distance = 0## 0
-kdistance = 0## 0
+kdistance = 990## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False
