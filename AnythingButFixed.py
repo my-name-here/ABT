@@ -214,27 +214,18 @@ class player(Turtle):
             
 
     def lazorgo(self):
-        b = bullet(90, self.pos(), (0, 255, 0))
-        b.hideturtle()
-        b.damage = 1
-        b.down()
-        b.width(3)
-        b.write("blap", font = ("Comic Sans MS", 20, "normal"))
-        for e in elist+flist:
-            if abs(e.xcor()-b.xcor()) < e.getWidth():
+        for e in elist+flist:#MAke collision using shapepoly
+            if abs(e.xcor()-self.xcor()) < e.getWidth():
                 if e.takeDamage():
                     p.health += random.randint(0, 1)
                 p.points += 1
                 updatescoreboard()
-        if fight and abs(boss.xcor()-b.xcor()) < max(boss.turtlesize()[0]*6-3, 0):
+        if fight and abs(boss.xcor()-self.xcor()) < max(boss.turtlesize()[0]*6-3, 0):
             boss.takeDamage(1)
-            p.points += 1
+            self.points += 1
             updatescoreboard()
-                
-        b.forward(600)
-        screen.update()
-        b.clear()
-        b.collide()
+
+        x = lazor(1.25, self, color = (0, 255, 0))
         return
             
 class bullet(Turtle):
@@ -299,11 +290,46 @@ class bullet(Turtle):
 
     def delete(self):
         self.hideturtle()
-        
-class explosion(Turtle):
-    def __init__(self, pos, fade, damage, color = (255, 0, 0), radius = 40):
+
+class animation(Turtle):
+    def __init__(self, stages = 4):
         Turtle.__init__(self)
         animations.append(self)
+        self.stages = stages
+
+    def changestate(self, stage):
+        if stage < self.stages:
+            self.next = lambda: self.changestate(stage+1, damagedenemies) #Modifies the next function
+        else:
+            self.hideturtle()
+        
+    def next(self):
+        self.changestate(0)
+
+class lazor(animation):
+    def __init__(self, fade, firer, color = (255, 0, 0), stages = 6): #firer is who fired the lazor
+        animation.__init__(self, stages)
+        self.up()
+        self.fade = fade
+        self.mycolor = color
+        self.color([int(x) for x in color])#Integizes the list
+        self.shape('square')
+        self.left(90)
+        self.forward(40) #This section needs to be generalized for all enemies. Currently this is hard-coded for the player
+        self.goto(firer.xcor(), self.ycor())
+        self.shapesize(0.08, 30, 1)
+
+    def changestate(self, stage):
+        if stage < self.stages:
+            self.mycolor = (self.mycolor[0]/self.fade, self.mycolor[1]/self.fade, self.mycolor[2]/self.fade)
+            self.color((int(self.mycolor[0]), int(self.mycolor[1]), int(self.mycolor[2])))
+            self.next = lambda: self.changestate(stage+1) #Modifies the next function
+        else:
+            self.hideturtle()
+        
+class explosion(animation): #Fix to inherit correctly later
+    def __init__(self, pos, fade, damage, color = (255, 0, 0), radius = 40):
+        animation.__init__(self, radius)
         self.fade = fade
         self.up()
         self.goto(pos)
@@ -315,7 +341,7 @@ class explosion(Turtle):
         self.damage = damage
         self.next()
 
-    def explode(self, radius, hitenemies = []):
+    def changestate(self, radius, hitenemies = []): #Stage is the radius
         damagedenemies = list(hitenemies)
         self.shapesize(radius/10, outline = 4)#Maybe outline should decrease as the explosion gets bigger?
         for enemy in elist:
@@ -324,14 +350,14 @@ class explosion(Turtle):
                 damagedenemies.append(enemy)
         if radius < self.radius:
             self.color = (self.color[0]/self.fade, self.color[1]/self.fade, self.color[2]/self.fade)
-            self.pencolor((int(self.color[0]/self.fade), int(self.color[1]/self.fade), int(self.color[2]/self.fade)))
-            self.next = lambda: self.explode(radius+2, damagedenemies) #Modifies the next function
+            self.pencolor((int(self.color[0]), int(self.color[1]), int(self.color[2])))
+            self.next = lambda: self.changestate(radius+2, damagedenemies) #Modifies the next function
         else:
             self.hideturtle()
             #garbage.append(self) #Explosion gets garbage-collected too fast. This causes hideturtle to fail 
 
     def next(self):
-        self.explode(1)
+        self.changestate(1)
      
 class enemy(Turtle):
     def __init__(self, level):
@@ -1129,7 +1155,7 @@ def main():
 colormode(255)
 color = (0, 255, 0)
 
-p = player(['blaster'])
+p = player(['blaster', 'lazor'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
