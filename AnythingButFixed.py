@@ -933,7 +933,7 @@ def start_tutorial():
     speech(turtor, f)
 
 def speech(turtor, words):
-    if not started and words != []:
+    if words != []:
         turtor.clear()
         turtor.goto(20, 20)
         turtor.write(words[0], font=("Ariel", 10, "normal"))
@@ -944,13 +944,8 @@ def speech(turtor, words):
         turtor.hideturtle()
         turtor.clear()
         screen.onkeypress(p.fire, "space")
-        first_loop()
-
-def first_loop():
-    global started
-    if not started:
-        started = True
-        while True:
+        bullets.append(turtor)
+        while True: #Runs the game
             if not stopped:
                 main()
             else:
@@ -1179,7 +1174,6 @@ kdistance = 0## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False
-started = False
 scoreboard = Tk()
 root = 0 #measured in grams
 boss = 0
