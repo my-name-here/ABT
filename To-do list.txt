@@ -14,16 +14,19 @@ Laser stick ships. (Glow red before shooting)
 Fix weapons not switching
 Implement turtle.get_shapepoly()
 Clean up
-Make lazor an animation
 Fix bill
 Terrain
+Add animations to their own file
+Change hp system
+Fix the raw turtle issue 
 ———————Linear collision with shapepoly——————— Enemies move before bullets, Make arelinesintersecting method
 Fix lazor boss’s hitbox
 Bosses can’t take debuffs
-Make the todo list 16 things long
-Laser doesn’t hit friendlies with the correct hitbox using shapepoly
+Laser doesn’t hit friendlies with the correct hitbox use shapepoly
 Make explosion subclass animation
 Fix laser boss hitbox
 Remove k??? From shop
 Make good gameplay
+Have consistent style
+Make chain an animation
 Ideas: Potentially make it so leveling up increases bullet cap, not new weapons
