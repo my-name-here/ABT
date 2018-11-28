@@ -29,7 +29,7 @@ class player(Turtle):
         self.maxcharge = 5
         self.points = 10000000
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 3 #Number of bosses defeated; should start as 0
+        self.level = 1 #Number of bosses defeated; should start as 0
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
         self.bulletprice = {'blaster': 1, 'spreadshot': 3,
                             'lazor': 0, 'pewpew': 1,
@@ -276,7 +276,7 @@ class bullet(Turtle):
             self.forward(self.movespeed)
         elif self.btype == 'phoming':
             x = self.heading()-90
-            self.seth(x+(self.towards(p)-90>x)-(self.towards(p)-90<x)+90)
+            self.seth(min(300, max(x+((self.towards(p)-90>x)-(self.towards(p)-90<x)/2)+90, 240)))
             self.forward(self.movespeed)
         else:
             self.forward(self.movespeed)
@@ -627,7 +627,7 @@ class boss2(Boss):
         self.turtlesize(5, 5, 2)
         self.pencolor((255, 0, 0))
         self.goto(0, 300)
-        self.health = 99
+        self.health = 130
         self.showhealth()
         self.points = 100
         self.spraying = 0
@@ -932,6 +932,9 @@ def first_loop():
 
 def objectdistance(pointa, pointb):
     return sqrt((pointa[0]-pointb[0])**2+(pointa[1]-pointb[1])**2)
+
+def areLinesIntersecting(lin1, lin2):
+    pass
                 
 def stop():
     global stopped, root
@@ -1129,7 +1132,7 @@ def main():
 colormode(255)
 color = (0, 255, 0)
 
-p = player(['blaster', 'bombs'])
+p = player(['blaster', 'bombs', 'homing_missile'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
@@ -1140,7 +1143,7 @@ p.turtlesize(3, 4, 2)
 p.left(90)
 p.back(260)
 
-bullets = [] #Holds the players bulletsd
+bullets = [] #Holds the players bullets
 ebullets = [] #Holds the enemy bullets
 elist = [] #Holds all the enemies
 flist = [] #Holds all the friendly's
@@ -1148,8 +1151,8 @@ garbage = [] #Holds all the garbage (stuff to be deleted)
 animations = [] #Holds animations
 
 mov = 0
-distance = 0## 0
-kdistance = 990## 0
+distance = 990## 0
+kdistance = 19## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False
