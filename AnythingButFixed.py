@@ -211,19 +211,37 @@ class player(Turtle):
     def wavego(self):
         for i in range(5): #Hits within a 500 radius
             e = explosion(self.pos(), 1.01, 1, (0, 255, 0), radius = 20*i) #Creates explosion objects
-            
 
     def lazorgo(self):
-        for e in elist+flist:#MAke collision using shapepoly
-            if abs(e.xcor()-self.xcor()) < e.getWidth():
+        for e in elist+flist:#Make collision using shapepoly
+            sh = list(e.get_shapepoly())
+            for i in range(len(sh)):
+                sh[i] = (sh[i][0] + e.xcor(), sh[i][1] + e.ycor())
+            w = [e.xcor(), e.xcor()]
+            for i in sh:
+                if i[0] < w[0]:
+                    w[0] = i[0]
+                elif i[0] > w[1]:
+                    w[1] = i[0]
+            if w[0]-3 < self.xcor() < w[1]+3:
                 if e.takeDamage():
                     p.health += random.randint(0, 1)
                 p.points += 1
                 updatescoreboard()
-        if fight and abs(boss.xcor()-self.xcor()) < max(boss.turtlesize()[0]*6-3, 0):
-            boss.takeDamage(1)
-            self.points += 1
-            updatescoreboard()
+        if fight:
+            sh = list(boss.get_shapepoly())
+            for i in range(len(sh)):
+                sh[i] = (sh[i][0] + e.xcor(), sh[i][1] + e.ycor())
+            w = [boss.xcor(), boss.xcor()]
+            for i in sh:
+                if i[0] < w[0]:
+                    w[0] = i[0]
+                elif i[0] > w[1]:
+                    w[1] = i[0]
+            if w[0]-3 < self.xcor() < w[1]+3:
+                boss.takeDamage(1)
+                self.points += 1
+                updatescoreboard()
 
         x = lazor(1.25, self, color = (0, 255, 0))
         return
@@ -271,9 +289,9 @@ class bullet(Turtle):
             self.forward(self.movespeed)
         else:
             self.forward(self.movespeed)
-        if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
+        if self.ycor() < -350 or self.ycor() > 350: #Take yourself off the screen when you're off the screen
             self.delete()
-        if self.xcor() < -300 or self.xcor() > 300:
+        if self.xcor() < -350 or self.xcor() > 350:
             self.delete()
 
     def moveToPos(self, pos):
@@ -1001,7 +1019,7 @@ def loop_iteration():
         try:
             e = elist[i]
             e.move(p) #p is Player
-            if elist[i].ycor() < -300:
+            if elist[i].ycor() < -350:
                 e.delete()
         except IndexError:
             pass
@@ -1009,7 +1027,7 @@ def loop_iteration():
         try:
             f = flist[i]
             f.move(p) #p is Player
-            if flist[i].ycor() < -300:
+            if abs(flist[i].xcor()) > 350: # if they are off the screen, delete them
                 f.delete()
         except IndexError:
             pass
@@ -1173,7 +1191,7 @@ animations = [] #Holds animations
 
 mov = 0
 distance = 990## 0
-kdistance = 19## 0
+kdistance = 9## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False
