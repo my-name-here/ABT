@@ -19,7 +19,7 @@ Fix bill
 Terrain
 Add animations to their own file
 Change hp system
-Fix the raw turtle issue 
+Add Weapon Stats and Weapon shop .txt
 ———————Linear collision with shapepoly——————— Enemies move before bullets, Make arelinesintersecting method
 Fix lazor boss’s hitbox
 Bosses can’t take debuffs
