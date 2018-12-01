@@ -150,6 +150,7 @@ def registerABTShapes(screen):
     bt = i.get_poly()
     screen.register_shape('bat', bt)
     i.clear()
+    screen._turtles.remove(i)
 
 #registerABTShapes(y)
     

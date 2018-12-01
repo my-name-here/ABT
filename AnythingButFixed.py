@@ -29,16 +29,22 @@ class player(Turtle):
         self.maxcharge = 5
         self.points = 10000000
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 1 #Number of bosses defeated; should start as 0
-        self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
+        self.level = 3 #Number of bosses defeated; should start as 0
+        self.debuffs = {'overheated': 0, 'freeze': 0, 'invisible': 0, 'ion': 0}#Overheated is similar to ion but does not dicolor the player
         self.bulletprice = {'blaster': 1, 'spreadshot': 3,
                             'lazor': 0, 'pewpew': 1,
                             'blaster_2.0': 1, 'freeze': 1,
                             'ion': 1, 'chain': 0, 'pentashot': 5,
                             'shotgun': 7, 'homing_missile': 1,
                             'bombs': 1, 'wave': 0} #This contains the amount of bullets used for each weapon
+        self.heatprice = {'blaster': 40, 'spreadshot': 45,
+                            'lazor': 30, 'pewpew': 10,
+                            'blaster_2.0': 30, 'freeze': 40,
+                            'ion': 40, 'chain': 20, 'pentashot': 25,
+                            'shotgun': 50, 'homing_missile': 55,
+                            'bombs': 40, 'wave': 20} #This contains the frames of cooldown used for each weapon
         self.up()
-        self.pencolor(color)
+        self.pencolor((0, 255, 0))
 
     def spray(self, num, charge, damage, speed, spread = 10, regular = False):
         self.charge -= charge
@@ -56,7 +62,8 @@ class player(Turtle):
                 b.seth(b.direction)
 
     def fire(self):
-        if len(bullets)+self.bulletprice[self.hotbarweapons[self.weapon]] <= self.cap and self.debuffs['ion'] <= 0:
+        if self.debuffs['overheated'] <= 0 and len(bullets)+self.bulletprice[self.hotbarweapons[self.weapon]] <= self.cap and self.debuffs['ion'] <= 0:
+            self.debuffs['overheated'] = self.heatprice[self.hotbarweapons[self.weapon]]
             if self.hotbarweapons[self.weapon] == 'blaster':
                 b = bullet(90, self.pos(), (0, 255, 0))
                 bullets.append(b)
@@ -530,7 +537,6 @@ class friendly(Turtle):
 class Boss(Turtle):
     def __init__(self):
         Turtle.__init__(self)
-        self.bossness = 0
         self.health = 0
         self.keeper = Turtle()
         self.debuffs = {'freeze': 0, 'invisible': 0, 'ion': 0}
@@ -841,7 +847,7 @@ def updatecharge(): #Delete if this doesn't make things faster
         battery = Label(scoreboard, text = 'charge: ' + str(int(p.charge)), font = ('Monaco', 16))
         battery.pack()
 
-def shop(root, k):#k???
+def shop(root):#k???
     global weapons
     c = Canvas(root)
     c.pack()
@@ -871,10 +877,10 @@ def shop(root, k):#k???
     if p.level > 1:
         cb = Button(root, text = 'increase charge speed [self explanatory] (20 pts)', command = csboost)
         cb.pack()
-    hb = Button(root, text = 'Change weapon loadout', command = lambda: loadout(p.level))
+    hb = Button(root, text = 'Change weapon loadout', command = loadout)
     hb.pack()
 
-def changewaepons(k, weapons):
+def changewaepons(weapons):
     global root
     newhotbarweapons = []
     for w in range(len(weapons)):
@@ -886,10 +892,10 @@ def changewaepons(k, weapons):
     p.weapon = 0
     root.destroy()
     root = Tk()
-    shop(root, k)
+    shop(root)
     updatescoreboard
 
-def loadout(k):
+def loadout():
     global root
     root.destroy()
     root = Tk()
@@ -903,7 +909,7 @@ def loadout(k):
         c.pack()
         weapons.append(var)
 
-    back = Button(root, text = 'SAVE AND EXIT', command = lambda: changewaepons(k, weapons))
+    back = Button(root, text = 'SAVE AND EXIT', command = lambda: changewaepons(weapons))
     back.pack()
         
         
@@ -975,13 +981,13 @@ def objectdistance(pointa, pointb):
 def areLinesIntersecting(lin1, lin2):
     pass
                 
-def stop():
+def stop(): #This method is not used
     global stopped, root
     stopped = True
     screen.onkey(main, "e")
     screen.onkey(main, "E")
     root = Tk()
-    shop(root, p.level)
+    shop(root)
                 
 def loop_iteration():
     '''Iterates once and returns whether you're done'''
@@ -996,6 +1002,8 @@ def loop_iteration():
         p.debuffs['ion'] -= 0.25
     else:
         p.pencolor(0, 255, 0)
+    if p.debuffs['overheated'] > 0:
+        p.debuffs['overheated'] -= 1
     if p.debuffs['freeze'] <= 0:
         p.setx(p.xcor() + mov)
     else:
@@ -1071,7 +1079,7 @@ def loop_iteration():
         screen.onkey(main, "e")
         screen.onkey(main, "E")
         root = Tk()
-        shop(root, boss.bossness)
+        shop(root, p.level)
     if p.health < 1:
         print('you lose haha')
         print('points: ', round(p.points))
@@ -1088,6 +1096,7 @@ def loop_iteration():
     return False
                         
 def boss_iteration():
+    '''Only called when there's a boss. Does all boss related actions'''
     global distance, kdistance, fight, boss
     distance = 0
     boss.move()
@@ -1117,6 +1126,7 @@ def boss_iteration():
             updatescoreboard()
 
 def main():
+    '''Controls the whole program, garbage collection, update distance, add boss if necessary'''
     global distance, kdistance, root, stopped, fight
     stopped = False
     garbage_collect(garbage)
@@ -1169,14 +1179,13 @@ def main():
     screen.update()
 
 colormode(255)
-color = (0, 255, 0)
 
 p = player(['blaster', 'lazor'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
 canvas = screen.getcanvas()
-ABTShapes.registerABTShapes(screen)
+ABTShapes.registerABTShapes(screen) #Raw turtle is created in this line
 screen.bgcolor(0, 0, 0)
 p.turtlesize(3, 4, 2)
 p.left(90)
@@ -1190,8 +1199,8 @@ garbage = [] #Holds all the garbage (stuff to be deleted)
 animations = [] #Holds animations
 
 mov = 0
-distance = 990## 0
-kdistance = 9## 0
+distance = 0## 0
+kdistance = 39## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False

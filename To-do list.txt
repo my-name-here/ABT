@@ -1,10 +1,11 @@
 Minibosses
 Bosses
 Better better enemies
-Cooldown??!.?
+Make the smallest enemies bigger
 Collision
 Player buffs
 Optimization
+Make removing all weapons in load out work right
 Weapons: Cluster Minelayer Spear
 Balancing
 Name the bosses
@@ -18,15 +19,12 @@ Fix bill
 Terrain
 Add animations to their own file
 Change hp system
-Fix the raw turtle issue 
+Add Weapon Stats and Weapon shop .txt
 ———————Linear collision with shapepoly——————— Enemies move before bullets, Make arelinesintersecting method
 Fix lazor boss’s hitbox
 Bosses can’t take debuffs
-Laser doesn’t hit friendlies with the correct hitbox use shapepoly
-Make explosion subclass animation
+Laser doesn’t hit friendlies with the correct hitbox use shapepoly-Done
 Fix laser boss hitbox
-Remove k??? From shop
-Make good gameplay
 Have consistent style
 Make chain an animation
 Ideas: Potentially make it so leveling up increases bullet cap, not new weapons
