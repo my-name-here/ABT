@@ -1206,5 +1206,4 @@ weaponl.pack()
 battery = Label(scoreboard, text = 'charge: ' + str(p.charge), font = ('Monaco', 16))
 battery.pack()
 
-print(screen._turtles)
 start_tutorial()
