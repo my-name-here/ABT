@@ -27,7 +27,7 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 10000000
+        self.points = 1000000
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 3 #Number of bosses defeated; should start as 0
         self.debuffs = {'overheated': 0, 'freeze': 0, 'invisible': 0, 'ion': 0}#Overheated is similar to ion but does not dicolor the player
@@ -218,37 +218,19 @@ class player(Turtle):
     def wavego(self):
         for i in range(5): #Hits within a 500 radius
             e = explosion(self.pos(), 1.01, 1, (0, 255, 0), radius = 20*i) #Creates explosion objects
+            
 
     def lazorgo(self):
-        for e in elist+flist:#Make collision using shapepoly
-            sh = list(e.get_shapepoly())
-            for i in range(len(sh)):
-                sh[i] = (sh[i][0] + e.xcor(), sh[i][1] + e.ycor())
-            w = [e.xcor(), e.xcor()]
-            for i in sh:
-                if i[0] < w[0]:
-                    w[0] = i[0]
-                elif i[0] > w[1]:
-                    w[1] = i[0]
-            if w[0]-3 < self.xcor() < w[1]+3:
+        for e in elist+flist:#MAke collision using shapepoly
+            if abs(e.xcor()-self.xcor()) < e.getWidth():
                 if e.takeDamage():
                     p.health += random.randint(0, 1)
                 p.points += 1
                 updatescoreboard()
-        if fight:
-            sh = list(boss.get_shapepoly())
-            for i in range(len(sh)):
-                sh[i] = (sh[i][0] + e.xcor(), sh[i][1] + e.ycor())
-            w = [boss.xcor(), boss.xcor()]
-            for i in sh:
-                if i[0] < w[0]:
-                    w[0] = i[0]
-                elif i[0] > w[1]:
-                    w[1] = i[0]
-            if w[0]-3 < self.xcor() < w[1]+3:
-                boss.takeDamage(1)
-                self.points += 1
-                updatescoreboard()
+        if fight and abs(boss.xcor()-self.xcor()) < max(boss.turtlesize()[0]*6-3, 0):
+            boss.takeDamage(1)
+            self.points += 1
+            updatescoreboard()
 
         x = lazor(1.25, self, color = (0, 255, 0))
         return
@@ -292,13 +274,13 @@ class bullet(Turtle):
             self.forward(self.movespeed)
         elif self.btype == 'phoming':
             x = self.heading()-90
-            self.seth(min(300, max(x+((self.towards(p)-90>x)-(self.towards(p)-90<x)/2)+90, 240)))
+            self.seth(x+(self.towards(p)-90>x)-(self.towards(p)-90<x)+90)
             self.forward(self.movespeed)
         else:
             self.forward(self.movespeed)
-        if self.ycor() < -350 or self.ycor() > 350: #Take yourself off the screen when you're off the screen
+        if self.ycor() < -300 or self.ycor() > 300: #Take yourself off the screen when you're off the screen
             self.delete()
-        if self.xcor() < -350 or self.xcor() > 350:
+        if self.xcor() < -300 or self.xcor() > 300:
             self.delete()
 
     def moveToPos(self, pos):
@@ -677,7 +659,7 @@ class boss2(Boss):
         self.turtlesize(5, 5, 2)
         self.pencolor((255, 0, 0))
         self.goto(0, 300)
-        self.health = 130
+        self.health = 99
         self.showhealth()
         self.points = 100
         self.spraying = 0
@@ -887,13 +869,13 @@ def changewaepons(weapons):
         if weapons[w].get():
             newhotbarweapons.append(p.weapons[w])
     if len(newhotbarweapons) == 0:
-        newhotbarweapons.append('blaster')
+        newhotbarweapons.append(p.hotbarweapons[p.weapon])
     p.hotbarweapons = newhotbarweapons
     p.weapon = 0
     root.destroy()
     root = Tk()
     shop(root)
-    updatescoreboard
+    updatescoreboard()
 
 def loadout():
     global root
@@ -977,9 +959,6 @@ def speech(turtor, words):
 
 def objectdistance(pointa, pointb):
     return sqrt((pointa[0]-pointb[0])**2+(pointa[1]-pointb[1])**2)
-
-def areLinesIntersecting(lin1, lin2):
-    pass
                 
 def stop(): #This method is not used
     global stopped, root
@@ -1020,14 +999,14 @@ def loop_iteration():
     if p.xcor() < -300:
         p.setx(300)
     if random.randint(0, 100) == 100 and not fight:
-        x = enemy(random.randint(p.level+1, p.level+3))
+        x = enemy(random.randint(p.level+1, p.level+2))
     if p.level > 3 and random.randint(0, 200) == 100 and not fight:
         x = friendly()
     for i in range(len(elist)):
         try:
             e = elist[i]
             e.move(p) #p is Player
-            if elist[i].ycor() < -350:
+            if elist[i].ycor() < -300:
                 e.delete()
         except IndexError:
             pass
@@ -1035,7 +1014,7 @@ def loop_iteration():
         try:
             f = flist[i]
             f.move(p) #p is Player
-            if abs(flist[i].xcor()) > 350: # if they are off the screen, delete them
+            if flist[i].ycor() < -300:
                 f.delete()
         except IndexError:
             pass
@@ -1180,7 +1159,7 @@ def main():
 
 colormode(255)
 
-p = player(['blaster', 'lazor'])
+p = player(['blaster'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
@@ -1191,7 +1170,7 @@ p.turtlesize(3, 4, 2)
 p.left(90)
 p.back(260)
 
-bullets = [] #Holds the players bullets
+bullets = [] #Holds the players bulletsd
 ebullets = [] #Holds the enemy bullets
 elist = [] #Holds all the enemies
 flist = [] #Holds all the friendly's
@@ -1200,7 +1179,7 @@ animations = [] #Holds animations
 
 mov = 0
 distance = 0## 0
-kdistance = 39## 0
+kdistance = 0## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False
