@@ -23,7 +23,7 @@ class player(Turtle):
         self.weapons = list(weapons)
         self.hotbarweapons = list(weapons)
         self.weapon = 0
-        self.health = 20
+        self.health = 1120
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
@@ -500,7 +500,7 @@ class friendly(Turtle):
         self.up()
         self.health = 4
         self.turtlesize(self.health, self.health, 2)
-        if random.randint(0, 1):
+        if random_event():
             self.goto(-300, random.randint(-200, 200))
         else:
             self.right(180)
@@ -639,6 +639,9 @@ class Boss(Turtle):
         for i in range(boss.points):
             p.points += 1
             updatescoreboard()
+        for i in range(10):
+            p.health += 1
+            updatescoreboard()
         self.hideturtle()
         garbage.append(self)
         garbage.append(self.keeper)
@@ -668,9 +671,9 @@ class boss1(Boss):
             self.n *= -1
 
     def fire(self):
-        if not random.randint(0, 100):
+        if not random_event(p=0.01):
             self.fireenemy(1, 4)
-        if not random.randint(0, 100):
+        if not random_event(p=0.01):
             self.spray(5, 1, 2)
 
 class boss2(Boss):
@@ -704,21 +707,21 @@ class boss2(Boss):
         alimit = self.health/10
         slimit = 100-self.health/4
         if self.health > 195:
-            if not random.randint(0, 200):
+            if not random_event(p=0.005):
                 self.shoot(direction = -90)
         else:
-            if not random.randint(0, 150) and not self.spraying:
+            if not random_event(p=0.006667) and not self.spraying:
                 self.spraying = int(slimit)
             if self.spraying > 0:
                 if not self.alternate:
                     self.spraying -= 1
                     if self.health > 100:
-                        if random.randint(0, 1):
+                        if random_event(p=0.5):
                             self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30})
                         else:
                             self.shoot(direction = random.randint(-30, 30)-90)
                     else:
-                        if random.randint(0, 1):
+                        if random_event(p=0.5):
                             self.shoot(direction = random.randint(-30, 30)-90, debuffs = {'freeze':30}, btype = 'phoming')
                         else:
                             self.shoot(direction = random.randint(-30, 30)-90, btype = 'phoming')
@@ -749,9 +752,9 @@ class boss3(Boss):
             self.n *= -1
 
     def fire(self):
-        if not random.randint(0, 200):
+        if not random_event(p=0.005):
             self.fireenemy(1, 4, self.towards(p.pos()) + random.randint(-20, 20))
-        if not random.randint(0, 200):
+        if not random_event(p=0.005):
             self.burst(self.towards(p.pos()), 10, 20)
 
 class boss4(Boss):
@@ -777,7 +780,7 @@ class boss4(Boss):
 
     def fire(self):
         if abs(self.xcor()-self.spot) < 5:
-            if not random.randint(0, 100):
+            if not random_event(p=0.01):
                 self.lazershot(self.pos(), -90)
                 self.spot = p.xcor()
             
@@ -946,7 +949,7 @@ def garbage_collect(turtles):
         screen._turtles.remove(b)
 
 def random_event(p=0.5):
-    return random.random()>p
+    return random.random()<p
 
 def start_tutorial():
     screen.onkey(lambda: speech(turtor, []), "e")
@@ -1012,7 +1015,7 @@ def loop_iteration():
         p.charge = min(p.charge, p.maxcharge)
         cdistance = 0
         updatecharge()
-    if random.randint(0, 100) == 100 and not fight:
+    if random_event(p=0.01) and not fight:
         x = enemy(random.randint(p.level+1, p.level+2))
     if p.level > 3 and random.randint(0, 200) == 100 and not fight:
         x = friendly()
@@ -1040,7 +1043,7 @@ def loop_iteration():
                 if (isColliding(b.xcor(), b.ycor(), e) and e.level <= 5) or\
                 (objectdistance(e.pos(), b.pos()) <= 13 and 6 <= e.level <= 7):
                     if e.takeDamage(b.damage): #True if it dies
-                        if random.randint(0, 1) == 0:
+                        if random_event(p=0.5):
                             p.health += 1
                     else:
                         for debuff in b.debuffs:
@@ -1051,7 +1054,7 @@ def loop_iteration():
             for f in flist:
                 if isColliding(b.xcor(), b.ycor(), f):
                     if f.takeDamage(b.damage): #True if it dies
-                        if random.randint(0, 1) == 0:
+                        if random_event(p=0.5):
                             p.health -= 1
                     else:
                         for debuff in b.debuffs:
@@ -1173,7 +1176,7 @@ def main():
 
 colormode(255)
 
-p = player(['blaster'])
+p = player(['blaster', 'bombs', 'chain'])
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
