@@ -22,9 +22,9 @@ Add Weapon Stats and Weapon shop .txt
 ———————Linear collision with shapepoly——————— Enemies move before bullets, Make arelinesintersecting method
 Fix lazor boss’s hitbox
 Bosses can’t take debuffs
-Laser doesn’t hit friendlies with the correct hitbox use shapepoly-Done
 Fix laser boss hitbox
 Have consistent style
 Make chain an animation
 Ideas: Potentially make it so leveling up increases bullet cap, not new weapons
 Notes: Randint int is WAY slower than random
+Use git ignore on pycache
