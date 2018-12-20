@@ -1,5 +1,5 @@
 Minibosses
-Bosses
+Bosses Complex behaviour
 Better better enemies
 Make the smallest enemies bigger
 Collision
