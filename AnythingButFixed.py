@@ -137,7 +137,27 @@ class player(Turtle):
         return
     
     def move(self):
-        pass
+        if self.debuffs['invisible'] > 0:
+            self.hideturtle()
+            self.debuffs['invisible'] -= 0.25
+        else:
+            self.showturtle()
+        if self.debuffs['ion'] > 0:
+            self.pencolor((min(255, int(200*self.debuffs['ion'])), min(255, int(200*self.debuffs['ion'])), 0))
+            self.debuffs['ion'] -= 0.25
+        else:
+            self.pencolor(0, 255, 0)
+        if self.debuffs['overheated'] > 0:
+            self.debuffs['overheated'] -= 1
+        if self.debuffs['freeze'] <= 0:
+            self.setx(self.xcor() + mov)
+        else:
+            self.debuffs['freeze'] -= 0.25
+            self.fillcolor((0, min(255, int(200*self.debuffs['freeze'])), min(255, int(200*self.debuffs['freeze']))))
+        if self.xcor() > 300:
+            self.setx(-300)
+        if self.xcor() < -300:
+            self.setx(300)
 
     def takeDamage(self):
         pass
@@ -985,33 +1005,13 @@ def stop(): #This method is not used
 def loop_iteration():
     '''Iterates once and returns whether you're done'''
     global cdistance
-    if p.debuffs['invisible'] > 0:
-        p.hideturtle()
-        p.debuffs['invisible'] -= 0.25
-    else:
-        p.showturtle()
-    if p.debuffs['ion'] > 0:
-        p.pencolor((min(255, int(200*p.debuffs['ion'])), min(255, int(200*p.debuffs['ion'])), 0))
-        p.debuffs['ion'] -= 0.25
-    else:
-        p.pencolor(0, 255, 0)
-    if p.debuffs['overheated'] > 0:
-        p.debuffs['overheated'] -= 1
-    if p.debuffs['freeze'] <= 0:
-        p.setx(p.xcor() + mov)
-    else:
-        p.debuffs['freeze'] -= 0.25
-        p.fillcolor((0, min(255, int(200*p.debuffs['freeze'])), min(255, int(200*p.debuffs['freeze']))))
+    p.move()
     cdistance += 1
     if p.charge < p.maxcharge and cdistance % 20 == 0:
         p.charge += p.chargespeed
         p.charge = min(p.charge, p.maxcharge)
         cdistance = 0
         updatecharge()
-    if p.xcor() > 300:
-        p.setx(-300)
-    if p.xcor() < -300:
-        p.setx(300)
     if random.randint(0, 100) == 100 and not fight:
         x = enemy(random.randint(p.level+1, p.level+2))
     if p.level > 3 and random.randint(0, 200) == 100 and not fight:
