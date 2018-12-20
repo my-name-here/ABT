@@ -29,7 +29,7 @@ class player(Turtle):
         self.maxcharge = 5
         self.points = 10000000
         self.cap = 10 #Maximum number of bullets on the screen
-        self.level = 3 #Number of bosses defeated; should start as 0
+        self.level = 0 #Number of bosses defeated; should start as 0
         self.debuffs = {'overheated': 0, 'freeze': 0, 'invisible': 0, 'ion': 0}#Overheated is similar to ion but does not dicolor the player
         self.bulletprice = {'blaster': 1, 'spreadshot': 3,
                             'lazor': 0, 'pewpew': 1,
@@ -238,7 +238,7 @@ class player(Turtle):
         if fight:
             sh = list(boss.get_shapepoly())
             for i in range(len(sh)):
-                sh[i] = (sh[i][0] + e.xcor(), sh[i][1] + e.ycor())
+                sh[i] = (sh[i][0] + boss.xcor(), sh[i][1] + boss.ycor())
             w = [boss.xcor(), boss.xcor()]
             for i in sh:
                 if i[0] < w[0]:
@@ -332,16 +332,16 @@ class animation(Turtle):
         self.changestate(0)
 
 class lazor(animation):
-    def __init__(self, fade, firer, color = (255, 0, 0), stages = 6): #firer is who fired the lazor
+    def __init__(self, fade, firer, color = (255, 0, 0), stages = 6, direction = 90): #firer is who fired the lazor
         animation.__init__(self, stages)
         self.up()
         self.fade = fade
         self.mycolor = color
         self.color([int(x) for x in color])#Integizes the list
-        self.shape('square')
-        self.left(90)
-        self.forward(40) #This section needs to be generalized for all enemies. Currently this is hard-coded for the player
-        self.goto(firer.xcor(), self.ycor())
+        self.shape('square') #This section needs to be generalized for all enemies. Currently this is hard-coded for the player
+        self.goto(firer.xcor(), firer.ycor())
+        self.seth(direction)
+        self.forward(150)
         self.shapesize(0.08, 30, 1)
 
     def changestate(self, stage):
@@ -429,7 +429,7 @@ class enemy(Turtle):
                     self.setx(-300)
                 if self.xcor() < -300:
                     self.setx(300)
-            elif 6 <= self.level <= 7:
+            elif 6 <= self.level <= 7: # bat code
                 if self.flying > 1:
                     a = self.towards(p)
                     if self.heading()-a>=0:
@@ -511,13 +511,6 @@ class friendly(Turtle):
             self.fillcolor((0, min(255, int(200*self.debuffs['freeze'])), min(255, int(200*self.debuffs['freeze']))))
         if self.xcor() > 310 or self.xcor() < -310:
             self.delete()
-
-    def shoot(self):
-        if self.debuffs['ion'] <= 0:
-            self.going = self.going * -1
-            b = bullet(-90, self.pos(), (255, 0, 0))
-            ebullets.append(b)
-        return
 
     def takeDamage(self, damage = 1):
         self.health -= damage
@@ -979,7 +972,12 @@ def objectdistance(pointa, pointb):
     return sqrt((pointa[0]-pointb[0])**2+(pointa[1]-pointb[1])**2)
 
 def areLinesIntersecting(lin1, lin2):
-    pass
+    if lin1[0][0] == lin1[1][0]:
+        pass
+    if lin2[0][0] == lin2[1][0]:
+        pass
+    nx = ((x-turtle.xcor())*cos(t)-(y-turtle.ycor())*sin(t))
+    ny = ((y-turtle.ycor())*cos(t)+(x-turtle.xcor())*sin(t))
                 
 def stop(): #This method is not used
     global stopped, root
@@ -1079,7 +1077,7 @@ def loop_iteration():
         screen.onkey(main, "e")
         screen.onkey(main, "E")
         root = Tk()
-        shop(root, p.level)
+        shop(root)
     if p.health < 1:
         print('you lose haha')
         print('points: ', round(p.points))
@@ -1200,7 +1198,7 @@ animations = [] #Holds animations
 
 mov = 0
 distance = 0## 0
-kdistance = 39## 0
+kdistance = 0## 0
 cdistance = 0#This is the charge count
 fight = False
 stopped = False
