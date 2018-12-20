@@ -1042,10 +1042,7 @@ def loop_iteration():
             for e in elist:
                 if (isColliding(b.xcor(), b.ycor(), e) and e.level <= 5) or\
                 (objectdistance(e.pos(), b.pos()) <= 13 and 6 <= e.level <= 7):
-                    if e.takeDamage(b.damage): #True if it dies
-                        if random_event(p=0.5):
-                            p.health += 1
-                    else:
+                    if not e.takeDamage(b.damage):
                         for debuff in b.debuffs:
                             e.debuffs[debuff] += b.debuffs[debuff]
                     b.collide()
@@ -1053,14 +1050,11 @@ def loop_iteration():
                     updatescoreboard()
             for f in flist:
                 if isColliding(b.xcor(), b.ycor(), f):
-                    if f.takeDamage(b.damage): #True if it dies
-                        if random_event(p=0.5):
-                            p.health -= 1
-                    else:
+                    if not f.takeDamage(b.damage): #True if it dies
                         for debuff in b.debuffs:
                             f.debuffs[debuff] += b.debuffs[debuff]
                     b.collide()
-                    p.points -= b.damage
+                    p.points -= b.damage*2
                     updatescoreboard()
 
     for b in ebullets:
