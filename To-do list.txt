@@ -5,7 +5,6 @@ Make the smallest enemies bigger
 Collision
 Player buffs
 Optimization
-Make removing all weapons in load out work right
 Weapons: Cluster Minelayer Spear
 Balancing
 Name the bosses
@@ -28,3 +27,4 @@ Fix laser boss hitbox
 Have consistent style
 Make chain an animation
 Ideas: Potentially make it so leveling up increases bullet cap, not new weapons
+Notes: Randint int is WAY slower than random
