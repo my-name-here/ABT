@@ -922,6 +922,9 @@ def garbage_collect(turtles):
         turtles.remove(b)
         screen._turtles.remove(b)
 
+def random_event(p=0.5):
+    return random.random()>p
+
 def start_tutorial():
     screen.onkey(lambda: speech(turtor, []), "e")
     screen.onkey(lambda: speech(turtor, []), "E")

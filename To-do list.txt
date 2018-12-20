@@ -26,5 +26,5 @@ Fix laser boss hitbox
 Have consistent style
 Make chain an animation
 Ideas: Potentially make it so leveling up increases bullet cap, not new weapons
-Notes: Randint int is WAY slower than random
+Notes: Implement random_event
 Use git ignore on pycache
