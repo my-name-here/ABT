@@ -16,9 +16,15 @@ import ABTShapes
 from time import time
 import os
 import sys
-
+global easy
+easy=False
+def easy_mode_on():
+    global easy
+    easy=True
+    
+    
 class player(Turtle):
-    def __init__(self, weapons):
+    def __init__(self, weapons,easy_mode=False):
         Turtle.__init__(self)
         self.weapons = list(weapons)
         self.hotbarweapons = list(weapons)
@@ -27,7 +33,10 @@ class player(Turtle):
         self.charge = 0
         self.chargespeed = 1
         self.maxcharge = 5
-        self.points = 1000000
+        if easy:
+            self.points = 10000000000
+        else:
+            self.points = 1000000
         self.cap = 10 #Maximum number of bullets on the screen
         self.level = 0 #Number of bosses defeated; should start as 0
         self.debuffs = {'overheated': 0, 'freeze': 0, 'invisible': 0, 'ion': 0}#Overheated is similar to ion but does not dicolor the player
@@ -1165,12 +1174,13 @@ def main():
         except:
             pass
     screen.onkey(stop, "e")
+    screen.onkey(easy_mode_on, "~")
     screen.onkey(stop, "E")
     screen.update()
 
 colormode(255)
 
-p = player(['blaster', 'bombs', 'chain'])
+p = player(['blaster', 'bombs', 'chain'],easy_mode=easy)
 screen = p.getscreen()
 screen.colormode(255)
 screen.tracer(0)
