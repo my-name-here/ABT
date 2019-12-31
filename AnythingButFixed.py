@@ -882,7 +882,7 @@ def shop(root):#k???
         
         f = open("weapons_easy_mode.txt").read().split('\n')
     else:
-        f = open("Weapons.txt").read().split('\n')
+        f = open("weapons.txt").read().split('\n')
     for weapond in f:
         weapon = weapond.split()
         if weapon[0] not in p.weapons and weapon[1] in p.weapons and p.level >= int(weapon[2]):
