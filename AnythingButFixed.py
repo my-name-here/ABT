@@ -878,7 +878,7 @@ def shop(root):#k???
     rt.right(90)
     rt.pencolor(0, 255, 0)
 
-    if p.easy_mode:
+    if easy:
         
         f = open("weapons_easy_mode.txt").read().split('\n')
     else:
@@ -1177,7 +1177,7 @@ def main():
         except:
             pass
     screen.onkey(stop, "e")
-    screen.onkey(easy_mode_on, "~")
+    screen.onkey(easy_mode_on, "z")
     screen.onkey(stop, "E")
     screen.update()
 
